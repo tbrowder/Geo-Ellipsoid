@@ -1,0 +1,18 @@
+--- #YAML:1.0
+name:                Geo-Ellipsoid
+version:             1.12
+abstract:            Accurate latitude/longitude calculations
+license:             ~
+author:              
+    - Jim Gibson (Jim@Gibson.org)
+generated_by:        ExtUtils::MakeMaker version 6.42
+distribution_type:   module
+requires:     
+    Carp:                          1.04
+    Math::Trig:                    1.03
+    Scalar::Util:                  1.19
+    Test::Number::Delta:           0.16
+    Test::Simple:                  0.44
+meta-spec:
+    url:     http://module-build.sourceforge.net/META-spec-v1.3.html
+    version: 1.3
