@@ -943,5 +943,3 @@ under the same terms as Perl itself.
 Geo::Distance, Geo::Ellipsoids
 
 =cut
-
-1; # End of Geo::Ellipsoid
