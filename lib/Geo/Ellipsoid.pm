@@ -9,7 +9,7 @@
 #	results of the calculations, although they do seem to 
 #	work for him and have been tested against other methods.
 
-package Geo::Ellipsoid;
+class Geo::Ellipsoid;
 
 use warnings;
 use strict;
