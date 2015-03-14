@@ -11,12 +11,9 @@
 
 class Geo::Ellipsoid;
 
-use warnings;
-use strict;
-use 5.006_00;
+use v6;
 
 use Scalar::Util 'looks_like_number';
-use Math::Trig;
 use Carp;
 
 =head1 NAME
