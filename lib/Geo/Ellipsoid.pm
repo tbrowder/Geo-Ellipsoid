@@ -600,7 +600,7 @@ In scalar context, returns just the range.
 =end pod
 
 # public
-method to($range, $bearing) returns (Num, Num)
+multi method to($range, $bearing)
 {
   my $units = self.units;
   my @a = ($range, $bearing);
@@ -613,7 +613,7 @@ method to($range, $bearing) returns (Num, Num)
   return ($range, $bearing);
 }
 
-method to($range) returns Num
+multi method to($range)
 {
   my $units = self.units;
   my @a = ($range);
