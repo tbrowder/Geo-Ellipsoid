@@ -55,7 +55,7 @@ semi-major and semi-minor axes. The shape may also be specifed by
 the flattening ratio C<f> as:
 
     f = (semi-major - semi-minor) / semi-major
-    
+
 which, since f is a small number, is normally given as the reciprocal 
 of the flattening C<1/f>.
 
@@ -215,10 +215,8 @@ values.
 =end pod
 
 # public method
-method set_units
+method set_units($units)
 {
-  my $self = shift;
-  my $units = shift;
   if ($units ~~ m:i/deg/) {
     $units = 'degrees';
   } elsif ($units ~~ m:i/rad/) {
@@ -227,7 +225,7 @@ method set_units
     croak("Invalid units specifier '$units' - please use either " ~
       "degrees or radians (the default)") unless $units ~~ m:i/rad/;
   }
-  $self.{units} = $units;
+  self.units = $units;
 }
 
 =begin pod
@@ -260,23 +258,21 @@ The distance conversion factors used by this module are as follows:
 =end pod
 
 # public
-method set_distance_unit
+method set_distance_unit($unit)
 {
-  my $self = shift;
-  my $unit = shift;
   say "distance unit = { $unit }" if $DEBUG;
 
   my $conversion = 0;
 
   if (defined $unit) {
-  
+
     my ($key, $val);
     while (($key,$val) = each %distance) {
       my $re = substr($key,0,3);
       print "trying ($key,$re,$val)\n" if $DEBUG;
       if ($unit ~~ m:i/^$re/) {
-        $self.{distance_units} = $unit;
-        $conversion = $val;	
+        self.distance_units = $unit;
+        $conversion = $val;
 
 	# finish iterating to reset 'each' function call
 	while (each %distance) {}
@@ -285,7 +281,7 @@ method set_distance_unit
     }
 
     if ($conversion == 0) {
-      if (looks_like_number($unit)) {
+      if (self.looks_like_number($unit)) {
         $conversion = $unit;
       } else {
         carp("Unknown argument to set_distance_unit: $unit\nAssuming meters");
@@ -297,14 +293,14 @@ method set_distance_unit
       "$unit\nAssuming meters");
     $conversion = 1.0;
   }
-  $self.{conversion} = $conversion;
+  self.conversion = $conversion;
 }
 
 =begin pod
 
 =head2 set_ellipsoid
 
-Set the ellipsoid to be used by the Geo::Ellipsoid object. See 
+Set the ellipsoid to be used by the Geo::Ellipsoid object. See
 L<"DEFINED ELLIPSOIDS"> below for the allowable values. The value
 may also be set by the constructor. The default value is 'WGS84'.
 
@@ -313,28 +309,27 @@ may also be set by the constructor. The default value is 'WGS84'.
 =end pod
 
 # public
-sub set_ellipsoid
+method set_ellipsoid($ell)
 {
-  my $self = shift;
-  my $ellipsoid = uc shift || %defaults<ellipsoid>;
-  print "  set ellipsoid to $ellipsoid\n" if $DEBUG;
-  unless (exists %ellipsoids{$ellipsoid}) {
+  my $ellipsoid = uc $ell || %defaults<ellipsoid>;
+  say "  set ellipsoid to $ellipsoid" if $DEBUG;
+  unless (%ellipsoids{$ellipsoid}) {
     croak("Ellipsoid $ellipsoid does not exist - please use " ~
       "set_custom_ellipsoid to use an ellipsoid not in valid set");
   }
-  $self.{ellipsoid} = $ellipsoid;
+  self.ellipsoid = $ellipsoid;
   my ($major, $recip) = @(%ellipsoids{$ellipsoid});
-  $self.{equatorial} = $major;
+  self.equatorial = $major;
   if ($recip == 0) {
     carp("Infinite flattening specified by ellipsoid -- assuming a sphere");
-    $self.{polar} = $self.{equatorial};
-    $self.{flattening} = 0;
-    $self.{eccentricity} = 0;
+    self.polar        = self.equatorial;
+    self.flattening   = 0;
+    self.eccentricity = 0;
   } else {
-    $self.{flattening} = (1.0 / %ellipsoids{$ellipsoid}[1]);
-    $self.{polar} = $self.{equatorial} * (1.0  - $self.{flattening});
-    $self.{eccentricity} = sqrt(2.0 * $self.{flattening} - 
-      ($self.{flattening} * $self.{flattening}));
+    self.flattening   = (1.0 / %ellipsoids{$ellipsoid}[1]);
+    self.polar        = self.equatorial * (1.0  - self.flattening);
+    self.eccentricity = sqrt(2.0 * self.flattening -
+      (self.flattening * self.flattening));
   }
 }
 
@@ -344,17 +339,16 @@ sub set_ellipsoid
 
 Sets the ellipsoid parameters to the specified (major semiaxis and
 reciprocal flattening. A zero value for the reciprocal flattening
-will result in a sphere for the ellipsoid, and a warning message 
+will result in a sphere for the ellipsoid, and a warning message
 will be issued.
 
     $geo->set_custom_ellipsoid('sphere', 6378137, 0);
-    
+
 =end pod
 
-sub set_custom_ellipsoid
+# public
+method set_custom_ellipsoid($name, $major, $recip)
 {
-  my $self = shift;
-  my ($name, $major, $recip) = @_;
   $name = uc $name;
   $recip = 0 unless defined $recip;
   if ($major) {
@@ -362,7 +356,7 @@ sub set_custom_ellipsoid
   } else {  
     croak("set_custom_ellipsoid called without semi-major radius parameter");
   }
-  set_ellipsoid($self,$name);
+  self.set_ellipsoid($name);
 }
 
 =begin pod
@@ -378,16 +372,16 @@ a false or undefined argument, sets the output angle range to be
 
 =end pod
 
-sub set_longitude_symmetric
+# public
+method set_longitude_symmetric($sym)
 {
-  my ($self, $sym) = @_;
   # see if argument passed
-  if (@_.end > 0) {
+  if ($sym > 0) {
     # yes -- use value passed
-    $self.{longitude} = $sym;
+    self.longitude = $sym;
   } else {
     # no -- set to true
-    $self.{longitude} = 1;
+    self.longitude = 1;
   }
 }
 
@@ -404,16 +398,16 @@ a false or undefined argument, sets the output angle range to be
 
 =end pod
 
-sub set_bearing_symmetric
+# public
+method set_bearing_symmetric($sym)
 {
-  my ($self, $sym) = @_;
   # see if argument passed
-  if (@_.end > 0) {
+  if ($sym > 0) {
     # yes -- use value passed
-    $self.{bearing} = $sym;
+    self.bearing = $sym;
   } else {
     # no -- set to true
-    $self.{bearing} = 1;
+    self.bearing = 1;
   }
 }
 
@@ -445,9 +439,12 @@ to their first three letters and are case-insensitive:
 
 =end pod
 
-sub set_defaults
+method set_defaults {}
+=begin pod
+### FIX THIS CORRECTLY
+# public
+method set_defaults
 {
-  my $self = shift;
   my %args = @_;
   for (keys %args) -> $key {
     if ($key ~~ m:i/^ell/) {
@@ -467,6 +464,7 @@ sub set_defaults
   say "Defaults set to (%defaults<ellipsoid>,%defaults<units>"
     if $DEBUG;
 }
+=end pod
 
 =begin pod
 
@@ -483,20 +481,19 @@ calculations in the vicinity of some location.
 
 =end pod
 
-sub scales
+# public
+method scales($lat)
 {
-  my $self = shift;
-  my $units = $self.{units};
-  my $lat = $_[0];
+  my $units = self.units;
   if (defined $lat) {
     $lat /= $degrees_per_radian if ($units eq 'degrees');
   } else {
     carp("scales() method requires latitude argument; assuming 0");
     $lat = 0;
   }
-  
-  my $aa = $self.{equatorial};
-  my $bb = $self.{polar};
+
+  my $aa = self.equatorial;
+  my $bb = self.polar;
   my $a2 = $aa*$aa;
   my $b2 = $bb*$bb;
   my $d1 = $aa * cos($lat);
@@ -504,15 +501,15 @@ sub scales
   my $d3 = $d1*$d1 + $d2*$d2;
   my $d4 = sqrt($d3);
   my $n1 = $aa * $bb;
-  my $latscl = ($n1 * $n1) / ($d3 * $d4 * $self.{conversion});
-  my $lonscl = ($aa * $d1) / ($d4 * $self.{conversion});
-  
+  my $latscl = ($n1 * $n1) / ($d3 * $d4 * self.conversion);
+  my $lonscl = ($aa * $d1) / ($d4 * self.conversion);
+
   if ($DEBUG) {
-    print "lat=$lat, aa=$aa, bb=$bb\nd1=$d1, d2=$d2, d3=$d3, d4=$d4\n";
-    print "latscl=$latscl, lonscl=$lonscl\n";
+    say "lat=$lat, aa=$aa, bb=$bb\nd1=$d1, d2=$d2, d3=$d3, d4=$d4";
+    say "latscl=$latscl, lonscl=$lonscl";
   }
 
-  if ($self.{units} eq 'degrees') {
+  if (self.units eq 'degrees') {
     $latscl /= $degrees_per_radian;
     $lonscl /= $degrees_per_radian;
   }
@@ -530,14 +527,15 @@ as latitude, longitude pairs.
     my $dist = $geo->range(@origin, @destination);
 
 =end pod
-    
-sub range
+
+# public
+method range(*@args)
 {
-  my $self = shift;
-  my @args = _normalize_input($self.{units},@_);
-  my ($range,$bearing) = _inverse($self,@args);
-  print "inverse(@_[1..4]) returns($range,$bearing)\n" if $DEBUG;
-  return $range;
+  my @a = @args;
+  @a = self!_normalize_input(self.units,@a);
+  my ($range,$bearing) = self!_inverse(@a);
+  say "inverse(@a[1..4]) returns($range,$bearing)" if $DEBUG;
+  #return $range;
 }
 
 =begin pod
@@ -547,19 +545,19 @@ sub range
 Returns the bearing in degrees or radians from the first location to
 the second. Zero bearing is true north.
 
-    my $bearing = $geo->bearing($lat1, $lon1, $lat2, $lon2);
+    my $bearing = $geo.bearing($lat1, $lon1, $lat2, $lon2);
 
 =end pod
 
-sub bearing
+# public
+method bearing($lat1, $lon1, $lat2, $lon2)
 {
-  my $self = shift;
-  my $units = $self.{units};
-  my @args = _normalize_input($units,@_);
-  my ($range,$bearing) = _inverse($self,@args);
-  print "inverse(@args) returns($range,$bearing)\n" if $DEBUG;
+  my $units = self.units;
+  my @args = self!_normalize_input($units,$lat1, $lon1, $lat2, $lon2);
+  my ($range,$bearing) = self!_inverse($lat1, $lon1, $lat2, $lon2);
+  say "inverse(@args) returns($range,$bearing)" if $DEBUG;
   my $t = $bearing;
-  $self._normalize_output('bearing',$bearing);
+  self._normalize_output('bearing',$bearing);
   say "_normalize_output($t) returns($bearing)" if $DEBUG;
   return $bearing;
 }
@@ -571,22 +569,22 @@ sub bearing
 Returns the list (latitude,longitude) in degrees or radians that is a
 specified range and bearing from a given location.
 
-    my ($lat2, $lon2) = $geo->at($lat1, $lon1, $range, $bearing);
+    my ($lat2, $lon2) = $geo.at($lat1, $lon1, $range, $bearing);
 
 =end pod
 
-sub at
+# public
+method at($lat1, $lon1, $range, $bearing)
 {
-  my $self = shift;
-  my $units = $self.{units};
-  my ($lat, $lon, $az) = _normalize_input($units,@_[0,1,3]);
+  my $units = self.units;
+  my ($lat, $lon, $az) = self!_normalize_input($units,$lat1,$lon1,$bearing); #@_[0,1,3]);
   my $r = $_[2];
-  print "at($lat,$lon,$r,$az)\n" if $DEBUG;
-  my ($lat2, $lon2) = _forward($self,$lat,$lon,$r,$az);
-  print "_forward returns ($lat2,$lon2)\n" if $DEBUG; 
-  $self._normalize_output('longitude',$lon2);
-  $self._normalize_output('latitude',$lat2);
-  return ($lat2, $lon2);  
+  say "at($lat,$lon,$r,$az)" if $DEBUG;
+  my ($lat2, $lon2) = self._forward($lat,$lon,$r,$az);
+  say "_forward returns ($lat2,$lon2)" if $DEBUG;
+  self._normalize_output('longitude',$lon2);
+  self._normalize_output('latitude',$lat2);
+  return ($lat2, $lon2);
 }
 
 =begin pod
@@ -601,16 +599,17 @@ In scalar context, returns just the range.
 
 =end pod
 
-sub to
+# public
+method to(*@args)
 {
-  my $self = shift;
-  my $units = $self.{units};
-  my @args = _normalize_input($units,@_);
-  print "to($units,@args)\n" if $DEBUG;
-  my ($range,$bearing) = _inverse($self,@args);
-  say "to: inverse(@args) returns($range,$bearing)" if $DEBUG;
+  my $units = self.units;
+  my @a = @args;
+  @a = self!_normalize_input($units,@a);
+  say "to($units,@a)" if $DEBUG;
+  my ($range,$bearing) = self!_inverse(@a);
+  say "to: inverse(@a) returns($range,$bearing)" if $DEBUG;
   #$bearing *= $degrees_per_radian if $units eq 'degrees';
-  $self._normalize_output('bearing',$bearing);
+  self!_normalize_output('bearing',$bearing);
   if (wantarray()) {
     return ($range, $bearing);
   } else {
@@ -633,14 +632,15 @@ or more, the concept of X and Y on a curved surface loses its meaning.
 
 =end pod
 
-sub displacement
+# public
+method displacement(*@args)
 {
-  my $self = shift;
-  print "displacement(",join(',',@_),"\n" if $DEBUG;
-  my @args = _normalize_input($self.{units},@_);
-  print "call _inverse(@args)\n" if $DEBUG;
-  my ($range, $bearing) = _inverse($self,@args);
-  print "disp: _inverse(@args) returns ($range,$bearing)\n" if $DEBUG;
+  my @a = @args;
+  say "displacement(",join(',',@a),"" if $DEBUG;
+  @a = self!_normalize_input(self.units,@a);
+  say "call self!_inverse(@a)" if $DEBUG;
+  my ($range, $bearing) = self!_inverse(@a);
+  say "disp: _inverse(@a) returns ($range,$bearing)" if $DEBUG;
   my $x = $range * sin($bearing);
   my $y = $range * cos($bearing);
   return ($x,$y);
@@ -657,16 +657,15 @@ displacement from a given location.
 
 =end pod
 
-sub location
+# public
+method location($lat,$lon,$x,$y)
 {
-  my $self = shift;
-  my $units = $self.{units};
-  my ($lat,$lon,$x,$y) = @_;
+  my $units = self.units;
   my $range = sqrt($x*$x+ $y*$y);
   my $bearing = atan2($x,$y);
   $bearing *= $degrees_per_radian if $units eq 'degrees';
-  print "location($lat,$lon,$x,$y,$range,$bearing)\n" if $DEBUG;
-  return $self.at($lat,$lon,$range,$bearing);
+  say "location($lat,$lon,$x,$y,$range,$bearing)" if $DEBUG;
+  return self.at($lat,$lon,$range,$bearing);
 }
 
 ########################################################################
@@ -686,10 +685,10 @@ sub location
 method !_inverse($lat1, $lon1, $lat2, $lon2)
 {
   say "_inverse($lat1,$lon1,$lat2,$lon2)" if $DEBUG;
-  
+
   my $a = self.equatorial;
   my $f = self.flattening;
-  
+
   my $r = 1.0 - $f;
   my $tu1 = $r * sin($lat1) / cos($lat1);
   my $tu2 = $r * sin($lat2) / cos($lat2);
@@ -700,14 +699,14 @@ method !_inverse($lat1, $lon1, $lat2, $lon2)
   my $baz = $s * $tu2;
   my $faz = $baz * $tu1;
   my $dlon = $lon2 - $lon1;
-  
+
   if ($DEBUG) {
-    printf "lat1=%.8f, lon1=%.8f\n", $lat1, $lon1; 
+    printf "lat1=%.8f, lon1=%.8f\n", $lat1, $lon1;
     printf "lat2=%.8f, lon2=%.8f\n", $lat2, $lon2;
     printf "r=%.8f, tu1=%.8f, tu2=%.8f\n", $r, $tu1, $tu2;
     printf "faz=%.8f, dlon=%.8f\n", $faz, $dlon;
   }
-  
+
   my $x = $dlon;
   my $cnt = 0;
   print "enter loop:\n" if $DEBUG;
@@ -718,10 +717,10 @@ method !_inverse($lat1, $lon1, $lat2, $lon2)
     $cx = cos($x);
     $tu1 = $cu2*$sx;
     $tu2 = $baz - ($su1*$cu2*$cx);
-  
+
     printf "    sx=%.8f, cx=%.8f, tu1=%.8f, tu2=%.8f\n", 
       $sx, $cx, $tu1, $tu2 if $DEBUG;
-  
+
     $sy = sqrt($tu1*$tu1 + $tu2*$tu2);
     $cy = $s*$cx + $faz;
     $y = atan2($sy,$cy);
@@ -731,10 +730,10 @@ method !_inverse($lat1, $lon1, $lat2, $lon2)
     } else {
       $sa = ($s*$sx) / $sy;
     }
-  
+
     printf "    sy=%.8f, cy=%.8f, y=%.8f, sa=%.8f\n", $sy, $cy, $y, $sa
       if $DEBUG;
-  
+
     $c2a = 1.0 - ($sa*$sa);
     $cz = $faz + $faz;
     if ($c2a > 0.0) {
@@ -746,15 +745,15 @@ method !_inverse($lat1, $lon1, $lat2, $lon2)
     $x = (($e * $cy * $c + $cz) * $sy * $c + $y) * $sa;
     $x = (1.0 - $c) * $x * $f + $dlon;
     $del = $d - $x;
-  
+
     if ($DEBUG) {
       printf "    c2a=%.8f, cz=%.8f\n", $c2a, $cz;
       printf "    e=%.8f, d=%.8f\n", $e, $d;
       printf "    (d-x)=%.8g\n", $del;
     }
-  
+
   } while ((abs($del) > $eps) && (++$cnt <= $max_loop_count));
-  
+
   $faz = atan2($tu1,$tu2);
   $baz = atan2($cu1*$sx,($baz*$cx - $su1*$cu2)) + pi;
   $x = sqrt(((1.0/($r*$r)) -1.0) * $c2a+1.0) + 1.0;
@@ -763,21 +762,21 @@ method !_inverse($lat1, $lon1, $lat2, $lon2)
   $c = (($x*$x)/4.0 + 1.0)/$c;
   $d = ((0.375*$x*$x) - 1.0)*$x;
   $x = $e*$cy;
-  
+
   if ($DEBUG) {
     printf "e=%.8f, cy=%.8f, x=%.8f\n", $e, $cy, $x;
     printf "sy=%.8f, c=%.8f, d=%.8f\n", $sy, $c, $d;
     printf "cz=%.8f, a=%.8f, r=%.8f\n", $cz, $a, $r;
   }
-  
+
   $s = 1.0 - $e - $e;
   $s = (((((((($sy * $sy * 4.0) - 3.0) * $s * $cz * $d/6.0) - $x) * 
     $d /4.0) + $cz) * $sy * $d) + $y) * $c * $a * $r;
-  
+
   printf "s=%.8f\n", $s if $DEBUG;
-  
+
   # adjust azimuth to (0,360) or (-180,180) as specified
-  if ($self.{symmetric}) {
+  if (self.symmetric) {
     $faz += $twopi if $faz < -(pi);
     $faz -= $twopi if $faz >= pi;
   } else {
@@ -786,7 +785,7 @@ method !_inverse($lat1, $lon1, $lat2, $lon2)
   }
 
   # return result
-  my @disp = (($s/$self.{conversion}), $faz);
+  my @disp = (($s/self.conversion), $faz);
   print "disp = (@disp)\n" if $DEBUG;
   return @disp;
 }
@@ -798,10 +797,8 @@ method !_inverse($lat1, $lon1, $lat2, $lon2)
 #	point as (range,bearing)
 #
 # private
-method !_forward
+method !_forward($lat1, $lon1, $range, $bearing)
 {
-  my $self = shift;
-  my ($lat1, $lon1, $range, $bearing) = @_;
 
   if ($DEBUG) {
     printf "_forward(lat1=%.8f,lon1=%.8f,range=%.8f,bearing=%.8f)\n",
@@ -810,19 +807,19 @@ method !_forward
 
   my $eps = 0.5e-13;
 
-  my $a = $self.{equatorial};
-  my $f = $self.{flattening};
+  my $a = self.equatorial;
+  my $f = self.flattening;
   my $r = 1.0 - $f;
 
   my $tu = $r * sin($lat1) / cos($lat1);
   my $faz = $bearing;
-  my $s = $self.{conversion} * $range;
+  my $s = self.conversion * $range;
   my $sf = sin($faz);
   my $cf = cos($faz);
 
   my $baz = 0.0;
   $baz = 2.0 * atan2($tu,$cf) if ($cf != 0.0);
-  
+
   my $cu = 1.0 / sqrt(1.0 + $tu*$tu);
   my $su = $tu * $cu;
   my $sa = $cu * $sf;
@@ -838,12 +835,12 @@ method !_forward
   if ($DEBUG) {
     printf "r=%.8f, tu=%.8f, faz=%.8f\n", $r, $tu, $faz;
     printf "baz=%.8f, sf=%.8f, cf=%.8f\n", $baz, $sf, $cf;
-    printf "cu=%.8f, su=%.8f, sa=%.8f\n", $cu, $su, $sa; 
+    printf "cu=%.8f, su=%.8f, sa=%.8f\n", $cu, $su, $sa;
     printf "x=%.8f, c=%.8f, y=%.8f\n", $x, $c, $y;
   }
 
   my ($cy, $cz, $e, $sy);
-  do {
+  repeat {
     $sy = sin($y);
     $cy = cos($y);
     $cz = cos($baz+$y);
@@ -879,17 +876,26 @@ method !_forward
 #	less than two pi.
 #
 # private
-method !_normalize_input
+method !_normalize_input($units, *@args)
 {
-  my $units = shift;
-  my @args = @_;
-  return map {
+  my @ret = map( {
     $_ = deg2rad($_) if $units eq 'degrees';
     while ($_ < 0) { $_ += $twopi }
     while ($_ >= $twopi) { $_ -= $twopi }
     $_
-  } @args;
-}  
+  }, @args);
+
+  return @ret;
+
+# original:
+#  return map {
+#    $_ = deg2rad($_) if $units eq 'degrees';
+#    while ($_ < 0) { $_ += $twopi }
+#    while ($_ >= $twopi) { $_ -= $twopi }
+#    $_
+#  } @args;
+
+}
 
 #	_normalize_output
 #
@@ -898,13 +904,13 @@ method !_normalize_input
 #	[0,2pi) as needed.
 #
 # private
-method !_normalize_output
+method !_normalize_output(*@args)
 {
-  my $self = shift;
-  my $elem = shift;	# 'bearing' or 'longitude'
+  my @a = @args;
+  my $elem = shift @a;	# 'bearing' or 'longitude'
   # adjust remaining input values by reference
-  for (@_) {
-    if ($self.{$elem}) {
+  for (@a) {
+    if (self.$elem) {
       # normalize to range [-pi,pi)
       while ($_ < -(pi)) { $_ += $twopi }
       while ($_ >= pi) { $_ -= $twopi }
@@ -913,9 +919,9 @@ method !_normalize_output
       while ($_ < 0) { $_ += $twopi }
       while ($_ >= $twopi) { $_ -= $twopi }
     }
-    $_ = rad2deg($_) if $self.{units} eq 'degrees';
+    $_ = rad2deg($_) if self.units eq 'degrees';
   }
-}  
+}
 
 =begin pod
 
