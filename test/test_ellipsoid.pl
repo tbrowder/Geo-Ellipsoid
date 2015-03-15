@@ -6,7 +6,7 @@
 
 #use v6;
 
-require '../lib/Geo/Ellipsoid.pm6';
+require '../lib/Geo/Ellipsoid.pm';
 #use '../lib/Geo/Ellipsoid.pm6';
 
 #sub MAIN ($debug, $xdebug);

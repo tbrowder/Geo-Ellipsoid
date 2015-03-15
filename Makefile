@@ -7,7 +7,7 @@ PERL  := perl6
 .PHONY: test-e test-t run
 
 test-e:
-	( cd lib/Geo; $(PERLM) $(OPTS) Ellipsoid.pm6 )
+	( cd lib/Geo; $(PERLM) $(OPTS) Ellipsoid.pm )
 
 run:
 	( cd test; $(PERL) $(OPTS) test_ellipsoid.pl )
