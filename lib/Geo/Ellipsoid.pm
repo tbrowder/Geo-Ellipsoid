@@ -267,7 +267,7 @@ method set_distance_unit($unit)
   if (defined $unit) {
 
     my ($key, $val);
-    while (($key,$val) = each %distance) {
+    while (($key,$val) = %distance.each) {
       my $re = substr($key,0,3);
       print "trying ($key,$re,$val)\n" if $DEBUG;
       if ($unit ~~ m:i/^$re/) {
@@ -275,7 +275,7 @@ method set_distance_unit($unit)
         $conversion = $val;
 
 	# finish iterating to reset 'each' function call
-	while (each %distance) {}
+	while (%distance.each) {}
 	last;
       }
     }
@@ -600,21 +600,28 @@ In scalar context, returns just the range.
 =end pod
 
 # public
-method to(*@args)
+method to($range, $bearing) returns (Num, Num)
 {
   my $units = self.units;
-  my @a = @args;
+  my @a = ($range, $bearing);
   @a = self!_normalize_input($units,@a);
   say "to($units,@a)" if $DEBUG;
-  my ($range,$bearing) = self!_inverse(@a);
+  ($range,$bearing) = self!_inverse(@a);
   say "to: inverse(@a) returns($range,$bearing)" if $DEBUG;
-  #$bearing *= $degrees_per_radian if $units eq 'degrees';
+  $bearing *= $degrees_per_radian if $units eq 'degrees';
   self!_normalize_output('bearing',$bearing);
-  if (wantarray()) {
-    return ($range, $bearing);
-  } else {
-    return $range;
-  }
+  return ($range, $bearing);
+}
+
+method to($range) returns Num
+{
+  my $units = self.units;
+  my @a = ($range);
+  @a = self!_normalize_input($units,@a);
+  say "to($units,$range)" if $DEBUG;
+  ($range) = self!_inverse(@a);
+  say "to: inverse(@a) returns($range)" if $DEBUG;
+  return $range;
 }
 
 =begin pod
