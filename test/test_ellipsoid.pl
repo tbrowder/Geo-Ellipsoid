@@ -1,38 +1,40 @@
-#!/usr/local/bin/perl
+#!/usr/bin/env perl6
 #
 #	test_ellipsoid.pl
 #
 #	Test Geo::Ellipsoid.pm module coordinate transformations
 
-use strict;
-use warnings;
+#use v6;
 
-use Math::Trig;
-BEGIN{
-  require '../lib/Geo/Ellipsoid.pm';
-}
+require '../lib/Geo/Ellipsoid.pm6';
+#use '../lib/Geo/Ellipsoid.pm6';
 
-print "Enter test_ellipsoid\n\n";
-print "Using Geo::Ellipsoid version $Geo::Ellipsoid::VERSION\n";
+#sub MAIN ($debug, $xdebug);
 
-my $debug = 0;
-my $xdebug = 0;
+say "Enter test_ellipsoid\n";
+#say "Using Geo::Ellipsoid version $Geo::Ellipsoid::VERSION";
+
 my $twopi = 2 * pi;
 my $halfpi = pi/2;
 my $degrees_per_radian = 180.0/pi;
 my $degree = pi/180.0;
 
-for ( @ARGV) {
-  $debug = 1 if /^-d$/;
-  $xdebug = 1 if /^-x$/;
-}
+# arg/option handling
+sub MAIN (Bool :d(:$debug), Bool :x(:$xdebug));
+
+say "debug  = { $debug  ?? 'True' !! 'False' }";
+say "xdebug = { $xdebug ?? 'True' !! 'False' }";
+
+
+=begin comment
 
 print "WGS84 ellipsoid values:\n";
 my $earth = Geo::Ellipsoid->new(
   units => 'degrees', 
   ellipsoid => 'WGS84'
 );
-if( $xdebug ) {
+
+if ($xdebug) {
   $Geo::Ellipsoid::DEBUG = 1;
 }
 
@@ -74,7 +76,7 @@ print_vector(
 
 print_dist(@dfw_arp,@ffc_orig);
 print_dist(@c1,@c1);
-    
+
 print_dist(@c2,@c2);
 print_dist(@c3,@c3);
 print_dist(@c4,@c4);
@@ -256,9 +258,9 @@ sub Angle
   my $frac = ( $min + (($sec + ($csec/100))/60))/60;
   my $angle = $deg;
   #print "  angle=$angle, frac=$frac\n" if $debug;
-  if( $angle < 0 ) {
+  if ( $angle < 0 ) {
     $angle += 360 - $frac;
-  }else{
+  } else {
     $angle += $frac;
   }
   #print "  angle.frac = $angle\n" if $debug;
@@ -272,3 +274,5 @@ sub polar
   my $bearing = $halfpi - atan2($y,$x);
   return ($range, $bearing);
 }
+
+=end comment

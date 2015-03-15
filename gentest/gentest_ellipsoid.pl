@@ -1,16 +1,11 @@
-#!/usr/local/bin/perl
+#!/usr/bin/env perl6
 #
 #	gentest_ellipsoid.pl
 #
 #	Test Ellipsoid.pm module coordinate transformations and
 #	generate test programs.
 
-use strict;
-use warnings;
 $|=1;
-
-use Getopt::Long;
-use Math::Trig;
 
 # get the uninstalled version of Geo::Ellipsoid
 BEGIN{
