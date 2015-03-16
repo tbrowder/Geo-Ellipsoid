@@ -43,7 +43,7 @@ our $DEBUG = 0;
 
 =head1 DESCRIPTION
 
-Geo::Ellipsoid performs geometrical calculations on the surface of 
+Geo::Ellipsoid performs geometrical calculations on the surface of
 an ellipsoid. An ellipsoid is a three-dimension object formed from 
 the rotation of an ellipse about one of its axes. The approximate 
 shape of the earth is an ellipsoid, so Geo::Ellipsoid can accurately
@@ -144,11 +144,11 @@ The initial default constructor is equivalent to the following:
       longitude => 0,
       bearing => 0,
    );
-    
+
 The constructor arguments may be of any case and, with the exception of
 the ellipsoid value, abbreviated to their first three characters. 
 Thus, (UNI => 'DEG', DIS => 'FEE', Lon => 1, ell => 'NAD27', bEA => 0) 
-is valid. 
+is valid.
 
 =end pod
 
@@ -156,8 +156,22 @@ is valid.
 has $.ellipsoid      is rw = 'WGS84';
 has $.units          is rw = 'radians';
 has $.distance_units is rw = 'meter';
-has $.longitude      is rw = 0;  
-has $.bearing        is rw = 0;  
+has $.longitude      is rw = 0;
+has $.bearing        is rw = 0;
+
+
+# temp until provide by core
+method !deg2rad($deg)
+{
+  my $rad = ($deg * pi / 180);
+  return $rad;
+}
+
+method !rad2deg($rad)
+{
+  my $deg = $rad * 180 / pi;
+  return $deg;
+}
 
 =begin pod
 
@@ -632,7 +646,7 @@ Returns the (x,y) displacement in distance units between the two specified
 locations.
 
     my ($x, $y) = $geo->displacement($lat1, $lon1, $lat2, $lon2);
-    
+
 NOTE: The x and y displacements are only approximations and only valid
 between two locations that are fairly near to each other. Beyond 10 kilometers
 or more, the concept of X and Y on a curved surface loses its meaning.
@@ -886,7 +900,7 @@ method !_forward($lat1, $lon1, $range, $bearing)
 method !_normalize_input($units, *@args)
 {
   my @ret = map( {
-    $_ = deg2rad($_) if $units eq 'degrees';
+    $_ = self!deg2rad($_) if $units eq 'degrees';
     while ($_ < 0) { $_ += $twopi }
     while ($_ >= $twopi) { $_ -= $twopi }
     $_
@@ -926,7 +940,7 @@ method !_normalize_output(*@args)
       while ($_ < 0) { $_ += $twopi }
       while ($_ >= $twopi) { $_ -= $twopi }
     }
-    $_ = rad2deg($_) if self.units eq 'degrees';
+    $_ = self!rad2deg($_) if self.units eq 'degrees';
   }
 }
 
