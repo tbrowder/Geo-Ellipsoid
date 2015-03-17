@@ -236,7 +236,7 @@ method set_units($units)
   } elsif ($units ~~ m:i/rad/) {
     $units = 'radians';
   } else {
-    croak("Invalid units specifier '$units' - please use either " ~
+    dir("Invalid units specifier '$units' - please use either " ~
       "degrees or radians (the default)") unless $units ~~ m:i/rad/;
   }
   self.units = $units;
@@ -328,7 +328,7 @@ method set_ellipsoid($ell)
   my $ellipsoid = uc $ell || %defaults<ellipsoid>;
   say "  set ellipsoid to $ellipsoid" if $DEBUG;
   unless (%ellipsoids{$ellipsoid}:exists) {
-    croak("Ellipsoid $ellipsoid does not exist - please use " ~
+    dir("Ellipsoid $ellipsoid does not exist - please use " ~
       "set_custom_ellipsoid to use an ellipsoid not in valid set");
   }
   self.ellipsoid = $ellipsoid;
@@ -368,7 +368,7 @@ method set_custom_ellipsoid($name, $major, $recip)
   if ($major) {
     %ellipsoids{$name} = [ $major, $recip ];
   } else {
-    croak("set_custom_ellipsoid called without semi-major radius parameter");
+    dir("set_custom_ellipsoid called without semi-major radius parameter");
   }
   self.set_ellipsoid($name);
 }
@@ -472,7 +472,7 @@ method set_defaults
     } elsif ($key ~~ m:i/^bea/) {
       %defaults<bearing> = %args{$key};
     } else {
-      croak("Geo::Ellipsoid::set_defaults called with invalid key: $key");
+      dir("Geo::Ellipsoid::set_defaults called with invalid key: $key");
     }
   }
   say "Defaults set to (%defaults<ellipsoid>,%defaults<units>"
