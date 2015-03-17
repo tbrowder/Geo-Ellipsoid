@@ -22,29 +22,27 @@ my $degree = pi/180.0;
 # arg/option handling
 sub MAIN (Bool :d(:$debug), Bool :x(:$xdebug));
 
-say "debug  = { $debug  ?? 'True' !! 'False' }";
-say "xdebug = { $xdebug ?? 'True' !! 'False' }";
+#say "debug  = { $debug  ?? 'True' !! 'False' }";
+#say "xdebug = { $xdebug ?? 'True' !! 'False' }";
 
-
-=begin comment
 
 print "WGS84 ellipsoid values:\n";
-my $earth = Geo::Ellipsoid->new(
-  units => 'degrees', 
-  ellipsoid => 'WGS84'
+my $earth = Geo::Ellipsoid.new(
+  units => 'degrees',
+  ellipsoid => 'WGS84',
 );
 
 if ($xdebug) {
   $Geo::Ellipsoid::DEBUG = 1;
 }
 
-printf "    Equatorial radius = %.10f\n", $earth->{equatorial};
-printf "         Polar radius = %.10f\n", $earth->{polar};
+printf "    Equatorial radius = %.10f\n", $earth.equatorial;
+printf "         Polar radius = %.10f\n", $earth.polar;
 
-my $ef = $earth->{flattening};
+my $ef = $earth.flattening;
 my $rf = 1.0 / $ef;
 printf   "           Flattening = %.16f\n", $ef;
-printf   "         Eccentricity = %.16f\n", $earth->{eccentricity};
+printf   "         Eccentricity = %.16f\n", $earth.eccentricity;
 printf   "Reciprocal flattening = %.8f\n", $rf;
 
 # print displacements between various locations
@@ -111,7 +109,7 @@ print_dist(@c5,@c7);
 
 print_dist(@c6,@c7);
 
-print_target( 
+print_target(
   32, 53, 45.42, -97, 2, 13.92,
   2005.3871, 160.5960
 );
@@ -121,37 +119,34 @@ print "\nPrint Latitude and Longitude scale factors (meters per degree):\n\n";
 print "+----------------------------------------+\n";
 print "| Latitude |    F(Lat)    |    F(Lon)    |\n";
 print "|----------|--------------|--------------|\n";
-for( my $l = 0; $l <= 90; $l++ ) {
+loop ( my $l = 0; $l <= 90; $l++ ) {
   print_latlon_scale($l);
 }
 print "+----------------------------------------+\n";
 
 exit(0);
 
-sub print_latlon_scale
+sub print_latlon_scale($deg)
 {
-  my $deg = shift;
   print "print_latlon_scale($deg)\n" if $debug;
-  my( $r_lat, $r_lon ) = $earth->scales($deg);
-  
+  my ( $r_lat, $r_lon ) = $earth.scales($deg);
+
   printf "| %8.4f | %12.4f | %12.4f |\n", $deg, $r_lat, $r_lon;
 }
 
-sub print_displacement
+sub print_displacement( $east, $north )
 {
-  my( $east, $north ) = @_;
   my $range = sqrt( $east*$east + $north*$north );
   my $bearing = atan2($north,$east);
   my $deg = $bearing * $degrees_per_radian;
   print "displacement = ($east,$north), r=$range, az=$bearing = $deg deg.\n";
 }
 
-sub print_vector
-{
-  my( $lat1deg, $lat1min, $lat1sec,
+sub print_vector($lat1deg, $lat1min, $lat1sec,
       $lon1deg, $lon1min, $lon1sec,
       $lat2deg, $lat2min, $lat2sec,
-      $lon2deg, $lon2min, $lon2sec) = @_;
+      $lon2deg, $lon2min, $lon2sec)
+{
   my $lat1 = Angle($lat1deg,$lat1min,$lat1sec);
   my $lon1 = Angle($lon1deg,$lon1min,$lon1sec);
   my $lat2 = Angle($lat2deg,$lat2min,$lat2sec);
@@ -171,15 +166,14 @@ sub print_vector
   print_dist(@here,@there);
 }
 
-sub print_dist
+sub print_dist($lat1, $lon1, $lat2, $lon2 )
 {
-  my( $lat1, $lon1, $lat2, $lon2 ) = @_;
   my $ellipsoid = Geo::Ellipsoid->new(uni=>'radians',ell=>'WGS84');
   my( $dlat1, $dlon1, $dlat2, $dlon2 ) = map { $_ * $degrees_per_radian } @_;
 
   printf "Here   = [%.12f,%.12f]\n", $dlat1, $dlon1;
   printf "There  = [%.12f,%.12f]\n", $dlat2, $dlon2;
-  
+
   my @d = $ellipsoid->displacement( $lat1, $lon1, $lat2, $lon2 );
   my( $range, $bearing ) = $ellipsoid->to( $lat1, $lon1, $lat2, $lon2 );
   my @loc = $ellipsoid->location($lat1, $lon1, $range, $bearing);
@@ -192,11 +186,10 @@ sub print_dist
   print "\n";
 }
 
-sub print_target
-{
-  my( $lat1deg, $lat1min, $lat1sec, 
+sub print_target( $lat1deg, $lat1min, $lat1sec,
       $lon1deg, $lon1min, $lon1sec, 
-      $range, $degrees ) = @_;
+      $range, $degrees )
+{
 
   my $lat1 = Angle($lat1deg,$lat1min,$lat1sec);
   my $lon1 = Angle($lon1deg,$lon1min,$lon1sec);
@@ -220,16 +213,14 @@ sub print_target
 
 sub print_all_ellipsoids
 {
-  while( (my( $ell, $aref ) = each %Geo::Ellipsoid::ellipsoids) ) {
+  while( (my( $ell, $aref ) = %Geo::Ellipsoid::ellipsoids.each) ) {
     print_ellipsoid_values($ell);
   }
   #print_ellipsoid_values('WGS84');
 }
 
-sub print_ellipsoid_values
+sub print_ellipsoid_values($ell)
 {
-  my( $ell ) = @_;
-  
   print "$ell ellipsoid values:\n";
   my $earth = Geo::Ellipsoid->new(
     units => 'degrees', 
@@ -247,12 +238,10 @@ sub print_ellipsoid_values
   printf   "Reciprocal flattening = %.8f\n\n", $rf;
 }
 
-sub Angle
+sub Angle(:$deg = 0, :$min = 0, :$sec = 0,
+          :$csec = 0 # optional 100th's of a second
+)
 {
-  my $deg = shift || 0;
-  my $min = shift || 0;
-  my $sec = shift || 0;
-  my $csec = shift || 0;	# optional 100th's of a second
 
   #print "convert (@_) to angle in radians\n" if $debug;
   my $frac = ( $min + (($sec + ($csec/100))/60))/60;
@@ -267,12 +256,9 @@ sub Angle
   return $angle/$degrees_per_radian;
 }
 
-sub polar
+sub polar($x, $y)
 {
-  my( $x, $y ) = @_;
   my $range = sqrt( $x*$x + $y*$y );
   my $bearing = $halfpi - atan2($y,$x);
   return ($range, $bearing);
 }
-
-=end comment
