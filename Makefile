@@ -4,10 +4,15 @@ PERL  := perl6
 #OPTS := --ll-exception
 #OPTS := -c
 
-.PHONY: test-e test-t run
+.PHONY: test-e test-t run test-p test-m
 
-#test-m:
-#	( $(PERLM) $(OPTS) T.pm )
+default: run
+
+test-p:
+	( $(PERL) $(OPTS) T.pl )
+
+test-m:
+	( $(PERLM) $(OPTS) T.pm )
 
 test-e:
 	( cd lib/Geo; $(PERLM) $(OPTS) Ellipsoid.pm )
