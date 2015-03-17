@@ -33,21 +33,21 @@ our $DEBUG = 0;
 =head1 SYNOPSIS
 
   use Geo::Ellipsoid;
-  $geo = Geo::Ellipsoid->new(ellipsoid=>'NAD27', units=>'degrees');
+  $geo = Geo::Ellipsoid.new(ellipsoid=>'NAD27', units=>'degrees');
   @origin = (37.619002, -122.374843);    # SFO
   @dest = (33.942536, -118.408074);      # LAX
-  ($range, $bearing) = $geo->to(@origin, @dest);
-  ($lat,$lon) = $geo->at(@origin, 2000, 45.0);
-  ($x, $y) = $geo->displacement(@origin, $lat, $lon);
-  @pos = $geo->location($lat, $lon, $x, $y);
+  ($range, $bearing) = $geo.to(@origin, @dest);
+  ($lat,$lon) = $geo.at(@origin, 2000, 45.0);
+  ($x, $y) = $geo.displacement(@origin, $lat, $lon);
+  @pos = $geo.location($lat, $lon, $x, $y);
 
 =head1 DESCRIPTION
 
 Geo::Ellipsoid performs geometrical calculations on the surface of
-an ellipsoid. An ellipsoid is a three-dimension object formed from 
-the rotation of an ellipse about one of its axes. The approximate 
+an ellipsoid. An ellipsoid is a three-dimension object formed from
+the rotation of an ellipse about one of its axes. The approximate
 shape of the earth is an ellipsoid, so Geo::Ellipsoid can accurately
-calculate distance and bearing between two widely-separated locations 
+calculate distance and bearing between two widely-separated locations
 on the earth's surface.
 
 The shape of an ellipsoid is defined by the lengths of its
@@ -56,7 +56,7 @@ the flattening ratio C<f> as:
 
     f = (semi-major - semi-minor) / semi-major
 
-which, since f is a small number, is normally given as the reciprocal 
+which, since f is a small number, is normally given as the reciprocal
 of the flattening C<1/f>.
 
 The shape of the earth has been surveyed and estimated differently
@@ -80,9 +80,9 @@ our $halfpi = pi/2;
 
 # these should disappear with proper Perl 6 class def
 our %defaults = (
-  ellipsoid => 'WGS84', 
+  ellipsoid => 'WGS84',
   units => 'radians',
-  distance_units => 'meter', 
+  distance_units => 'meter',
   longitude => 0,
   latitude => 1,	# allows use of _normalize_output
   bearing => 0,
@@ -96,9 +96,9 @@ our %distance = (
 );
 
 # set of ellipsoids that can be used.
-# values are 
-#  1) a = semi-major (equatorial) radius of Ellipsoid 
-#  2) 1/f = reciprocal of flattening (f), the ratio of the semi-minor 
+# values are
+#  1) a = semi-major (equatorial) radius of Ellipsoid
+#  2) 1/f = reciprocal of flattening (f), the ratio of the semi-minor
 #     (polar) radius to the semi-major (equatorial) axis, or
 #     polar radius = equatorial radius * (1 - f)
 
@@ -133,12 +133,12 @@ our %ellipsoids = (
 
 The new() constructor may be called with a hash list to set the value of the
 ellipsoid to be used, the value of the units to be used for angles and
-distances, and whether or not the output range of longitudes and bearing 
-angles should be symmetric around zero or always greater than zero.  
+distances, and whether or not the output range of longitudes and bearing
+angles should be symmetric around zero or always greater than zero.
 The initial default constructor is equivalent to the following:
 
-    my $geo = Geo::Ellipsoid->new(
-      ellipsoid => 'WGS84', 
+    my $geo = Geo::Ellipsoid.new(
+      ellipsoid => 'WGS84',
       units => 'radians' ,
       distance_units => 'meter',
       longitude => 0,
@@ -146,8 +146,8 @@ The initial default constructor is equivalent to the following:
    );
 
 The constructor arguments may be of any case and, with the exception of
-the ellipsoid value, abbreviated to their first three characters. 
-Thus, (UNI => 'DEG', DIS => 'FEE', Lon => 1, ell => 'NAD27', bEA => 0) 
+the ellipsoid value, abbreviated to their first three characters.
+Thus, (UNI => 'DEG', DIS => 'FEE', Lon => 1, ell => 'NAD27', bEA => 0)
 is valid.
 
 =end pod
@@ -183,28 +183,28 @@ sub new
   foreach my $key (keys %args) {
     my $val = $args{$key};
     if ($key =~ /^ell/i) {
-      $self->{ellipsoid} = uc $args{$key};
+      $self.{ellipsoid} = uc $args{$key};
     } elsif ($key =~ /^uni/i) {
-      $self->{units} = $args{$key};
+      $self.{units} = $args{$key};
     } elsif ($key =~ /^dis/i) {
-      $self->{distance_units} = $args{$key};
+      $self.{distance_units} = $args{$key};
     } elsif ($key =~ /^lon/i) {
-      $self->{longitude} = $args{$key};
+      $self.{longitude} = $args{$key};
     } elsif ($key =~ /^bea/i) {
-      $self->{bearing} = $args{$key};
+      $self.{bearing} = $args{$key};
     } else {
       die("Unknown argument: $key => $args{$key}");
     }
   }
-  set_units($self,$self->{units});
-  set_ellipsoid($self,$self->{ellipsoid});
-  set_distance_unit($self,$self->{distance_units});
-  set_longitude_symmetric($self,$self->{longitude});
-  set_bearing_symmetric($self,$self->{bearing});
+  set_units($self,$self.{units});
+  set_ellipsoid($self,$self.{ellipsoid});
+  set_distance_unit($self,$self.{distance_units});
+  set_longitude_symmetric($self,$self.{longitude});
+  set_bearing_symmetric($self,$self.{bearing});
   print
-    "Ellipsoid(units=>$self->{units},distance_units=>" .
-    "$self->{distance_units},ellipsoid=>$self->{ellipsoid}," .
-    "longitude=>$self->{longitude},bearing=>$self->{bearing})\n" if $DEBUG;
+    "Ellipsoid(units=>$self.{units},distance_units=>" .
+    "$self.{distance_units},ellipsoid=>$self.{ellipsoid}," .
+    "longitude=>$self.{longitude},bearing=>$self.{bearing})\n" if $DEBUG;
   bless $self,$class;
   return $self;
 }
@@ -224,7 +224,7 @@ not case sensitive and may be abbreviated to 3 letters. The units of
 angle apply to both input and output latitude, longitude, and bearing
 values.
 
-    $geo->set_units('degrees');
+    $geo.set_units('degrees');
 
 =end pod
 
@@ -252,13 +252,13 @@ values are 'meter', 'kilometer', 'mile', 'nm' (nautical mile), or 'foot'.
 The default is 'meter'. The value is not case sensitive and may be
 abbreviated to 3 letters.
 
-    $geo->set_distance_unit('kilometer');
+    $geo.set_distance_unit('kilometer');
 
 For any other unit of distance not recogized by this method, pass a
 numerical argument representing the length of the distance unit in
 meters. For example, to use units of furlongs, call
 
-    $geo->set_distance_unit(201.168);
+    $geo.set_distance_unit(201.168);
 
 The distance conversion factors used by this module are as follows:
 
@@ -318,7 +318,7 @@ Set the ellipsoid to be used by the Geo::Ellipsoid object. See
 L<"DEFINED ELLIPSOIDS"> below for the allowable values. The value
 may also be set by the constructor. The default value is 'WGS84'.
 
-    $geo->set_ellipsoid('NAD27');
+    $geo.set_ellipsoid('NAD27');
 
 =end pod
 
@@ -356,7 +356,7 @@ reciprocal flattening. A zero value for the reciprocal flattening
 will result in a sphere for the ellipsoid, and a warning message
 will be issued.
 
-    $geo->set_custom_ellipsoid('sphere', 6378137, 0);
+    $geo.set_custom_ellipsoid('sphere', 6378137, 0);
 
 =end pod
 
@@ -382,7 +382,7 @@ values for longitude to be in the range [-pi,+pi) radians.  If called with
 a false or undefined argument, sets the output angle range to be
 [0,2*pi) radians.
 
-    $geo->set_longitude_symmetric(1);
+    $geo.set_longitude_symmetric(1);
 
 =end pod
 
@@ -408,7 +408,7 @@ values for bearing to be in the range [-pi,+pi) radians.  If called with
 a false or undefined argument, sets the output angle range to be
 [0,2*pi) radians.
 
-    $geo->set_bearing_symmetric(1);
+    $geo.set_bearing_symmetric(1);
 
 =end pod
 
@@ -432,7 +432,7 @@ method set_bearing_symmetric($sym)
 Sets the defaults for the new method. Call with key, value pairs similar to
 new.
 
-    $Geo::Ellipsoid->set_defaults(
+    $Geo::Ellipsoid.set_defaults(
       units => 'degrees',
       ellipsoid => 'GRS80',
       distance_units => 'kilometer',
@@ -443,7 +443,7 @@ new.
 Keys and string values (except for the ellipsoid identifier) may be shortened
 to their first three letters and are case-insensitive:
 
-    $Geo::Ellipsoid->set_defaults(
+    $Geo::Ellipsoid.set_defaults(
       uni => 'deg',
       ell => 'GRS80',
       dis => 'kil',
@@ -460,7 +460,7 @@ method set_defaults {}
 method set_defaults
 {
   my %args = @_;
-  for (keys %args) -> $key {
+  for (keys %args) . $key {
     if ($key ~~ m:i/^ell/) {
       %defaults<ellipsoid> = uc %args{$key};
     } elsif ($key ~~ m:i/^uni/) {
@@ -537,8 +537,8 @@ method scales($lat)
 Returns the range in distance units between two specified locations given
 as latitude, longitude pairs.
 
-    my $dist = $geo->range($lat1, $lon1, $lat2, $lon2);
-    my $dist = $geo->range(@origin, @destination);
+    my $dist = $geo.range($lat1, $lon1, $lat2, $lon2);
+    my $dist = $geo.range(@origin, @destination);
 
 =end pod
 
@@ -608,8 +608,8 @@ method at($lat1, $lon1, $range, $bearing)
 In list context, returns (range, bearing) between two specified locations.
 In scalar context, returns just the range.
 
-    my ($dist, $theta) = $geo->to($lat1, $lon1, $lat2, $lon2);
-    my $dist = $geo->to($lat1, $lon1, $lat2, $lon2);
+    my ($dist, $theta) = $geo.to($lat1, $lon1, $lat2, $lon2);
+    my $dist = $geo.to($lat1, $lon1, $lat2, $lon2);
 
 =end pod
 
@@ -642,10 +642,10 @@ multi method to($range)
 
 =head2 displacement
 
-Returns the (x,y) displacement in distance units between the two specified 
+Returns the (x,y) displacement in distance units between the two specified
 locations.
 
-    my ($x, $y) = $geo->displacement($lat1, $lon1, $lat2, $lon2);
+    my ($x, $y) = $geo.displacement($lat1, $lon1, $lat2, $lon2);
 
 NOTE: The x and y displacements are only approximations and only valid
 between two locations that are fairly near to each other. Beyond 10 kilometers
@@ -674,7 +674,7 @@ method displacement(*@args)
 Returns the list (latitude,longitude) of a location at a given (x,y)
 displacement from a given location.
 
-	my @loc = $geo->location($lat, $lon, $x, $y);
+	my @loc = $geo.location($lat, $lon, $x, $y);
 
 =end pod
 
