@@ -59,10 +59,10 @@ my @c5 = (Angle(-1,0,0),Angle(90,0,0));
 my @c6 = (Angle(0,0,0),Angle(-90,0,0));
 my @c7 = (Angle(1,0,0),Angle(-90,0,0));
 
-my @ord_9l =  ( Angle(42,00,19.51), Angle(-87,55,36.17) );
-my @ord_27r = ( Angle(42,00,19.83), Angle(-87,53,57.15) );
-my @ord_10c = ( Angle(41,58,06,28), Angle(-87,55,52,65) );
-my @ord_28c = ( Angle(41,58,06,98), Angle(-87,53,30,02) );
+my @ord_9l =  ( Angle(42, 0,19.51), Angle(-87,55,36.17) );
+my @ord_27r = ( Angle(42, 0,19.83), Angle(-87,53,57.15) );
+my @ord_10c = ( Angle(41,58, 6,28), Angle(-87,55,52,65) );
+my @ord_28c = ( Angle(41,58, 6,98), Angle(-87,53,30, 2) );
 
 print_dist(@ord_orig,@ord_9l);
 print_dist(@ord_9l,@ord_27r);
