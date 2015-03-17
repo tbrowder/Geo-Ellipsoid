@@ -327,7 +327,7 @@ method set_ellipsoid($ell)
 {
   my $ellipsoid = uc $ell || %defaults<ellipsoid>;
   say "  set ellipsoid to $ellipsoid" if $DEBUG;
-  unless (%ellipsoids{$ellipsoid}) {
+  unless (%ellipsoids{$ellipsoid}:exists) {
     croak("Ellipsoid $ellipsoid does not exist - please use " ~
       "set_custom_ellipsoid to use an ellipsoid not in valid set");
   }
