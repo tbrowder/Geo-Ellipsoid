@@ -489,7 +489,7 @@ and longitude (degrees or radians) at the specified latitude.
 These values may be used for fast approximations of distance
 calculations in the vicinity of some location.
 
-    ($lat_scale, $lon_scale) = $geo->scales($lat0);
+    ($lat_scale, $lon_scale) = $geo.scales($lat0);
     $x = $lon_scale * ($lon - $lon0);
     $y = $lat_scale * ($lat - $lat0);
 
