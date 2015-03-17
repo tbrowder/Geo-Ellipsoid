@@ -193,7 +193,7 @@ sub new
     } elsif ($key =~ /^bea/i) {
       $self->{bearing} = $args{$key};
     } else {
-      carp("Unknown argument: $key => $args{$key}");
+      die("Unknown argument: $key => $args{$key}");
     }
   }
   set_units($self,$self->{units});
@@ -201,7 +201,7 @@ sub new
   set_distance_unit($self,$self->{distance_units});
   set_longitude_symmetric($self,$self->{longitude});
   set_bearing_symmetric($self,$self->{bearing});
-  print 
+  print
     "Ellipsoid(units=>$self->{units},distance_units=>" .
     "$self->{distance_units},ellipsoid=>$self->{ellipsoid}," .
     "longitude=>$self->{longitude},bearing=>$self->{bearing})\n" if $DEBUG;
@@ -217,9 +217,9 @@ sub new
 
 =head2 set_units
 
-Set the angle units used by the Geo::Ellipsoid object. The units may 
-also be set in the constructor of the object. The allowable values are 
-'degrees' or 'radians'. The default is 'radians'. The units value is 
+Set the angle units used by the Geo::Ellipsoid object. The units may
+also be set in the constructor of the object. The allowable values are
+'degrees' or 'radians'. The default is 'radians'. The units value is
 not case sensitive and may be abbreviated to 3 letters. The units of
 angle apply to both input and output latitude, longitude, and bearing
 values.
@@ -247,9 +247,9 @@ method set_units($units)
 =head2 set_distance_unit
 
 Set the distance unit used by the Geo::Ellipsoid object. The unit of
-distance may also be set in the constructor of the object. The recognized 
-values are 'meter', 'kilometer', 'mile', 'nm' (nautical mile), or 'foot'. 
-The default is 'meter'. The value is not case sensitive and may be 
+distance may also be set in the constructor of the object. The recognized
+values are 'meter', 'kilometer', 'mile', 'nm' (nautical mile), or 'foot'.
+The default is 'meter'. The value is not case sensitive and may be
 abbreviated to 3 letters.
 
     $geo->set_distance_unit('kilometer');
@@ -298,12 +298,12 @@ method set_distance_unit($unit)
       if (self.looks_like_number($unit)) {
         $conversion = $unit;
       } else {
-        carp("Unknown argument to set_distance_unit: $unit\nAssuming meters");
+        die("Unknown argument to set_distance_unit: $unit\nAssuming meters");
         $conversion = 1.0;
       }
     }
   } else {
-    carp("Missing or undefined argument to set_distance_unit: " ~
+    die("Missing or undefined argument to set_distance_unit: " ~
       "$unit\nAssuming meters");
     $conversion = 1.0;
   }
@@ -335,7 +335,7 @@ method set_ellipsoid($ell)
   my ($major, $recip) = @(%ellipsoids{$ellipsoid});
   self.equatorial = $major;
   if ($recip == 0) {
-    carp("Infinite flattening specified by ellipsoid -- assuming a sphere");
+    die("Infinite flattening specified by ellipsoid -- assuming a sphere");
     self.polar        = self.equatorial;
     self.flattening   = 0;
     self.eccentricity = 0;
@@ -367,7 +367,7 @@ method set_custom_ellipsoid($name, $major, $recip)
   $recip = 0 unless defined $recip;
   if ($major) {
     %ellipsoids{$name} = [ $major, $recip ];
-  } else {  
+  } else {
     croak("set_custom_ellipsoid called without semi-major radius parameter");
   }
   self.set_ellipsoid($name);
@@ -377,9 +377,9 @@ method set_custom_ellipsoid($name, $major, $recip)
 
 =head2 set_longitude_symmetric
 
-If called with no argument or a true argument, sets the range of output 
-values for longitude to be in the range [-pi,+pi) radians.  If called with 
-a false or undefined argument, sets the output angle range to be 
+If called with no argument or a true argument, sets the range of output
+values for longitude to be in the range [-pi,+pi) radians.  If called with
+a false or undefined argument, sets the output angle range to be
 [0,2*pi) radians.
 
     $geo->set_longitude_symmetric(1);
@@ -403,9 +403,9 @@ method set_longitude_symmetric($sym)
 
 =head2 set_bearing_symmetric
 
-If called with no argument or a true argument, sets the range of output 
-values for bearing to be in the range [-pi,+pi) radians.  If called with 
-a false or undefined argument, sets the output angle range to be 
+If called with no argument or a true argument, sets the range of output
+values for bearing to be in the range [-pi,+pi) radians.  If called with
+a false or undefined argument, sets the output angle range to be
 [0,2*pi) radians.
 
     $geo->set_bearing_symmetric(1);
@@ -429,22 +429,22 @@ method set_bearing_symmetric($sym)
 
 =head2 set_defaults
 
-Sets the defaults for the new method. Call with key, value pairs similar to 
+Sets the defaults for the new method. Call with key, value pairs similar to
 new.
 
     $Geo::Ellipsoid->set_defaults(
-      units => 'degrees', 
+      units => 'degrees',
       ellipsoid => 'GRS80',
       distance_units => 'kilometer',
       longitude => 1,
       bearing => 0
    );
 
-Keys and string values (except for the ellipsoid identifier) may be shortened 
+Keys and string values (except for the ellipsoid identifier) may be shortened
 to their first three letters and are case-insensitive:
 
     $Geo::Ellipsoid->set_defaults(
-      uni => 'deg', 
+      uni => 'deg',
       ell => 'GRS80',
       dis => 'kil',
       lon => 1,
@@ -471,7 +471,7 @@ method set_defaults
       %defaults<longitude> = %args{$key};
     } elsif ($key ~~ m:i/^bea/) {
       %defaults<bearing> = %args{$key};
-    } else {  
+    } else {
       croak("Geo::Ellipsoid::set_defaults called with invalid key: $key");
     }
   }
@@ -484,14 +484,14 @@ method set_defaults
 
 =head2 scales
 
-Returns a list consisting of the distance unit per angle of latitude 
-and longitude (degrees or radians) at the specified latitude. 
+Returns a list consisting of the distance unit per angle of latitude
+and longitude (degrees or radians) at the specified latitude.
 These values may be used for fast approximations of distance
 calculations in the vicinity of some location.
 
     ($lat_scale, $lon_scale) = $geo->scales($lat0);
-    $x = $lon_scale * ($lon - $lon0); 
-    $y = $lat_scale * ($lat - $lat0); 
+    $x = $lon_scale * ($lon - $lon0);
+    $y = $lat_scale * ($lat - $lat0);
 
 =end pod
 
@@ -502,7 +502,7 @@ method scales($lat)
   if (defined $lat) {
     $lat /= $degrees_per_radian if ($units eq 'degrees');
   } else {
-    carp("scales() method requires latitude argument; assuming 0");
+    die("scales() method requires latitude argument; assuming 0");
     $lat = 0;
   }
 
