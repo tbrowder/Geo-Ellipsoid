@@ -6,8 +6,10 @@
 
 #use v6;
 
-require '../lib/Geo/Ellipsoid.pm';
-#use '../lib/Geo/Ellipsoid.pm6';
+#require '../lib/Geo/Ellipsoid.pm';
+
+use lib '../lib';
+use Geo::Ellipsoid;
 
 #sub MAIN ($debug, $xdebug);
 
@@ -156,46 +158,47 @@ sub print_vector($lat1deg, $lat1min, $lat1sec,
   my @there = ( $lat2, $lon2 );
 
   print "Print range and bearing from:\n";
-  print "(${lat1deg}d ${lat1min}m ${lat1sec})-(" .
-    "${lon1deg}d ${lon1min}m ${lon1sec}) ";
+  print "({$lat1deg}d $lat1min}m {$lat1sec})-(" ~
+    "{$lon1deg}d {$lon1min}m {$lon1sec}) ";
   printf "[%.8f,%.8f] to\n", $lat1, $lon1;
   print 
-  "(${lat2deg}d ${lat2min}m ${lat2sec})-(${lon2deg}d ${lon2min}m ${lon2sec}) ";
+  "({$lat2deg}d {$lat2min}m {$lat2sec})-({$lon2deg}d {$lon2min}m {$lon2sec}) ";
   printf "[%.8f,%.8f]\n", $lat2, $lon2;
 
   print_dist(@here,@there);
 }
 
-sub print_dist($lat1, $lon1, $lat2, $lon2 )
+sub print_dist(*@args)
 {
-  my $ellipsoid = Geo::Ellipsoid->new(uni=>'radians',ell=>'WGS84');
-  my( $dlat1, $dlon1, $dlat2, $dlon2 ) = map { $_ * $degrees_per_radian } @_;
+  my ($lat1, $lon1, $lat2, $lon2) = @args;
+  my $ellipsoid = Geo::Ellipsoid.new(uni=>'radians',ell=>'WGS84');
+  my ($dlat1, $dlon1, $dlat2, $dlon2) = map( { $_ * $degrees_per_radian },
+    ($lat1, $lon1, $lat2, $lon2));
 
   printf "Here   = [%.12f,%.12f]\n", $dlat1, $dlon1;
   printf "There  = [%.12f,%.12f]\n", $dlat2, $dlon2;
 
-  my @d = $ellipsoid->displacement( $lat1, $lon1, $lat2, $lon2 );
-  my( $range, $bearing ) = $ellipsoid->to( $lat1, $lon1, $lat2, $lon2 );
-  my @loc = $ellipsoid->location($lat1, $lon1, $range, $bearing);
+  my @d = $ellipsoid.displacement( $lat1, $lon1, $lat2, $lon2 );
+  my ( $range, $bearing ) = $ellipsoid.to( $lat1, $lon1, $lat2, $lon2 );
+  my @loc = $ellipsoid.location($lat1, $lon1, $range, $bearing);
   $bearing *= $degrees_per_radian;
   print "displacement() returns (@d)\n" if $debug;
 
   printf "Range  = %.4f m., bearing = %.4f deg.\n", $range, $bearing;
   printf "East   = %.4f m., north = %.4f m.\n", @d;
-  printf "There2 = [%.12f,%.12f]\n", map { $_ * $degrees_per_radian } @loc;
+  printf "There2 = [%.12f,%.12f]\n", map( { $_ * $degrees_per_radian }, @loc);
   print "\n";
 }
 
 sub print_target( $lat1deg, $lat1min, $lat1sec,
-      $lon1deg, $lon1min, $lon1sec, 
+      $lon1deg, $lon1min, $lon1sec,
       $range, $degrees )
 {
-
   my $lat1 = Angle($lat1deg,$lat1min,$lat1sec);
   my $lon1 = Angle($lon1deg,$lon1min,$lon1sec);
 
   my @here = ( $lat1, $lon1 );
-  my $ellipsoid = Geo::Ellipsoid->new( ellip=>'WGS84');
+  my $ellipsoid = Geo::Ellipsoid.new( ellip=>'WGS84');
 
   my $radians = $degrees / $degrees_per_radian;
   my $x = $range*sin($radians);
@@ -203,7 +206,7 @@ sub print_target( $lat1deg, $lat1min, $lat1sec,
 
   my @d = ($x,$y);
 
-  my @there = $ellipsoid->at(@here,@d);
+  my @there = $ellipsoid.at(@here,@d);
 
   printf "Starting at (%.8f,%.8f)\n", @here;
   printf "and going (x=%.4f m.,y=%.4f m.)\n", @d;
@@ -213,7 +216,7 @@ sub print_target( $lat1deg, $lat1min, $lat1sec,
 
 sub print_all_ellipsoids
 {
-  while( (my( $ell, $aref ) = %Geo::Ellipsoid::ellipsoids.each) ) {
+  while ((my ( $ell, $aref ) = %Geo::Ellipsoid::ellipsoids.each)) {
     print_ellipsoid_values($ell);
   }
   #print_ellipsoid_values('WGS84');
@@ -222,19 +225,19 @@ sub print_all_ellipsoids
 sub print_ellipsoid_values($ell)
 {
   print "$ell ellipsoid values:\n";
-  my $earth = Geo::Ellipsoid->new(
-    units => 'degrees', 
-    ellipsoid => 'WGS84', 
-    debug => $debug 
+  my $earth = Geo::Ellipsoid.new(
+    units => 'degrees',
+    ellipsoid => 'WGS84',
+    debug => $debug
   );
 
-  printf "    Equatorial radius = %.10f\n", $earth->{equatorial};
-  printf "         Polar radius = %.10f\n", $earth->{polar};
+  printf "    Equatorial radius = %.10f\n", $earth.equatorial;
+  printf "         Polar radius = %.10f\n", $earth.polar;
 
-  my $ef = $earth->{flattening};
+  my $ef = $earth.flattening;
   my $rf = 1.0 / $ef;
   printf   "           Flattening = %.16f\n", $ef;
-  printf   "         Eccentricity = %.16f\n", $earth->{eccentricity};
+  printf   "         Eccentricity = %.16f\n", $earth.eccentricity;
   printf   "Reciprocal flattening = %.8f\n\n", $rf;
 }
 
