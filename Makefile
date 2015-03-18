@@ -6,6 +6,8 @@ PERL  := perl6
 
 .PHONY: test-e test-t run test-p test-m
 
+#default: test-m test-p
+#default: test-e run
 default: run
 
 test-p:
