@@ -9,9 +9,9 @@
 #	results of the calculations, although they do seem to 
 #	work for him and have been tested against other methods.
 
-class Geo::Ellipsoid;
-
 use v6;
+
+class Geo::Ellipsoid;
 
 =begin pod
 
@@ -26,7 +26,7 @@ Version 1.12, released July 4, 2008.
 =end pod
 
 our $VERSION = '1.12';
-our $DEBUG = 0;
+our $DEBUG = 1;
 
 =begin pod
 
@@ -80,12 +80,12 @@ our $halfpi = pi/2;
 
 # these should disappear with proper Perl 6 class def
 our %defaults = (
-  ellipsoid => 'WGS84',
-  units => 'radians',
+  ellipsoid      => 'WGS84',
+  units          => 'radians',
   distance_units => 'meter',
-  longitude => 0,
-  latitude => 1,	# allows use of _normalize_output
-  bearing => 0,
+  longitude      => 0,
+  latitude       => 1,	# allows use of _normalize_output
+  bearing        => 0,
 );
 our %distance = (
   'foot'      => 0.3048,
@@ -138,11 +138,11 @@ angles should be symmetric around zero or always greater than zero.
 The initial default constructor is equivalent to the following:
 
     my $geo = Geo::Ellipsoid.new(
-      ellipsoid => 'WGS84',
-      units => 'radians' ,
+      ellipsoid      => 'WGS84',
+      units          => 'radians' ,
       distance_units => 'meter',
-      longitude => 0,
-      bearing => 0,
+      longitude      => 0,
+      bearing        => 0,
    );
 
 The constructor arguments may be of any case and, with the exception of
@@ -153,14 +153,60 @@ is valid.
 =end pod
 
 # define the class attributes
-has $.ellipsoid      is rw = 'WGS84';
-has $.units          is rw = 'radians';
-has $.distance_units is rw = 'meter';
-has $.longitude      is rw = 0;
-has $.bearing        is rw = 0;
+has $.ellipsoid      is rw;
+has $.units          is rw;
+has $.distance_units is rw;
+has $.longitude      is rw;
+has $.latitude       is rw;
+has $.bearing        is rw;
+
+# following were implicit in original Perl 5 version
+has $.equatorial   is rw;
+has $.polar        is rw;
+has $.flattening   is rw;
+has $.eccentricity is rw;
+has $.conversion   is rw;
+
+# the above are set during construction
+submethod BUILD(
+  # set defaults here
+  :$!ellipsoid      = %defaults<ellipsoid>,      # 'WGS84',
+  :$!units          = %defaults<units>,          # 'radians',
+  :$!distance_units = %defaults<distance_units>, # 'meter',
+  :$!longitude      = %defaults<longitude>,      # 0,
+  :$!latitude       = %defaults<latitude>,       # 1,
+  :$!bearing        = %defaults<bearing>,        # 0,
+
+  # these depend on values above
+  :$!equatorial,
+  :$!polar,
+  :$!flattening,
+  :$!eccentricity,
+  :$!conversion,
+               ) {
+  say "Setting units..." if $DEBUG;
+  self.set_units($!units);
+
+  say "Setting ellipsoid..." if $DEBUG;
+  self.set_ellipsoid($!ellipsoid);
+
+  say "Setting distance_units..." if $DEBUG;
+  self.set_distance_unit($!distance_units);
+
+  say "Setting longitude..." if $DEBUG;
+  self.set_longitude_symmetric($!longitude);
+
+  say "Setting bearing..." if $DEBUG;
+  self.set_bearing_symmetric($!bearing);
+
+  say
+    "Ellipsoid(units=>{self.units},distance_units=>" ~
+    "{self.distance_units},ellipsoid=>{self.ellipsoid}," ~
+    "longitude=>{self.longitude},bearing=>{self.bearing})" if $DEBUG;
+}
 
 
-# temp until provide by core
+# temp until provided by core
 method !deg2rad($deg)
 {
   my $rad = ($deg * pi / 180);
@@ -196,6 +242,7 @@ sub new
       die("Unknown argument: $key => $args{$key}");
     }
   }
+
   set_units($self,$self.{units});
   set_ellipsoid($self,$self.{ellipsoid});
   set_distance_unit($self,$self.{distance_units});
@@ -232,14 +279,13 @@ values.
 method set_units($units)
 {
   if ($units ~~ m:i/deg/) {
-    $units = 'degrees';
+    self.units = 'degrees';
   } elsif ($units ~~ m:i/rad/) {
-    $units = 'radians';
+    self.units = 'radians';
   } else {
-    dir("Invalid units specifier '$units' - please use either " ~
+    die("Invalid units specifier '$units' - please use either " ~
       "degrees or radians (the default)") unless $units ~~ m:i/rad/;
   }
-  self.units = $units;
 }
 
 =begin pod
@@ -278,18 +324,20 @@ method set_distance_unit($unit)
 
   my $conversion = 0;
 
-  if (defined $unit) {
+  if ($unit) {
 
-    my ($key, $val);
-    while (($key,$val) = %distance.each) {
-      my $re = substr($key,0,3);
+    #my ($key, $val);
+    #while (($key,$val) = (%distance.kv)) { # each?) {
+    for %distance.kv -> $key, $val { # each?) {
+      say "key = {$key}";
+      my $re = $key.substr(0, 3); #substr($key,0,3);
       print "trying ($key,$re,$val)\n" if $DEBUG;
       if ($unit ~~ m:i/^$re/) {
         self.distance_units = $unit;
         $conversion = $val;
 
 	# finish iterating to reset 'each' function call
-	while (%distance.each) {}
+	#while (%distance.each) {}
 	last;
       }
     }
@@ -387,9 +435,9 @@ a false or undefined argument, sets the output angle range to be
 =end pod
 
 # public
-method set_longitude_symmetric($sym)
+multi method set_longitude_symmetric($sym)
 {
-  # see if argument passed
+  # see if argument > 0 (true)
   if ($sym > 0) {
     # yes -- use value passed
     self.longitude = $sym;
@@ -398,14 +446,19 @@ method set_longitude_symmetric($sym)
     self.longitude = 1;
   }
 }
+multi method set_longitude_symmetric
+{
+  # no arg -- set to true
+  self.longitude = 1;
+}
 
 =begin pod
 
 =head2 set_bearing_symmetric
 
-If called with no argument or a true argument, sets the range of output
-values for bearing to be in the range [-pi,+pi) radians.  If called with
-a false or undefined argument, sets the output angle range to be
+If called with no argument or a true argument, sets the range of output 
+values for bearing to be in the range [-pi,+pi) radians.  If called with 
+a false or undefined argument, sets the output angle range to be 
 [0,2*pi) radians.
 
     $geo.set_bearing_symmetric(1);
@@ -413,16 +466,20 @@ a false or undefined argument, sets the output angle range to be
 =end pod
 
 # public
-method set_bearing_symmetric($sym)
+multi method set_bearing_symmetric($sym)
 {
-  # see if argument passed
+  # see if argument > 0 (true)
   if ($sym > 0) {
-    # yes -- use value passed
     self.bearing = $sym;
   } else {
     # no -- set to true
     self.bearing = 1;
   }
+}
+multi method set_bearing_symmetric
+{
+  # no arg -- set to true
+  self.bearing = 1;
 }
 
 =begin pod
@@ -437,7 +494,7 @@ new.
       ellipsoid => 'GRS80',
       distance_units => 'kilometer',
       longitude => 1,
-      bearing => 0
+      bearing => False
    );
 
 Keys and string values (except for the ellipsoid identifier) may be shortened
@@ -448,7 +505,7 @@ to their first three letters and are case-insensitive:
       ell => 'GRS80',
       dis => 'kil',
       lon => 1,
-      bea => 0
+      bea => False
    );
 
 =end pod
