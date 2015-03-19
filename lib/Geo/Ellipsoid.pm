@@ -669,7 +669,7 @@ In scalar context, returns just the range.
 =end pod
 
 # public
-multi method to($range, $bearing)
+multi method to($lat1, $lon1, $lat2, $lon2) -> $range, $bearing
 {
   my $units = self.units;
   my @a = ($range, $bearing);
@@ -682,7 +682,7 @@ multi method to($range, $bearing)
   return ($range, $bearing);
 }
 
-multi method to($range)
+multi method to($lat1, $lon1, $lat2, $lon2) -> $range
 {
   my $units = self.units;
   my @a = ($range);
