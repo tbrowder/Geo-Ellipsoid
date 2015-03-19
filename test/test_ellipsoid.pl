@@ -67,49 +67,49 @@ my @ord_10c = ( Angle(41,58, 6,28), Angle(-87,55,52,65) );
 my @ord_28c = ( Angle(41,58, 6,98), Angle(-87,53,30, 2) );
 
 print_dist(|@ord_orig,|@ord_9l);
-print_dist(@ord_9l,@ord_27r);
+print_dist(|@ord_9l,|@ord_27r);
 
-print_vector( 
+print_vector(
   32, 53, 45.42, -97, 2, 13.92,
   32, 52, 44.02, -97, 1, 48.29
 );
 
-print_dist(@dfw_arp,@ffc_orig);
-print_dist(@c1,@c1);
+print_dist(|@dfw_arp,|@ffc_orig);
+print_dist(|@c1,|@c1);
 
-print_dist(@c2,@c2);
-print_dist(@c3,@c3);
-print_dist(@c4,@c4);
-print_dist(@c5,@c5);
-print_dist(@c6,@c6);
-print_dist(@c7,@c7);
+print_dist(|@c2,|@c2);
+print_dist(|@c3,|@c3);
+print_dist(|@c4,|@c4);
+print_dist(|@c5,|@c5);
+print_dist(|@c6,|@c6);
+print_dist(|@c7,|@c7);
 
-print_dist(@c1,@c2);
-print_dist(@c1,@c3);
-print_dist(@c1,@c4);
-print_dist(@c1,@c5);
-print_dist(@c1,@c6);
-print_dist(@c1,@c7);
+print_dist(|@c1,|@c2);
+print_dist(|@c1,|@c3);
+print_dist(|@c1,|@c4);
+print_dist(|@c1,|@c5);
+print_dist(|@c1,|@c6);
+print_dist(|@c1,|@c7);
 
-print_dist(@c2,@c3);
-print_dist(@c2,@c4);
-print_dist(@c2,@c5);
-print_dist(@c2,@c6);
-print_dist(@c2,@c7);
+print_dist(|@c2,|@c3);
+print_dist(|@c2,|@c4);
+print_dist(|@c2,|@c5);
+print_dist(|@c2,|@c6);
+print_dist(|@c2,|@c7);
 
-print_dist(@c3,@c4);
-print_dist(@c3,@c5);
-print_dist(@c3,@c6);
-print_dist(@c3,@c7);
+print_dist(|@c3,|@c4);
+print_dist(|@c3,|@c5);
+print_dist(|@c3,|@c6);
+print_dist(|@c3,|@c7);
 
-print_dist(@c4,@c5);
-print_dist(@c4,@c6);
-print_dist(@c4,@c7);
+print_dist(|@c4,|@c5);
+print_dist(|@c4,|@c6);
+print_dist(|@c4,|@c7);
 
-print_dist(@c5,@c6);
-print_dist(@c5,@c7);
+print_dist(|@c5,|@c6);
+print_dist(|@c5,|@c7);
 
-print_dist(@c6,@c7);
+print_dist(|@c6,|@c7);
 
 print_target(
   32, 53, 45.42, -97, 2, 13.92,
@@ -161,16 +161,15 @@ sub print_vector($lat1deg, $lat1min, $lat1sec,
   print "({$lat1deg}d $lat1min}m {$lat1sec})-(" ~
     "{$lon1deg}d {$lon1min}m {$lon1sec}) ";
   printf "[%.8f,%.8f] to\n", $lat1, $lon1;
-  print 
+  print
   "({$lat2deg}d {$lat2min}m {$lat2sec})-({$lon2deg}d {$lon2min}m {$lon2sec}) ";
   printf "[%.8f,%.8f]\n", $lat2, $lon2;
 
-  print_dist(@here,@there);
+  print_dist(|@here,|@there);
 }
 
-sub print_dist(*@args)
+sub print_dist($lat1, $lon1, $lat2, $lon2)
 {
-  my ($lat1, $lon1, $lat2, $lon2) = @args;
   my $ellipsoid = Geo::Ellipsoid.new(uni=>'radians',ell=>'WGS84');
   my ($dlat1, $dlon1, $dlat2, $dlon2) = map( { $_ * $degrees_per_radian },
     ($lat1, $lon1, $lat2, $lon2));
@@ -179,7 +178,7 @@ sub print_dist(*@args)
   printf "There  = [%.12f,%.12f]\n", $dlat2, $dlon2;
 
   my @d = $ellipsoid.displacement($lat1, $lon1, $lat2, $lon2);
-  my ($range, $bearing) = $ellipsoid.to( $lat1, $lon1, $lat2, $lon2 );
+  my ($range, $bearing) = $ellipsoid.to($lat1, $lon1, $lat2, $lon2);
   my @loc = $ellipsoid.location($lat1, $lon1, $range, $bearing);
   $bearing *= $degrees_per_radian;
   print "displacement() returns (@d)\n" if $debug;
@@ -206,7 +205,7 @@ sub print_target( $lat1deg, $lat1min, $lat1sec,
 
   my @d = ($x,$y);
 
-  my @there = $ellipsoid.at(@here,@d);
+  my @there = $ellipsoid.at(|@here,|@d);
 
   printf "Starting at (%.8f,%.8f)\n", @here;
   printf "and going (x=%.4f m.,y=%.4f m.)\n", @d;
