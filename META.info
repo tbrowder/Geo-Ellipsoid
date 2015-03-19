@@ -10,5 +10,5 @@
                      Test::Number::Delta:           0.16
                      Test::Simple:                  0.44
                     ],
-        "source-url" : "git://github.com/tbrowder/Geo-Ellipsoid.git"
+        "source-url" : "git://github.com/tbrowder/Geo-Ellipsoid-perl6.git"
     }
