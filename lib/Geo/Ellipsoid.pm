@@ -376,7 +376,7 @@ method set_ellipsoid($ell)
   my $ellipsoid = uc $ell || %defaults<ellipsoid>;
   say "  set ellipsoid to $ellipsoid" if $DEBUG;
   unless (%ellipsoids{$ellipsoid}:exists) {
-    dir("Ellipsoid $ellipsoid does not exist - please use " ~
+    die("Ellipsoid $ellipsoid does not exist - please use " ~
       "set_custom_ellipsoid to use an ellipsoid not in valid set");
   }
   self.ellipsoid = $ellipsoid;
@@ -416,7 +416,7 @@ method set_custom_ellipsoid($name, $major, $recip)
   if ($major) {
     %ellipsoids{$name} = [ $major, $recip ];
   } else {
-    dir("set_custom_ellipsoid called without semi-major radius parameter");
+    die("set_custom_ellipsoid called without semi-major radius parameter");
   }
   self.set_ellipsoid($name);
 }
@@ -456,9 +456,9 @@ multi method set_longitude_symmetric
 
 =head2 set_bearing_symmetric
 
-If called with no argument or a true argument, sets the range of output 
-values for bearing to be in the range [-pi,+pi) radians.  If called with 
-a false or undefined argument, sets the output angle range to be 
+If called with no argument or a true argument, sets the range of output
+values for bearing to be in the range [-pi,+pi) radians.  If called with
+a false or undefined argument, sets the output angle range to be
 [0,2*pi) radians.
 
     $geo.set_bearing_symmetric(1);
@@ -529,7 +529,7 @@ method set_defaults
     } elsif ($key ~~ m:i/^bea/) {
       %defaults<bearing> = %args{$key};
     } else {
-      dir("Geo::Ellipsoid::set_defaults called with invalid key: $key");
+      die("Geo::Ellipsoid::set_defaults called with invalid key: $key");
     }
   }
   say "Defaults set to (%defaults<ellipsoid>,%defaults<units>"
