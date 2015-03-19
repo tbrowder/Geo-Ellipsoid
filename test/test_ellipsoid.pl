@@ -66,7 +66,7 @@ my @ord_27r = ( Angle(42, 0,19.83), Angle(-87,53,57.15) );
 my @ord_10c = ( Angle(41,58, 6,28), Angle(-87,55,52,65) );
 my @ord_28c = ( Angle(41,58, 6,98), Angle(-87,53,30, 2) );
 
-print_dist(@ord_orig,@ord_9l);
+print_dist(|@ord_orig,|@ord_9l);
 print_dist(@ord_9l,@ord_27r);
 
 print_vector( 
