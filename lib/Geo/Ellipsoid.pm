@@ -166,6 +166,7 @@ has $.polar        is rw;
 has $.flattening   is rw;
 has $.eccentricity is rw;
 has $.conversion   is rw;
+has $.symmetric    is rw; # ???
 
 # the above are set during construction
 submethod BUILD(
@@ -183,6 +184,7 @@ submethod BUILD(
   :$!flattening,
   :$!eccentricity,
   :$!conversion,
+  :$!symmetric,
                ) {
   say "Setting units..." if $DEBUG;
   self.set_units($!units);
@@ -712,8 +714,8 @@ method displacement(*@args)
   my @a = @args;
   say "displacement(",join(',',@a),"" if $DEBUG;
   @a = self!_normalize_input(self.units,@a);
-  say "call self!_inverse(@a)" if $DEBUG;
-  my ($range, $bearing) = self!_inverse(@a);
+  say "call self!_inverse(|@a)" if $DEBUG;
+  my ($range, $bearing) = self!_inverse(|@a);
   say "disp: _inverse(@a) returns ($range,$bearing)" if $DEBUG;
   my $x = $range * sin($bearing);
   my $y = $range * cos($bearing);
