@@ -490,11 +490,11 @@ Sets the defaults for the new method. Call with key, value pairs similar to
 new.
 
     $Geo::Ellipsoid.set_defaults(
-      units => 'degrees',
-      ellipsoid => 'GRS80',
+      units          => 'degrees',
+      ellipsoid      => 'GRS80',
       distance_units => 'kilometer',
-      longitude => 1,
-      bearing => False
+      longitude      => 1,
+      bearing        => 0,
    );
 
 Keys and string values (except for the ellipsoid identifier) may be shortened
@@ -505,7 +505,7 @@ to their first three letters and are case-insensitive:
       ell => 'GRS80',
       dis => 'kil',
       lon => 1,
-      bea => False
+      bea => 0,
    );
 
 =end pod
@@ -611,17 +611,17 @@ method range(*@args)
 
 =begin pod
 
-=head2 bearing
+=head2 get_bearing
 
 Returns the bearing in degrees or radians from the first location to
 the second. Zero bearing is true north.
 
-    my $bearing = $geo.bearing($lat1, $lon1, $lat2, $lon2);
+    my $bearing = $geo.get_bearing($lat1, $lon1, $lat2, $lon2);
 
 =end pod
 
 # public
-method bearing($lat1, $lon1, $lat2, $lon2)
+method get_bearing($lat1, $lon1, $lat2, $lon2)
 {
   my $units = self.units;
   my @args = self!_normalize_input($units,$lat1, $lon1, $lat2, $lon2);
@@ -950,7 +950,7 @@ method !_forward($lat1, $lon1, $range, $bearing)
 #
 #	Normalize a set of input angle values by converting to
 #	radians if given in degrees and by converting to the
-#	range [0,2pi), i.e. greater than or equal to zero and
+#	range [0,2pi), i.e., greater than or equal to zero and
 #	less than two pi.
 #
 # private

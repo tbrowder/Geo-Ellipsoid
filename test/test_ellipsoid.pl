@@ -49,7 +49,7 @@ printf   "Reciprocal flattening = %.8f\n", $rf;
 
 # print displacements between various locations
 print "\nResults for various locations:\n\n";
-my @dfw_arp = (Angle(32,53,45.42),Angle(-97,2,13.92));
+my @dfw_arp  = (Angle(32,53,45.42),Angle(-97,2,13.92));
 my @ffc_orig = (Angle(32,52,44.02),Angle(-97,1,48.29));
 my @ord_orig = (Angle(41,58,43.48),Angle(-87,54,11.31));
 
@@ -178,8 +178,8 @@ sub print_dist(*@args)
   printf "Here   = [%.12f,%.12f]\n", $dlat1, $dlon1;
   printf "There  = [%.12f,%.12f]\n", $dlat2, $dlon2;
 
-  my @d = $ellipsoid.displacement( $lat1, $lon1, $lat2, $lon2 );
-  my ( $range, $bearing ) = $ellipsoid.to( $lat1, $lon1, $lat2, $lon2 );
+  my @d = $ellipsoid.displacement($lat1, $lon1, $lat2, $lon2);
+  my ($range, $bearing) = $ellipsoid.to( $lat1, $lon1, $lat2, $lon2 );
   my @loc = $ellipsoid.location($lat1, $lon1, $range, $bearing);
   $bearing *= $degrees_per_radian;
   print "displacement() returns (@d)\n" if $debug;
@@ -216,10 +216,11 @@ sub print_target( $lat1deg, $lat1min, $lat1sec,
 
 sub print_all_ellipsoids
 {
-  while ((my ( $ell, $aref ) = %Geo::Ellipsoid::ellipsoids.each)) {
+  #while ((my ($ell, $aref) = %Geo::Ellipsoid::ellipsoids.each)) {
+  for (%Geo::Ellipsoid::ellipsoids.kv) -> $ell, $aref {
     print_ellipsoid_values($ell);
   }
-  #print_ellipsoid_values('WGS84');
+  print_ellipsoid_values('WGS84');
 }
 
 sub print_ellipsoid_values($ell)
@@ -241,8 +242,8 @@ sub print_ellipsoid_values($ell)
   printf   "Reciprocal flattening = %.8f\n\n", $rf;
 }
 
-sub Angle(:$deg = 0, :$min = 0, :$sec = 0,
-          :$csec = 0 # optional 100th's of a second
+sub Angle($deg = 0, $min = 0, $sec = 0,
+          $csec = 0 # optional 100th's of a second
 )
 {
 
