@@ -21,11 +21,11 @@ Geo::Ellipsoid - Longitude and latitude calculations using an ellipsoid model.
 
 =head1 VERSION
 
-Version 1.12, released July 4, 2008.
+Version 0.1.0, not released.
 
 =end pod
 
-our $VERSION = '1.12';
+our $VERSION = '0.1.0';
 our $DEBUG = 1;
 
 =begin pod
@@ -510,24 +510,21 @@ to their first three letters and are case-insensitive:
 
 =end pod
 
-method set_defaults {}
-=begin pod
-### FIX THIS CORRECTLY
 # public
-method set_defaults
+method set_defaults(*@_)
 {
   my %args = @_;
-  for (keys %args) . $key {
+  for %args.kv -> $key, $val {
     if ($key ~~ m:i/^ell/) {
-      %defaults<ellipsoid> = uc %args{$key};
+      %defaults<ellipsoid> = uc $val;
     } elsif ($key ~~ m:i/^uni/) {
-      %defaults<units> = %args{$key};
+      %defaults<units> = $val;
     } elsif ($key ~~ m:i/^dis/) {
-      %defaults<distance_units> = %args{$key};
+      %defaults<distance_units> = $val;
     } elsif ($key ~~ m:i/^lon/) {
-      %defaults<longitude> = %args{$key};
+      %defaults<longitude> = $val;
     } elsif ($key ~~ m:i/^bea/) {
-      %defaults<bearing> = %args{$key};
+      %defaults<bearing> = $val;
     } else {
       die("Geo::Ellipsoid::set_defaults called with invalid key: $key");
     }
@@ -535,7 +532,6 @@ method set_defaults
   say "Defaults set to (%defaults<ellipsoid>,%defaults<units>"
     if $DEBUG;
 }
-=end pod
 
 =begin pod
 
