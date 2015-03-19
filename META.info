@@ -7,7 +7,6 @@
         "depends" : [ 
                      Carp:                          1.04
                      Math::Trig:                    1.03
-                     Scalar::Util:                  1.19
                      Test::Number::Delta:           0.16
                      Test::Simple:                  0.44
                     ],
