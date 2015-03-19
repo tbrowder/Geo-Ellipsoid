@@ -660,16 +660,14 @@ method at($lat1, $lon1, $range, $bearing)
 
 =head2 to
 
-In list context, returns (range, bearing) between two specified locations.
-In scalar context, returns just the range.
+Returns (range, bearing) between two specified locations.
 
     my ($dist, $theta) = $geo.to($lat1, $lon1, $lat2, $lon2);
-    my $dist = $geo.to($lat1, $lon1, $lat2, $lon2);
 
 =end pod
 
 # public
-multi method to($lat1, $lon1, $lat2, $lon2 --> {Num, Num})
+method to($lat1, $lon1, $lat2, $lon2)
 {
   my $units = self.units;
   my @a = self!_normalize_input($units,$lat1, $lon1, $lat2, $lon2);
@@ -681,12 +679,22 @@ multi method to($lat1, $lon1, $lat2, $lon2 --> {Num, Num})
   return ($range, $bearing);
 }
 
-multi method to($lat1, $lon1, $lat2, $lon2 --> Num)
+=begin pod
+
+=head2 to_range
+
+Returns range between two specified locations.
+
+    my $dist = $geo.to_range($lat1, $lon1, $lat2, $lon2);
+
+=end pod
+
+method to_range($lat1, $lon1, $lat2, $lon2)
 {
   my $units = self.units;
   my @a = self!_normalize_input($units,$lat1, $lon1, $lat2, $lon2);
-  say "to($units,$range)" if $DEBUG;
   my $range = self!_inverse(|@a);
+  say "to($units,$range)" if $DEBUG;
   say "to: inverse(|@a) returns($range)" if $DEBUG;
   return $range;
 }
