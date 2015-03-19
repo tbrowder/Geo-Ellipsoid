@@ -669,26 +669,24 @@ In scalar context, returns just the range.
 =end pod
 
 # public
-multi method to($lat1, $lon1, $lat2, $lon2) -> $range, $bearing
+multi method to($lat1, $lon1, $lat2, $lon2 --> {Num, Num})
 {
   my $units = self.units;
-  my @a = ($range, $bearing);
-  @a = self!_normalize_input($units,|@a);
+  my @a = self!_normalize_input($units,$lat1, $lon1, $lat2, $lon2);
   say "to($units,|@a)" if $DEBUG;
-  ($range,$bearing) = self!_inverse(|@a);
+  my ($range,$bearing) = self!_inverse(|@a);
   say "to: inverse(|@a) returns($range,$bearing)" if $DEBUG;
   $bearing *= $degrees_per_radian if $units eq 'degrees';
   self!_normalize_output('bearing',$bearing);
   return ($range, $bearing);
 }
 
-multi method to($lat1, $lon1, $lat2, $lon2) -> $range
+multi method to($lat1, $lon1, $lat2, $lon2 --> Num)
 {
   my $units = self.units;
-  my @a = ($range);
-  @a = self!_normalize_input($units,|@a);
+  my @a = self!_normalize_input($units,$lat1, $lon1, $lat2, $lon2);
   say "to($units,$range)" if $DEBUG;
-  ($range) = self!_inverse(|@a);
+  my $range = self!_inverse(|@a);
   say "to: inverse(|@a) returns($range)" if $DEBUG;
   return $range;
 }
