@@ -883,6 +883,8 @@ method !_inverse($lat1, $lon1, $lat2, $lon2)
 method !_forward($lat1, $lon1, $range, $bearing)
 {
 
+  die "!!!" if !defined $range;
+
   if ($DEBUG) {
     printf "_forward(lat1=%.8f,lon1=%.8f,range=%.8f,bearing=%.8f)\n",
       $lat1, $lon1, $range, $bearing;
@@ -893,7 +895,6 @@ method !_forward($lat1, $lon1, $range, $bearing)
   my $a = self.equatorial;
   my $f = self.flattening;
   my $r = 1.0 - $f;
-
   my $tu = $r * sin($lat1) / cos($lat1);
   my $faz = $bearing;
   my $s = self.conversion * $range;

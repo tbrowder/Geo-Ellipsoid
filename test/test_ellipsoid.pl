@@ -14,7 +14,7 @@ use Geo::Ellipsoid;
 #sub MAIN ($debug, $xdebug);
 
 say "Enter test_ellipsoid\n";
-#say "Using Geo::Ellipsoid version $Geo::Ellipsoid::VERSION";
+say "Using Geo::Ellipsoid version $Geo::Ellipsoid::VERSION";
 
 my $twopi = 2 * pi;
 my $halfpi = pi/2;
