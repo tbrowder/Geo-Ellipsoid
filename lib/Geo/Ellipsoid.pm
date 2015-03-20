@@ -551,7 +551,7 @@ calculations in the vicinity of some location.
 =end pod
 
 # public
-method scales($lat)
+method scales($lat is copy)
 {
   my $units = self.units;
   if (defined $lat) {
@@ -649,10 +649,10 @@ method at($lat1, $lon1, $range, $bearing)
   my ($lat, $lon, $az) = self!_normalize_input($units,$lat1,$lon1,$bearing); #@_[0,1,3]);
   my $r = $_[2];
   say "at($lat,$lon,$r,$az)" if $DEBUG;
-  my ($lat2, $lon2) = self._forward($lat,$lon,$r,$az);
+  my ($lat2, $lon2) = self!_forward($lat,$lon,$r,$az);
   say "_forward returns ($lat2,$lon2)" if $DEBUG;
-  self._normalize_output('longitude',$lon2);
-  self._normalize_output('latitude',$lat2);
+  self!_normalize_output('longitude',$lon2);
+  self!_normalize_output('latitude',$lat2);
   return ($lat2, $lon2);
 }
 
@@ -991,18 +991,19 @@ method !_normalize_output(*@args)
   my @a = @args;
   my $elem = shift @a;	# 'bearing' or 'longitude'
   # adjust remaining input values by reference
-  for (@a) {
-    if (self.$elem) {
+  for @a <-> $_ { # <-> is 'read-write' operator
+    if (self.{$elem}) { # <======= LINE 995 =============== LINE 995
       # normalize to range [-pi,pi)
       while ($_ < -(pi)) { $_ += $twopi }
-      while ($_ >= pi) { $_ -= $twopi }
+      while ($_ >= pi)   { $_ -= $twopi }
     } else {
       # normalize to range [0,2*pi)
-      while ($_ < 0) { $_ += $twopi }
+      while ($_ <  0)      { $_ += $twopi }
       while ($_ >= $twopi) { $_ -= $twopi }
     }
     $_ = self!rad2deg($_) if self.units eq 'degrees';
   }
+  return @a;
 }
 
 =begin pod
