@@ -22,5 +22,8 @@ test-e:
 run:
 	( cd test; $(PERL) $(OPTS) test_ellipsoid.pl )
 
+run-s:
+	( cd test; $(PERL) $(OPTS) test_ellipsoid.pl -s)
+
 test-t:
 	( cd test; $(PERLM) $(OPTS) test_ellipsoid.pl )
