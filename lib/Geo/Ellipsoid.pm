@@ -647,10 +647,9 @@ specified range and bearing from a given location.
 method at($lat1, $lon1, $range, $bearing)
 {
   my $units = self.units;
-  my ($lat, $lon, $az) = self!_normalize_input($units,$lat1,$lon1,$bearing); #@_[0,1,3]);
-  my $r = $_[2];
-  say "at($lat,$lon,$r,$az)" if $DEBUG;
-  my ($lat2, $lon2) = self!_forward($lat,$lon,$r,$az);
+  my ($lat, $lon, $az) = self!_normalize_input($units,$lat1,$lon1,$bearing);
+  say "at($lat,$lon,$range,$az)" if $DEBUG;
+  my ($lat2, $lon2) = self!_forward($lat,$lon,$range,$az);
   say "_forward returns ($lat2,$lon2)" if $DEBUG;
   self!_normalize_output('longitude',$lon2);
   self!_normalize_output('latitude',$lat2);
