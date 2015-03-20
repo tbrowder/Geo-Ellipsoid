@@ -4,11 +4,15 @@ PERL  := perl6
 #OPTS := --ll-exception
 #OPTS := -c
 
-.PHONY: test-e test-t run test-p test-m
+.PHONY: test-e test-t run test-p test-m test-full
 
 #default: test-m test-p
 #default: test-e run
-default: run
+default: test-full
+
+# the original test suite (i.e., 'make test')
+test-full:
+	( $(PERL) t/*.t )
 
 test-p:
 	( $(PERL) $(OPTS) T.pl )
