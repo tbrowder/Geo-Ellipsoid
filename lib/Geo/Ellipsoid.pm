@@ -26,7 +26,7 @@ Version 0.1.0, not released.
 =end pod
 
 our $VERSION = '0.1.0';
-our $DEBUG = 1;
+our $DEBUG = 0;
 
 =begin pod
 
@@ -331,7 +331,7 @@ method set_distance_unit($unit)
     #my ($key, $val);
     #while (($key,$val) = (%distance.kv)) { # each?) {
     for %distance.kv -> $key, $val { # each?) {
-      say "key = {$key}";
+      say "key = {$key}" if $DEBUG;
       my $re = $key.substr(0, 3); #substr($key,0,3);
       print "trying ($key,$re,$val)\n" if $DEBUG;
       if ($unit ~~ m:i/^$re/) {
@@ -357,6 +357,7 @@ method set_distance_unit($unit)
       "$unit\nAssuming meters");
     $conversion = 1.0;
   }
+
   self.conversion = $conversion;
 }
 
