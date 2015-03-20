@@ -22,7 +22,7 @@ my $degrees_per_radian = 180.0/pi;
 my $degree = pi/180.0;
 
 # arg/option handling
-sub MAIN (Bool :d(:$debug), Bool :x(:$xdebug));
+sub MAIN (Bool :d(:$debug), Bool :x(:$xdebug), Bool :s(:$sdebug));
 
 #say "debug  = { $debug  ?? 'True' !! 'False' }";
 #say "xdebug = { $xdebug ?? 'True' !! 'False' }";
@@ -30,7 +30,7 @@ sub MAIN (Bool :d(:$debug), Bool :x(:$xdebug));
 
 print "WGS84 ellipsoid values:\n";
 my $earth = Geo::Ellipsoid.new(
-  units => 'degrees',
+  units     => 'degrees',
   ellipsoid => 'WGS84',
 );
 
@@ -67,6 +67,12 @@ my @ord_10c = ( Angle(41,58, 6,28), Angle(-87,55,52,65) );
 my @ord_28c = ( Angle(41,58, 6,98), Angle(-87,53,30, 2) );
 
 print_dist(|@ord_orig,|@ord_9l);
+
+if ($sdebug) {
+  say "DEBUG: early exit.";
+  exit;;
+}
+
 print_dist(|@ord_9l,|@ord_27r);
 
 print_vector(
@@ -158,7 +164,7 @@ sub print_vector($lat1deg, $lat1min, $lat1sec,
   my @there = ( $lat2, $lon2 );
 
   print "Print range and bearing from:\n";
-  print "({$lat1deg}d $lat1min}m {$lat1sec})-(" ~
+  print "({$lat1deg}d {$lat1min}m {$lat1sec})-(" ~
     "{$lon1deg}d {$lon1min}m {$lon1sec}) ";
   printf "[%.8f,%.8f] to\n", $lat1, $lon1;
   print
@@ -247,16 +253,18 @@ sub Angle($deg = 0, $min = 0, $sec = 0,
 {
 
   #print "convert (@_) to angle in radians\n" if $debug;
-  my $frac = ( $min + (($sec + ($csec/100))/60))/60;
+  my $frac = ( $min + (($sec + ($csec/100.0))/60.0))/60.0;
   my $angle = $deg;
   #print "  angle=$angle, frac=$frac\n" if $debug;
   if ( $angle < 0 ) {
-    $angle += 360 - $frac;
+    $angle += 360.0 - $frac;
   } else {
     $angle += $frac;
   }
   #print "  angle.frac = $angle\n" if $debug;
-  return $angle/$degrees_per_radian;
+  my $angrad = $angle/$degrees_per_radian;
+  die "!!!" if !defined $angrad;
+  return $angrad;
 }
 
 sub polar($x, $y)
