@@ -212,7 +212,6 @@ has $.polar        is rw;
 has $.flattening   is rw;
 has $.eccentricity is rw;
 has $.conversion   is rw;
-has $.symmetric    is rw; # ???
 
 # the above are set during construction
 submethod BUILD(
@@ -230,7 +229,6 @@ submethod BUILD(
   :$!flattening,
   :$!eccentricity,
   :$!conversion,
-  :$!symmetric,
                ) {
   say "Setting units..." if $DEBUG;
   self.set_units($!units);
