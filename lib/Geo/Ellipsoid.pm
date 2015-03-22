@@ -25,7 +25,7 @@ Version 0.1.0, not released.
 
 =end pod
 
-our $VERSION = '0.1.0';
+our $VERSION = '1.12.1';
 our $DEBUG = 0;
 
 =begin pod
@@ -77,6 +77,52 @@ our $eps = 1.0e-23;
 our $max_loop_count = 20;
 our $twopi = 2 * pi;
 our $halfpi = pi/2;
+
+# arrays for use during testing
+our @rw_attributes
+  = <
+ellipsoid
+units
+distance_units
+longitude
+latitude
+bearing
+equatorial
+polar
+flattening
+eccentricity
+conversion
+    >;
+
+our @public_methods
+  = <
+at
+displacement
+get_bearing
+location
+new
+range
+scales
+set_bearing_symmetric
+set_custom_ellipsoid
+set_defaults
+set_distance_unit
+set_ellipsoid
+set_longitude_symmetric
+set_units
+to
+to_range
+    >;
+
+our @private_methods
+  = <
+_forward
+_inverse
+_normalize_input
+_normalize_output
+deg2rad
+rad2deg
+    >;
 
 # these should disappear with proper Perl 6 class def
 our %defaults = (
