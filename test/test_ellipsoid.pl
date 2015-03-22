@@ -9,6 +9,7 @@
 #require '../lib/Geo/Ellipsoid.pm';
 
 use lib '../lib';
+use lib './lib';
 use Geo::Ellipsoid;
 
 #sub MAIN ($debug, $xdebug);
@@ -36,6 +37,18 @@ my $earth = Geo::Ellipsoid.new(
 
 if ($xdebug) {
   $Geo::Ellipsoid::DEBUG = 1;
+
+  my $o = Geo::Ellipsoid.new();
+  #say $o.perl;
+
+  my $meth = 'to';
+  try {
+    $o, $meth();
+    #catch {
+    #}
+ }
+
+  exit;
 }
 
 printf "    Equatorial radius = %.10f\n", $earth.equatorial;
