@@ -12,7 +12,7 @@ default: test-full
 
 # the original test suite (i.e., 'make test')
 test-full:
-	( $(PERL) t/*.t )
+	( cd t; $(PERLM) $(OPTS) *.t )
 
 test-p:
 	( $(PERL) $(OPTS) T.pl )
