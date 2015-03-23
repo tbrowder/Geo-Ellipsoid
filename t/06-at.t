@@ -12,7 +12,7 @@ plan 400;
 
 my $e1 = Geo::Ellipsoid.new(units=>'degrees');
 my $e2 = Geo::Ellipsoid.new(units=>'degrees',longitude=>1);
-my($lat1,$lon1,$lat2,$lon2,$x,$y);
+my ($lat1,$lon1,$lat2,$lon2,$x,$y);
 
 ($lat1,$lon1) = $e1.at(-38.369163,190.874558,663.027183,53.574472);
 ($lat2,$lon2) = $e2.at(-38.369163,190.874558,663.027183,53.574472);

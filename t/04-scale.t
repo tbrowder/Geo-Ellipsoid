@@ -11,7 +11,8 @@ use Geo::Ellipsoid;
 plan 180;
 
 my $e = Geo::Ellipsoid.new(units => 'degrees');
-my($xs, $ys);
+my ($xs, $ys);
+
 ($ys, $xs) = $e.scales(0);
 delta_ok($xs, 111319.490793274);
 delta_ok($ys, 110574.275821594);

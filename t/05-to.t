@@ -11,7 +11,8 @@ use Geo::Ellipsoid;
 plan 476;
 
 my $e = Geo::Ellipsoid.new(units=>'degrees');
-my($r, $a);
+my ($r, $a);
+
 ($r, $a) = $e.to(-88.000000, 1.000000,-88.000000, 1.000000);
 delta_within($r, 0, 0.1);
 

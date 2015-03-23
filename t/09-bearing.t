@@ -12,7 +12,7 @@ plan 432;
 
 my $e_pos = Geo::Ellipsoid.new(units=>'degrees');
 my $e_sym = Geo::Ellipsoid.new(units=>'degrees',bearing=>1);
-my($azp,$azs);
+my ($azp,$azs);
 
 $azp = $e_pos.bearing(-88.000000,1.000000,-88.000000,90.000000);
 delta_within($azp, 134.482545961512, 0.1);

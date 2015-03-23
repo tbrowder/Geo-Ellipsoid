@@ -12,7 +12,7 @@ plan 200;
 
 my $e1 = Geo::Ellipsoid.new(units=>'degrees');
 my $e2 = Geo::Ellipsoid.new(units=>'degrees',longitude=>1);
-my($lat1,$lon1,$lat2,$lon2,$x,$y);
+my ($lat1,$lon1,$lat2,$lon2,$x,$y);
 
 ($x, $y) = $e1.displacement(-38.369163,190.874558,-38.365617,190.880663);
 delta_within($x, 533.491110769497, 1.0);

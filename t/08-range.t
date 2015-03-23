@@ -15,7 +15,7 @@ my $e_kilo = Geo::Ellipsoid.new(units=>'degrees',distance=>'kilo');
 my $e_mile = Geo::Ellipsoid.new(units=>'degrees',distance=>'mile');
 my $e_foot = Geo::Ellipsoid.new(units=>'degrees',distance=>'foot');
 my $e_nm = Geo::Ellipsoid.new(units=>'degrees',distance=>'nm');
-my($r1,$r2,$r3,$r4,$r5);
+my ($r1,$r2,$r3,$r4,$r5);
 
 $r1 = $e_meter.range(-88.000000,1.000000,-88.000000,1.000000);
 $r2 = $e_kilo.range(-88.000000,1.000000,-88.000000,1.000000);
