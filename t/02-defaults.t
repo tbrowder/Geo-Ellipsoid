@@ -1,11 +1,14 @@
-#!/usr/local/bin/perl
+#!/usr/bin/env perl6
 # Test Geo::Ellipsoid defaults
-use Test::More tests => 192;
-use Test::Number::Delta relative => 1e-6;
+
+use v6;
+use Test;
+use lib './lib';
+use lib '../lib';
+
 use Geo::Ellipsoid;
-use blib;
-use strict;
-use warnings;
+
+plan 30;
 
 my $e1 = Geo::Ellipsoid->new();
 ok( $e1->{ellipsoid} eq 'WGS84' );
