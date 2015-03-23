@@ -98,7 +98,7 @@ our @public_methods
   = <
 at
 displacement
-get_bearing
+bearing
 location
 new
 range
@@ -638,28 +638,28 @@ as latitude, longitude pairs.
 =end pod
 
 # public
-method range(*@args)
+method get_range(*@args)
 {
   my @a = @args;
   @a = self!_normalize_input(self.units,@a);
   my ($range,$bearing) = self!_inverse(@a);
   say "inverse(@a[1..4]) returns($range,$bearing)" if $DEBUG;
-  #return $range;
+  return $range;
 }
 
 =begin pod
 
-=head2 get_bearing
+=head2 bearing
 
 Returns the bearing in degrees or radians from the first location to
 the second. Zero bearing is true north.
 
-    my $bearing = $geo.get_bearing($lat1, $lon1, $lat2, $lon2);
+    my $bearing = $geo.bearing($lat1, $lon1, $lat2, $lon2);
 
 =end pod
 
 # public
-method get_bearing($lat1, $lon1, $lat2, $lon2)
+method bearing($lat1, $lon1, $lat2, $lon2)
 {
   my $units = self.units;
   my @args = self!_normalize_input($units,$lat1, $lon1, $lat2, $lon2);
