@@ -142,7 +142,7 @@ ok($Geo::Ellipsoid::ellipsoids{'IAU76'}:exists);
 
 # group 14
 my $e14 = Geo::Ellipsoid.new(ellipsoid=>'KRASSOVSKY-1938');
-ok($e14,defined, "test {++$n}");
+ok($e14.defined, "test {++$n}");
 ok($e14.isa('Geo::Ellipsoid'));
 ok($e14.ellipsoid eq 'KRASSOVSKY-1938');
 is_approx($e14.equatorial, 6378245);
