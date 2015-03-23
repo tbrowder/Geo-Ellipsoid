@@ -1,11 +1,14 @@
-#!/usr/local/bin/perl
+#!/usr/bin/env perl6
 # Test Geo::Ellipsoid bearing
-use Test::More tests => 432;
-use Test::Number::Delta relative => 1e-6;
+
+use v6;
+use Test;
+use lib './lib';
+use lib '../lib';
+
 use Geo::Ellipsoid;
-use blib;
-use strict;
-use warnings;
+
+plan 432;
 
 my $e_pos = Geo::Ellipsoid->new(units=>'degrees');
 my $e_sym = Geo::Ellipsoid->new(units=>'degrees',bearing=>1);

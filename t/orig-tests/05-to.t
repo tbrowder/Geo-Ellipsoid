@@ -1,11 +1,14 @@
-#!/usr/local/bin/perl
+#!/usr/bin/env perl6
 # Test Geo::Ellipsoid to
-use Test::More tests => 476;
-use Test::Number::Delta relative => 1e-6;
+
+use v6;
+use Test;
+use lib './lib';
+use lib '../lib';
+
 use Geo::Ellipsoid;
-use blib;
-use strict;
-use warnings;
+
+plan 476;
 
 my $e = Geo::Ellipsoid->new(units=>'degrees');
 my( $r, $a );

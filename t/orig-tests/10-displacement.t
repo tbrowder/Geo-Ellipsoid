@@ -1,11 +1,14 @@
-#!/usr/local/bin/perl
+#!/usr/bin/env perl6
 # Test Geo::Ellipsoid displacement
-use Test::More tests => 200;
-use Test::Number::Delta relative => 1e-6;
+
+use v6;
+use Test;
+use lib './lib';
+use lib '../lib';
+
 use Geo::Ellipsoid;
-use blib;
-use strict;
-use warnings;
+
+plan 200;
 
 my $e1 = Geo::Ellipsoid->new(units=>'degrees');
 my $e2 = Geo::Ellipsoid->new(units=>'degrees',longitude=>1);

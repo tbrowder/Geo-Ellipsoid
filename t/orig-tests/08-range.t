@@ -1,11 +1,14 @@
-#!/usr/local/bin/perl
+#!/usr/bin/env perl6
 # Test Geo::Ellipsoid range
-use Test::More tests => 1220;
-use Test::Number::Delta relative => 1e-6;
+
+use v6;
+use Test;
+use lib './lib';
+use lib '../lib';
+
 use Geo::Ellipsoid;
-use blib;
-use strict;
-use warnings;
+
+plan 1220;
 
 my $e_meter = Geo::Ellipsoid->new(units=>'degrees');
 my $e_kilo = Geo::Ellipsoid->new(units=>'degrees',distance=>'kilo');
