@@ -222,8 +222,8 @@ is_approx($e21.flattening, 0.00333333333333333);
 ok(%Geo::Ellipsoid::ellipsoids{'CUSTOM'}:exists);
 
 # group 22
-print "\n#\n#\tWarning about 'Infinite flattening' OK here\n#\n;";
 my $e22 = Geo::Ellipsoid.new();
+say "\n#\n#\tWarning about 'Infinite flattening' OK here.\n#";
 $e22.set_custom_ellipsoid('sphere',6378137,0);
 ok($e22.defined, "test group {++$n}");
 ok($e22.isa('Geo::Ellipsoid'));
