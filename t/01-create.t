@@ -42,7 +42,7 @@ ok($e4.ellipsoid eq 'BESSEL-1841');
 delta_ok($e4.equatorial, 6377397.155);
 delta_ok($e4.polar, 6356078.96281819);
 delta_ok($e4.flattening, 0.00334277318217481);
-ok($Geo::Ellipsoid::ellipsoids{'BESSEL-1841'}"exists);
+ok($Geo::Ellipsoid::ellipsoids{'BESSEL-1841'}:exists);
 
 my $e5 = Geo::Ellipsoid.new(ell=>'CLARKE-1880');
 ok(defined $e5);
