@@ -6,27 +6,21 @@ INSTALLATION
 
 To install this module, run the following commands:
 
-    perl Makefile.PL
-    make
-    make test
-    make install
+    panda install Geo::Ellipsoid
 
 RELEASE NOTES
 
-This is version 1.12. 
+This is version 1.0, the initial port of the CPAN Perl 5 version to
+Perl 6.
 
-Methods are now guaranteed to return angle values in the range [0,2pi) or
-[-pi,pi). The output range may be selected with arguments to the new() 
-constructor method or by calling the set_longitude_symmetric or 
-set_bearing_symmetric methods.
-
-Perls older than 5.6 are not supported.
+RELEASE NOTES (from the original CPAN version)
 
 This module is a port of existing Fortran subroutines to Perl.
 
 COPYRIGHT AND LICENCE
 
+Copyright (C) 2015 Tom Browder <tom.browder@gmail.com>
 Copyright (C) 2005-2008 Jim Gibson
 
-This program is free software; you can redistribute it and/or modify it
+This program is free software; you can redistribute it or modify it
 under the same terms as Perl itself.
