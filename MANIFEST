@@ -1,11 +1,11 @@
 MANIFEST
 README
 LICENSE
-Todo
+TODO
 Changes
-Makefile.PL
+Makefile
 lib/Geo/Ellipsoid.pm
-META.yml                                 Module meta-data (added by MakeMaker)
+META.info
 t/00-load.t
 t/01-create.t
 t/02-defaults.t
