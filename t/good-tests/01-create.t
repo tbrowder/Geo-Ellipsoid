@@ -8,6 +8,8 @@ use lib '../lib';
 
 use Geo::Ellipsoid;
 
+plan 153;
+
 my $n =0;
 
 # group 1
