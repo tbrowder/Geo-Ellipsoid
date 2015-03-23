@@ -84,9 +84,9 @@ our @rw_attributes
 ellipsoid
 units
 distance_units
-longitude
+longitude_sym
 latitude
-bearing
+bearing_sym
 equatorial
 polar
 flattening
@@ -124,14 +124,14 @@ deg2rad
 rad2deg
     >;
 
-# these should disappear with proper Perl 6 class def
+# these may disappear with proper Perl 6 class def
 our %defaults = (
   ellipsoid      => 'WGS84',
   units          => 'radians',
   distance_units => 'meter',
-  longitude      => 0,
+  longitude_sym  => False,
   latitude       => 1,	# allows use of _normalize_output
-  bearing        => 0,
+  bearing_sym    => False,
 );
 our %distance = (
   'foot'      => 0.3048,
@@ -187,8 +187,8 @@ The initial default constructor is equivalent to the following:
       ellipsoid      => 'WGS84',
       units          => 'radians' ,
       distance_units => 'meter',
-      longitude      => 0,
-      bearing        => 0,
+      longitude_sym  => False,
+      bearing_sym    => False,
    );
 
 The constructor arguments may be of any case and, with the exception of
@@ -202,9 +202,9 @@ is valid.
 has $.ellipsoid      is rw;
 has $.units          is rw;
 has $.distance_units is rw;
-has $.longitude      is rw;
+has $.longitude_sym  is rw;
 has $.latitude       is rw;
-has $.bearing        is rw;
+has $.bearing_sym    is rw;
 
 # following were implicit in original Perl 5 version
 has $.equatorial   is rw;
@@ -219,9 +219,9 @@ submethod BUILD(
   :$!ellipsoid      = %defaults<ellipsoid>,      # 'WGS84',
   :$!units          = %defaults<units>,          # 'radians',
   :$!distance_units = %defaults<distance_units>, # 'meter',
-  :$!longitude      = %defaults<longitude>,      # 0,
-  :$!latitude       = %defaults<latitude>,       # 1,
-  :$!bearing        = %defaults<bearing>,        # 0,
+  :$!longitude_sym  = %defaults<longitude>,      # False,
+  :$!latitude       = %defaults<latitude_sym>,   # 1,
+  :$!bearing_sym    = %defaults<bearing_sym>,    # False,
 
   # these depend on values above
   :$!equatorial,
@@ -240,15 +240,15 @@ submethod BUILD(
   self.set_distance_unit($!distance_units);
 
   say "Setting longitude..." if $DEBUG;
-  self.set_longitude_symmetric($!longitude);
+  self.set_longitude_symmetric($!longitude_sym);
 
   say "Setting bearing..." if $DEBUG;
-  self.set_bearing_symmetric($!bearing);
+  self.set_bearing_symmetric($!bearing_sym);
 
   say
     "Ellipsoid(units=>{self.units},distance_units=>" ~
     "{self.distance_units},ellipsoid=>{self.ellipsoid}," ~
-    "longitude=>{self.longitude},bearing=>{self.bearing})" if $DEBUG;
+    "longitude_sym=>{self.longitude_sym},bearing_sym=>{self.bearing_sym})" if $DEBUG;
 }
 
 
@@ -477,26 +477,26 @@ values for longitude to be in the range [-pi,+pi) radians.  If called with
 a false or undefined argument, sets the output angle range to be
 [0,2*pi) radians.
 
-    $geo.set_longitude_symmetric(1);
+    $geo.set_longitude_symmetric(True);
 
 =end pod
 
 # public
 multi method set_longitude_symmetric($sym)
 {
-  # see if argument > 0 (true)
-  if ($sym > 0) {
-    # yes -- use value passed
-    self.longitude = $sym;
+  # see if argument is true
+  if ($sym) {
+    # yes -- set to true
+    self.longitude_sym = True;
   } else {
-    # no -- set to true
-    self.longitude = 1;
+    # no -- set to false
+    self.longitude_sym = False;
   }
 }
 multi method set_longitude_symmetric
 {
   # no arg -- set to true
-  self.longitude = 1;
+  self.longitude_sym = True;
 }
 
 =begin pod
@@ -508,25 +508,26 @@ values for bearing to be in the range [-pi,+pi) radians.  If called with
 a false or undefined argument, sets the output angle range to be
 [0,2*pi) radians.
 
-    $geo.set_bearing_symmetric(1);
+    $geo.set_bearing_symmetric(True);
 
 =end pod
 
 # public
 multi method set_bearing_symmetric($sym)
 {
-  # see if argument > 0 (true)
-  if ($sym > 0) {
-    self.bearing = $sym;
+  # see if argument is true
+  if ($sym) {
+    # yes -- set to true
+    self.bearing_sym = True;
   } else {
-    # no -- set to true
-    self.bearing = 1;
+    # no -- set to false
+    self.bearing_sym = False;
   }
 }
 multi method set_bearing_symmetric
 {
   # no arg -- set to true
-  self.bearing = 1;
+  self.bearing_sym = True;
 }
 
 =begin pod
@@ -902,7 +903,7 @@ method !_inverse($lat1, $lon1, $lat2, $lon2)
   printf "s=%.8f\n", $s if $DEBUG;
 
   # adjust azimuth to (0,360) or (-180,180) as specified
-  if (self.symmetric) {
+  if (self.bearing_sym) {
     $faz += $twopi if $faz < -(pi);
     $faz -= $twopi if $faz >= pi;
   } else {
