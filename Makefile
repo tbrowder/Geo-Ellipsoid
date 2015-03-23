@@ -8,8 +8,8 @@ TESTS := t/*.t
 
 # the original test suite (i.e., 'make test')
 test:
-	for i in $(TESTS) ; do \
-	  $(PERL) $$i ; \
+	for f in $(TESTS) ; do \
+	  $(PERL) $$f ; \
 	done
 
 test-orig:
