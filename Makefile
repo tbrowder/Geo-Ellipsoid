@@ -1,33 +1,16 @@
-PERLM := perl6-m
 PERL  := perl6
 
-#OPTS := --ll-exception
-#OPTS := -c
+.PHONY: test test-orig
 
-.PHONY: test-e test-t run test-p test-m test-full
+default: test
 
-#default: test-m test-p
-#default: test-e run
-default: test-full
+TESTS := t/*.t
 
 # the original test suite (i.e., 'make test')
-test-full:
-	( cd t; $(PERLM) $(OPTS) *.t )
+test:
+	for i in $(TESTS) ; do \
+	  $(PERL) $$i ; \
+	done
 
-test-p:
-	( $(PERL) $(OPTS) T.pl )
-
-test-m:
-	( $(PERLM) $(OPTS) T.pm )
-
-test-e:
-	( cd lib/Geo; $(PERLM) $(OPTS) Ellipsoid.pm )
-
-run:
-	( cd test; $(PERL) $(OPTS) test_ellipsoid.pl )
-
-run-s:
-	( cd test; $(PERL) $(OPTS) test_ellipsoid.pl -s)
-
-test-t:
-	( cd test; $(PERLM) $(OPTS) test_ellipsoid.pl )
+test-orig:
+	$(PERL) test/test_ellipsoid.pl
