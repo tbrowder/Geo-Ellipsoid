@@ -8,7 +8,7 @@ use lib '../lib';
 
 use Geo::Ellipsoid;
 
-plan 30;
+plan 192;
 
 my $e1 = Geo::Ellipsoid->new();
 ok($e1->{ellipsoid} eq 'WGS84');
