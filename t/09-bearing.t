@@ -11,7 +11,7 @@ use Geo::Ellipsoid;
 #plan 432;
 
 my $e_pos = Geo::Ellipsoid.new(units=>'degrees');
-my $e_sym = Geo::Ellipsoid.new(units=>'degrees',bearing=>1);
+my $e_sym = Geo::Ellipsoid.new(units=>'degrees',bearing_sym=>True);
 my ($azp,$azs);
 
 $azp = $e_pos.bearing(-88.000000,1.000000,-88.000000,90.000000);
