@@ -219,8 +219,8 @@ submethod BUILD(
   :$!ellipsoid      = %defaults<ellipsoid>,      # 'WGS84',
   :$!units          = %defaults<units>,          # 'radians',
   :$!distance_units = %defaults<distance_units>, # 'meter',
-  :$!longitude_sym  = %defaults<longitude>,      # False,
-  :$!latitude       = %defaults<latitude_sym>,   # 1,
+  :$!longitude_sym  = %defaults<longitude_sym>,  # False,
+  :$!latitude       = %defaults<latitude>,       # 1,
   :$!bearing_sym    = %defaults<bearing_sym>,    # False,
 
   # these depend on values above
