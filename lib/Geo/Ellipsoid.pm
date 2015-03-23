@@ -430,7 +430,7 @@ method set_ellipsoid($ell)
   my ($major, $recip) = @(%ellipsoids{$ellipsoid});
   self.equatorial = $major;
   if ($recip == 0) {
-    die("Infinite flattening specified by ellipsoid -- assuming a sphere");
+    say("Infinite flattening specified by ellipsoid -- assuming a sphere");
     self.polar        = self.equatorial;
     self.flattening   = 0;
     self.eccentricity = 0;
@@ -456,9 +456,9 @@ will be issued.
 =end pod
 
 # public
-method set_custom_ellipsoid($name, $major, $recip)
+method set_custom_ellipsoid($nam, $major, $recip)
 {
-  $name = uc $name;
+  my $name = uc $nam;
   $recip = 0 unless defined $recip;
   if ($major) {
     %ellipsoids{$name} = [ $major, $recip ];
