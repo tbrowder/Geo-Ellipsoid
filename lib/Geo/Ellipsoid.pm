@@ -251,7 +251,6 @@ submethod BUILD(
     "longitude_sym=>{self.longitude_sym},bearing_sym=>{self.bearing_sym})" if $DEBUG;
 }
 
-
 # temp until provided by core
 method !deg2rad($deg)
 {
