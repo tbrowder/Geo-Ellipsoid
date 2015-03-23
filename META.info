@@ -1,14 +1,10 @@
     {
         "name" : "Geo::Ellipsoid",
-        "version" : "0.1.0",
+        "version" : "1.0",
         "description" : "Accurate latitude/longitude calculations",
-        "author" : "Tom Browder (translator Perl 5 to Perl 6), 
+        "author" : "Tom Browder (translator Perl 5 to Perl 6, current maintainer), 
                     Jim Gibson (CPAN Perl 5 author, v1.12)",
         "depends" : [ 
-                     Carp:                          1.04
-                     Math::Trig:                    1.03
-                     Test::Number::Delta:           0.16
-                     Test::Simple:                  0.44
                     ],
         "source-url" : "git://github.com/tbrowder/Geo-Ellipsoid-perl6.git"
     }
