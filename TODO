@@ -3,4 +3,8 @@ TODO list for Perl module Geo::Ellipsoid
 - Figure out what to do if _forward or _inverse does not converge because
   points are opposite each other
 
+- See if arg values should be constrained in some cases.
+
+- Ensure all test suite scripts have a plan.
+
 
