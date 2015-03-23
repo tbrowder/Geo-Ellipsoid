@@ -14,4 +14,6 @@ BEFORE RELEASE
 
 - Make README.md instructions correct for the ecosystem.
 
+- Ensure there is a test for bad invalid inputs for
+  Geo::Ellipsoid.new, e.g., 'distance' instead of 'distance_units'.
 
