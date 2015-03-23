@@ -8,6 +8,17 @@ To install this module, run the following commands:
 
     panda install Geo::Ellipsoid
 
+TESTING
+
+1. To run the test suite:
+
+   $ make test
+
+2. To compare the results of this module to the CPAN Perl 5 version:
+
+   $ make test-orig > res.txt
+   $ diff res.txt test/results.txt
+
 RELEASE NOTES
 
 This is version 1.0, the initial port of the CPAN Perl 5 version to
