@@ -430,7 +430,7 @@ method set_ellipsoid($ell)
   my ($major, $recip) = @(%ellipsoids{$ellipsoid});
   self.equatorial = $major;
   if ($recip == 0) {
-    say("Infinite flattening specified by ellipsoid -- assuming a sphere");
+    say("# WARNING: Infinite flattening specified by ellipsoid -- assuming a sphere.");
     self.polar        = self.equatorial;
     self.flattening   = 0;
     self.eccentricity = 0;
