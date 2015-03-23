@@ -24,6 +24,7 @@ $e1.set_defaults(
   longitude_sym => True,
   bearing_sym => True
 );
+
 my $e2 = Geo::Ellipsoid.new();
 ok($e2.ellipsoid eq 'NAD27');
 ok($e2.units eq 'degrees');
@@ -34,7 +35,7 @@ ok($e2.bearing_sym == True);
 
 Geo::Ellipsoid.set_defaults(units=>'degrees',ellipsoid=>'EVEREST-1830');
 ok(%Geo::Ellipsoid::defaults<ellipsoid> eq 'EVEREST-1830');
-ok(%Geo::Ellipsoid::defaults,units> eq 'degrees');
+ok(%Geo::Ellipsoid::defaults<units> eq 'degrees');
 my $e3 = Geo::Ellipsoid.new();
 ok($e3.defined);
 ok($e3.isa('Geo::Ellipsoid'));
