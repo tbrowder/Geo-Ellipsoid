@@ -456,15 +456,10 @@ will be issued.
 =end pod
 
 # public
-method set_custom_ellipsoid($nam, $major, $recip)
+method set_custom_ellipsoid($nam, $major, $recip = 0)
 {
   my $name = uc $nam;
-  $recip = 0 unless defined $recip;
-  if ($major) {
-    %ellipsoids{$name} = [ $major, $recip ];
-  } else {
-    die("set_custom_ellipsoid called without semi-major radius parameter");
-  }
+  %ellipsoids{$name} = [ $major, $recip ];
   self.set_ellipsoid($name);
 }
 
