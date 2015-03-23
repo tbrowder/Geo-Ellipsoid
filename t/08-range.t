@@ -11,10 +11,10 @@ use Geo::Ellipsoid;
 #plan 1220;
 
 my $e_meter = Geo::Ellipsoid.new(units=>'degrees');
-my $e_kilo = Geo::Ellipsoid.new(units=>'degrees',distance=>'kilo');
-my $e_mile = Geo::Ellipsoid.new(units=>'degrees',distance=>'mile');
-my $e_foot = Geo::Ellipsoid.new(units=>'degrees',distance=>'foot');
-my $e_nm = Geo::Ellipsoid.new(units=>'degrees',distance=>'nm');
+my $e_kilo = Geo::Ellipsoid.new(units=>'degrees',distance_units=>'kilo');
+my $e_mile = Geo::Ellipsoid.new(units=>'degrees',distance_units=>'mile');
+my $e_foot = Geo::Ellipsoid.new(units=>'degrees',distance_units=>'foot');
+my $e_nm = Geo::Ellipsoid.new(units=>'degrees',distance_units=>'nm');
 my ($r1,$r2,$r3,$r4,$r5);
 
 $r1 = $e_meter.range(-88.000000,1.000000,-88.000000,1.000000);
