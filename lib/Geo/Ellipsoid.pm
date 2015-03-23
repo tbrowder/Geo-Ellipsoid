@@ -633,16 +633,15 @@ Returns the range in distance units between two specified locations given
 as latitude, longitude pairs.
 
     my $dist = $geo.range($lat1, $lon1, $lat2, $lon2);
-    my $dist = $geo.range(@origin, @destination);
+    my $dist = $geo.range(|@origin, |@destination);
 
 =end pod
 
 # public
-method get_range(*@args)
+method range($lat1, $lon1, $lat2, $lon2)
 {
-  my @a = @args;
-  @a = self!_normalize_input(self.units,@a);
-  my ($range,$bearing) = self!_inverse(@a);
+  my @a = self!_normalize_input(self.units,$lat1, $lon1, $lat2, $lon2);
+  my ($range,$bearing) = self!_inverse(|@a);
   say "inverse(@a[1..4]) returns($range,$bearing)" if $DEBUG;
   return $range;
 }
@@ -661,12 +660,11 @@ the second. Zero bearing is true north.
 # public
 method bearing($lat1, $lon1, $lat2, $lon2)
 {
-  my $units = self.units;
-  my @args = self!_normalize_input($units,$lat1, $lon1, $lat2, $lon2);
-  my ($range,$bearing) = self!_inverse($lat1, $lon1, $lat2, $lon2);
-  say "inverse(@args) returns($range,$bearing)" if $DEBUG;
+  my @a = self!_normalize_input(self.units,$lat1, $lon1, $lat2, $lon2);
+  my ($range,$bearing) = self!_inverse(|@a);
+  say "inverse(@a) returns($range,$bearing)" if $DEBUG;
   my $t = $bearing;
-  self._normalize_output('bearing',$bearing);
+  self!_normalize_output('bearing',$bearing);
   say "_normalize_output($t) returns($bearing)" if $DEBUG;
   return $bearing;
 }
