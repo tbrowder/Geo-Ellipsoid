@@ -10,7 +10,7 @@ use Geo::Ellipsoid;
 
 plan 153;
 
-my $n =0;
+my $n = 0;
 
 # group 1
 my $e1 = Geo::Ellipsoid.new(ellipsoid=>'AIRY');
@@ -234,4 +234,3 @@ is_approx($e22.equatorial, 6378137);
 is_approx($e22.polar, 6378137);
 #delta_within($e22.flattening, 0, 1e-6);
 ok(%Geo::Ellipsoid::ellipsoids{'SPHERE'}:exists);
-
