@@ -1,7 +1,7 @@
 TODO list for Perl module Geo::Ellipsoid
 
-- Figure out what to do if _forward or _inverse does not converge because
-  points are opposite each other
+- Figure out what to do if _forward or _inverse does not converge
+  because points are opposite each other
 
 BEFORE RELEASE
 
@@ -16,4 +16,3 @@ BEFORE RELEASE
 
 - Ensure there is a test for bad invalid inputs for
   Geo::Ellipsoid.new, e.g., 'distance' instead of 'distance_units'.
-
