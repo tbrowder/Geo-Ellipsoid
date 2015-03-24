@@ -10,6 +10,7 @@ use Geo::Ellipsoid;
 
 plan 192;
 
+# tests 1-6
 my $e1 = Geo::Ellipsoid.new();
 ok($e1.ellipsoid eq 'WGS84');
 ok($e1.units eq 'radians');
@@ -25,15 +26,17 @@ $e1.set_defaults(
   bearing_sym => True
 );
 
+# tests 7-12
 my $e2 = Geo::Ellipsoid.new();
 ok($e2.ellipsoid eq 'NAD27');
 ok($e2.units eq 'degrees');
 ok($e2.distance_units eq 'kilometer');
-ok($e2.longitude_sym == True);
+ok({$e2.longitude_sym ?? True !! False});
 ok($e2.latitude == 1);
-ok($e2.bearing_sym == True);
+ok({$e2.bearing_sym ?? True !! False});
 
-Geo::Ellipsoid.set_defaults(units=>'degrees',ellipsoid=>'EVEREST-1830');
+# tests 13-21
+Geo::Ellipsoid.set_defaults(units=>'degrees', ellipsoid=>'EVEREST-1830');
 ok(%Geo::Ellipsoid::defaults<ellipsoid> eq 'EVEREST-1830');
 ok(%Geo::Ellipsoid::defaults<units> eq 'degrees');
 my $e3 = Geo::Ellipsoid.new();
@@ -45,6 +48,7 @@ is_approx($e3.equatorial, 6377276.345);
 is_approx($e3.polar, 6356075.41314024);
 is_approx($e3.flattening, 0.00332444929666288);
 
+# tests 22-30
 Geo::Ellipsoid.set_defaults(units=>'degrees',ellipsoid=>'HOUGH-1956');
 ok(%Geo::Ellipsoid::defaults<ellipsoid> eq 'HOUGH-1956');
 ok(%Geo::Ellipsoid::defaults<units> eq 'degrees');
@@ -57,6 +61,7 @@ is_approx($e4.equatorial, 6378270);
 is_approx($e4.polar, 6356794.34343434);
 is_approx($e4.flattening, 0.00336700336700337);
 
+# tests 31-39
 Geo::Ellipsoid.set_defaults(units=>'degrees',ellipsoid=>'HAYFORD');
 ok(%Geo::Ellipsoid::defaults<ellipsoid> eq 'HAYFORD');
 ok(%Geo::Ellipsoid::defaults<units> eq 'degrees');
@@ -69,6 +74,7 @@ is_approx($e5.equatorial, 6378388);
 is_approx($e5.polar, 6356911.94612795);
 is_approx($e5.flattening, 0.00336700336700337);
 
+# tests 40-48
 Geo::Ellipsoid.set_defaults(units=>'degrees',ellipsoid=>'AIRY-MODIFIED');
 ok(%Geo::Ellipsoid::defaults<ellipsoid> eq 'AIRY-MODIFIED');
 ok(%Geo::Ellipsoid::defaults<units> eq 'degrees');
@@ -81,6 +87,7 @@ is_approx($e6.equatorial, 6377340.189);
 is_approx($e6.polar, 6356034.44793853);
 is_approx($e6.flattening, 0.00334085064149708);
 
+# tests 49-57
 Geo::Ellipsoid.set_defaults(units=>'degrees',ellipsoid=>'NWL-9D');
 ok(%Geo::Ellipsoid::defaults<ellipsoid> eq 'NWL-9D');
 ok(%Geo::Ellipsoid::defaults<units> eq 'degrees');
@@ -93,6 +100,7 @@ is_approx($e7.equatorial, 6378145);
 is_approx($e7.polar, 6356759.76948868);
 is_approx($e7.flattening, 0.00335289186923722);
 
+# tests 58-66
 Geo::Ellipsoid.set_defaults(units=>'degrees',ellipsoid=>'CLARKE-1880');
 ok(%Geo::Ellipsoid::defaults<ellipsoid> eq 'CLARKE-1880');
 ok(%Geo::Ellipsoid::defaults<units> eq 'degrees');
@@ -105,6 +113,7 @@ is_approx($e8.equatorial, 6378249.145);
 is_approx($e8.polar, 6356514.86954978);
 is_approx($e8.flattening, 0.00340756137869933);
 
+# tests 67-75
 Geo::Ellipsoid.set_defaults(units=>'degrees',ellipsoid=>'KRASSOVSKY-1938');
 ok(%Geo::Ellipsoid::defaults<ellipsoid> eq 'KRASSOVSKY-1938');
 ok(%Geo::Ellipsoid::defaults<units> eq 'degrees');
@@ -117,6 +126,7 @@ is_approx($e9.equatorial, 6378245);
 is_approx($e9.polar, 6356863.01877305);
 is_approx($e9.flattening, 0.00335232986925913);
 
+# tests 76-84
 Geo::Ellipsoid.set_defaults(units=>'degrees',ellipsoid=>'FISHER-1968');
 ok(%Geo::Ellipsoid::defaults<ellipsoid> eq 'FISHER-1968');
 ok(%Geo::Ellipsoid::defaults<units> eq 'degrees');
@@ -129,6 +139,7 @@ is_approx($e10.equatorial, 6378150);
 is_approx($e10.polar, 6356768.33724438);
 is_approx($e10.flattening, 0.00335232986925913);
 
+# tests 85-93
 Geo::Ellipsoid.set_defaults(units=>'degrees',ellipsoid=>'AUSTRALIAN');
 ok(%Geo::Ellipsoid::defaults<ellipsoid> eq 'AUSTRALIAN');
 ok(%Geo::Ellipsoid::defaults<units> eq 'degrees');
@@ -141,6 +152,7 @@ is_approx($e11.equatorial, 6378160);
 is_approx($e11.polar, 6356774.71919531);
 is_approx($e11.flattening, 0.00335289186923722);
 
+# tests 94-102
 Geo::Ellipsoid.set_defaults(units=>'degrees',ellipsoid=>'EVEREST-MODIFIED');
 ok(%Geo::Ellipsoid::defaults<ellipsoid> eq 'EVEREST-MODIFIED');
 ok(%Geo::Ellipsoid::defaults<units> eq 'degrees');
@@ -153,6 +165,7 @@ is_approx($e12.equatorial, 6377304.063);
 is_approx($e12.polar, 6356103.03899315);
 is_approx($e12.flattening, 0.00332444929666288);
 
+# tests 103-111
 Geo::Ellipsoid.set_defaults(units=>'degrees',ellipsoid=>'WGS72');
 ok(%Geo::Ellipsoid::defaults<ellipsoid> eq 'WGS72');
 ok(%Geo::Ellipsoid::defaults<units> eq 'degrees');
@@ -165,6 +178,7 @@ is_approx($e13.equatorial, 6378135);
 is_approx($e13.polar, 6356750.52001609);
 is_approx($e13.flattening, 0.0033527794541675);
 
+# tests 112-120
 Geo::Ellipsoid.set_defaults(units=>'degrees',ellipsoid=>'FISHER-1960');
 ok(%Geo::Ellipsoid::defaults<ellipsoid> eq 'FISHER-1960');
 ok(%Geo::Ellipsoid::defaults<units> eq 'degrees');
@@ -177,6 +191,7 @@ is_approx($e14.equatorial, 6378166);
 is_approx($e14.polar, 6356784.28360711);
 is_approx($e14.flattening, 0.00335232986925913);
 
+# tests 122-129
 Geo::Ellipsoid.set_defaults(units=>'degrees',ellipsoid=>'BESSEL-1841');
 ok(%Geo::Ellipsoid::defaults<ellipsoid> eq 'BESSEL-1841');
 ok(%Geo::Ellipsoid::defaults<units> eq 'degrees');
@@ -189,6 +204,7 @@ is_approx($e15.equatorial, 6377397.155);
 is_approx($e15.polar, 6356078.96281819);
 is_approx($e15.flattening, 0.00334277318217481);
 
+# tests 130-138
 Geo::Ellipsoid.set_defaults(units=>'degrees',ellipsoid=>'AIRY');
 ok(%Geo::Ellipsoid::defaults<ellipsoid> eq 'AIRY');
 ok(%Geo::Ellipsoid::defaults<units> eq 'degrees');
@@ -201,6 +217,7 @@ is_approx($e16.equatorial, 6377563.396);
 is_approx($e16.polar, 6356256.90923729);
 is_approx($e16.flattening, 0.00334085064149708);
 
+# tests 139-147
 Geo::Ellipsoid.set_defaults(units=>'degrees',ellipsoid=>'GRS80');
 ok(%Geo::Ellipsoid::defaults<ellipsoid> eq 'GRS80');
 ok(%Geo::Ellipsoid::defaults<units> eq 'degrees');
@@ -213,6 +230,7 @@ is_approx($e17.equatorial, 6378137);
 is_approx($e17.polar, 6356752.31414035);
 is_approx($e17.flattening, 0.00335281068118367);
 
+# tests 148-156
 Geo::Ellipsoid.set_defaults(units=>'degrees',ellipsoid=>'IAU76');
 ok(%Geo::Ellipsoid::defaults<ellipsoid> eq 'IAU76');
 ok(%Geo::Ellipsoid::defaults<units> eq 'degrees');
@@ -225,6 +243,7 @@ is_approx($e18.equatorial, 6378140);
 is_approx($e18.polar, 6356755.28815753);
 is_approx($e18.flattening, 0.00335281317789691);
 
+# tests 157-165
 Geo::Ellipsoid.set_defaults(units=>'degrees',ellipsoid=>'SOUTHAMERICAN-1969');
 ok(%Geo::Ellipsoid::defaults<ellipsoid> eq 'SOUTHAMERICAN-1969');
 ok(%Geo::Ellipsoid::defaults<units> eq 'degrees');
@@ -237,6 +256,7 @@ is_approx($e19.equatorial, 6378160);
 is_approx($e19.polar, 6356774.71919531);
 is_approx($e19.flattening, 0.00335289186923722);
 
+# tests 166-174
 Geo::Ellipsoid.set_defaults(units=>'degrees',ellipsoid=>'WGS84');
 ok(%Geo::Ellipsoid::defaults<ellipsoid> eq 'WGS84');
 ok(%Geo::Ellipsoid::defaults<units> eq 'degrees');
@@ -249,6 +269,7 @@ is_approx($e20.equatorial, 6378137);
 is_approx($e20.polar, 6356752.31424518);
 is_approx($e20.flattening, 0.00335281066474748);
 
+# tests 175-183
 Geo::Ellipsoid.set_defaults(units=>'degrees',ellipsoid=>'SOVIET-1985');
 ok(%Geo::Ellipsoid::defaults<ellipsoid> eq 'SOVIET-1985');
 ok(%Geo::Ellipsoid::defaults<units> eq 'degrees');
@@ -261,6 +282,7 @@ is_approx($e21.equatorial, 6378136);
 is_approx($e21.polar, 6356751.30156878);
 is_approx($e21.flattening, 0.00335281317789691);
 
+# tests 184-192
 Geo::Ellipsoid.set_defaults(units=>'degrees',ellipsoid=>'NAD27');
 ok(%Geo::Ellipsoid::defaults<ellipsoid> eq 'NAD27');
 ok(%Geo::Ellipsoid::defaults<units> eq 'degrees');
@@ -272,4 +294,3 @@ ok($e22.units eq 'degrees');
 is_approx($e22.equatorial, 6378206.4);
 is_approx($e22.polar, 6356583.79999999);
 is_approx($e22.flattening, 0.00339007530392992);
-
