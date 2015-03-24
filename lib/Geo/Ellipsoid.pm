@@ -553,9 +553,9 @@ to their first three letters and are case-insensitive:
 =end pod
 
 # public
-method set_defaults(*@_)
+method set_defaults(*%_)
 {
-  my %args = @_;
+  my %args = %_;
   for %args.kv -> $key, $val {
     if ($key ~~ m:i/^ell/) {
       %defaults<ellipsoid> = uc $val;
