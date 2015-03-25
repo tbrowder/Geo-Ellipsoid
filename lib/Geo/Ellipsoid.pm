@@ -117,7 +117,7 @@ our @private_methods
   = <
 _forward
 _inverse
-_normalize_input
+_normalize_input_angles
 _normalize_output
 deg2rad
 rad2deg
@@ -629,7 +629,7 @@ as latitude, longitude pairs.
 # public
 method range($lat1, $lon1, $lat2, $lon2)
 {
-  my @a = self!_normalize_input($lat1, $lon1, $lat2, $lon2);
+  my @a = self!_normalize_input_angles($lat1, $lon1, $lat2, $lon2);
   my ($range, $bearing) = self!_inverse(|@a);
   say "inverse(|@a) returns($range, $bearing)" if $DEBUG;
   return $range;
@@ -649,7 +649,7 @@ the second. Zero bearing is true north.
 # public
 method bearing($lat1, $lon1, $lat2, $lon2)
 {
-  my @a = self!_normalize_input($lat1, $lon1, $lat2, $lon2);
+  my @a = self!_normalize_input_angles($lat1, $lon1, $lat2, $lon2);
   my ($range,$bearing) = self!_inverse(|@a);
   say "inverse(|@a) returns($range, $bearing)" if $DEBUG;
   my $t = $bearing;
@@ -672,7 +672,7 @@ specified range and bearing from a given location.
 # public
 method at($lat1, $lon1, $range, $bearing)
 {
-  my ($lat, $lon, $az) = self!_normalize_input($lat1, $lon1, $bearing);
+  my ($lat, $lon, $az) = self!_normalize_input_angles($lat1, $lon1, $bearing);
   say "at($lat,$lon,$range,$az)" if $DEBUG;
   my ($lat2, $lon2) = self!_forward($lat, $lon, $range, $az);
   say "_forward returns ($lat2, $lon2)" if $DEBUG;
@@ -694,7 +694,7 @@ Returns (range, bearing) between two specified locations.
 # public
 method to($lat1, $lon1, $lat2, $lon2)
 {
-  my @a = self!_normalize_input($lat1, $lon1, $lat2, $lon2);
+  my @a = self!_normalize_input_angles($lat1, $lon1, $lat2, $lon2);
   say "to(self.units,|@a)" if $DEBUG;
   my ($range,$bearing) = self!_inverse(|@a);
   say "to: inverse(|@a) returns($range, $bearing)" if $DEBUG;
@@ -714,7 +714,7 @@ Returns range between two specified locations.
 
 method to_range($lat1, $lon1, $lat2, $lon2)
 {
-  my @a = self!_normalize_input($lat1, $lon1, $lat2, $lon2);
+  my @a = self!_normalize_input_angles($lat1, $lon1, $lat2, $lon2);
   my $range = self!_inverse(|@a);
   say "to(self.units, $range)" if $DEBUG;
   say "to: inverse(|@a) returns($range)" if $DEBUG;
@@ -741,7 +741,7 @@ method displacement(*@args)
 {
   my @a = @args;
   say "displacement(",join(',',@a),"" if $DEBUG;
-  @a = self!_normalize_input(|@a);
+  @a = self!_normalize_input_angles(|@a);
   say "call self!_inverse(|@a)" if $DEBUG;
   my ($range, $bearing) = self!_inverse(|@a);
   say "disp: _inverse(@a) returns ($range,$bearing)" if $DEBUG;
@@ -778,7 +778,7 @@ method location($lat, $lon, $x, $y)
 #	inverse
 #
 #	Calculate the displacement from origin to destination.
-#	The input to this subroutine is 
+#	The input to this subroutine is
 #	  (latitude-1, longitude-1, latitude-2, longitude-2) in radians.
 #
 #	Return the results as the list (range,bearing) with range in the
@@ -821,7 +821,7 @@ method !_inverse($lat1, $lon1, $lat2, $lon2)
     $tu1 = $cu2*$sx;
     $tu2 = $baz - ($su1*$cu2*$cx);
 
-    printf "    sx=%.8f, cx=%.8f, tu1=%.8f, tu2=%.8f\n", 
+    printf "    sx=%.8f, cx=%.8f, tu1=%.8f, tu2=%.8f\n",
       $sx, $cx, $tu1, $tu2 if $DEBUG;
 
     $sy = sqrt($tu1*$tu1 + $tu2*$tu2);
@@ -873,7 +873,7 @@ method !_inverse($lat1, $lon1, $lat2, $lon2)
   }
 
   $s = 1.0 - $e - $e;
-  $s = (((((((($sy * $sy * 4.0) - 3.0) * $s * $cz * $d/6.0) - $x) * 
+  $s = (((((((($sy * $sy * 4.0) - 3.0) * $s * $cz * $d/6.0) - $x) *
     $d /4.0) + $cz) * $sy * $d) + $y) * $c * $a * $r;
 
   printf "s=%.8f\n", $s if $DEBUG;
@@ -969,7 +969,7 @@ method !_forward($lat1, $lon1, $range, $bearing)
 
 }
 
-#	_normalize_input
+#	_normalize_input_angles
 #
 #	Normalize a set of input angle values by converting to
 #	radians if given in degrees and by converting to the
@@ -977,7 +977,7 @@ method !_forward($lat1, $lon1, $range, $bearing)
 #	less than two pi.
 #
 # private
-method !_normalize_input(*@args)
+method !_normalize_input_angles(*@args)
 {
   return map {
     $_ = self!deg2rad($_) if self.units eq 'degrees';
