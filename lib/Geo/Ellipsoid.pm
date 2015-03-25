@@ -588,7 +588,8 @@ calculations in the vicinity of some location.
 # public
 method scales($lat is copy)
 {
-  $lat /= $degrees_per_radian if (self.units eq 'degrees');
+  # convert to radians for calculations
+  $lat = self!deg2rad($lat) if (self.units eq 'degrees');
 
   my $aa = self.equatorial;
   my $bb = self.polar;
@@ -599,6 +600,8 @@ method scales($lat is copy)
   my $d3 = $d1*$d1 + $d2*$d2;
   my $d4 = sqrt($d3);
   my $n1 = $aa * $bb;
+
+  # units of distance per rad:
   my $latscl = ($n1 * $n1) / ($d3 * $d4 * self.conversion);
   my $lonscl = ($aa * $d1) / ($d4 * self.conversion);
 
@@ -608,6 +611,8 @@ method scales($lat is copy)
   }
 
   if (self.units eq 'degrees') {
+    # convert back to distance per degree for output
+    # dist/rad  / deg/rad => dist/rad X rad/deg => dist/deg
     $latscl /= $degrees_per_radian;
     $lonscl /= $degrees_per_radian;
   }
