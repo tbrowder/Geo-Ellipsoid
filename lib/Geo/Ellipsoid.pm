@@ -566,7 +566,7 @@ method set_defaults(*%_)
       die("Geo::Ellipsoid::set_defaults called with invalid key: $key");
     }
   }
-  say "Defaults set to (%defaults<ellipsoid>,%defaults<units>"
+  say "Defaults set to (%defaults<ellipsoid>,%defaults<units>)"
     if $DEBUG;
 }
 
