@@ -559,9 +559,9 @@ method set_defaults(*%_)
     } elsif ($key ~~ m:i/^dis/) {
       %defaults<distance_units> = $val;
     } elsif ($key ~~ m:i/^lon/) {
-      %defaults<longitude> = $val;
+      %defaults<longitude_sym> = $val;
     } elsif ($key ~~ m:i/^bea/) {
-      %defaults<bearing> = $val;
+      %defaults<bearing_sym> = $val;
     } else {
       die("Geo::Ellipsoid::set_defaults called with invalid key: $key");
     }
