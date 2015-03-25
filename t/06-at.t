@@ -11,15 +11,18 @@ use Geo::Ellipsoid;
 plan 400;
 
 my $e1 = Geo::Ellipsoid.new(units=>'degrees');
-my $e2 = Geo::Ellipsoid.new(units=>'degrees',longitude=>1);
+my $e2 = Geo::Ellipsoid.new(units=>'degrees',longitude_sym=>True);
 my ($lat1,$lon1,$lat2,$lon2,$x,$y);
 
+# tests 1-4
 ($lat1,$lon1) = $e1.at(-38.369163,190.874558,663.027183,53.574472);
 ($lat2,$lon2) = $e2.at(-38.369163,190.874558,663.027183,53.574472);
-is_approx($lat1, -38.3656166574817);
+is_approx($lat1,  -38.3656166574817);
 is_approx($lon1, 190.880662670944);
-is_approx($lat2, -38.3656166574817);
+is_approx($lat2,  -38.3656166574817);
 is_approx($lon2, -169.119337329056);
+
+exit;
 
 ($lat1,$lon1) = $e1.at(-14.608137,30.094655,6390.954467,5.838786);
 ($lat2,$lon2) = $e2.at(-14.608137,30.094655,6390.954467,5.838786);
@@ -713,4 +716,3 @@ is_approx($lat1, -70.0019179240387);
 is_approx($lon1, 165.578716457451);
 is_approx($lat2, -70.0019179240387);
 is_approx($lon2, 165.578716457451);
-
