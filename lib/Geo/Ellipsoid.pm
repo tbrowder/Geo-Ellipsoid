@@ -383,7 +383,7 @@ method set_distance_unit($unit)
     }
 
     if ($conversion == 0) {
-      if (self.looks_like_number($unit)) {
+      if $unit.WHAT ~~ Num {
         $conversion = $unit;
       } else {
         die("Unknown argument to set_distance_unit: $unit\nAssuming meters");
@@ -440,7 +440,7 @@ method set_ellipsoid($ell)
 
 =head2 set_custom_ellipsoid
 
-Sets the ellipsoid parameters to the specified (major semiaxis and
+Sets the ellipsoid parameters to the specified major semiaxis and
 reciprocal flattening. A zero value for the reciprocal flattening
 will result in a sphere for the ellipsoid, and a warning message
 will be issued.
@@ -452,7 +452,7 @@ will be issued.
 # public
 method set_custom_ellipsoid($nam, $major, $recip = 0)
 {
-  my $name = uc $nam;
+  my $name           = uc $nam;
   %ellipsoids{$name} = [ $major, $recip ];
   self.set_ellipsoid($name);
 }
@@ -530,8 +530,8 @@ new.
       units          => 'degrees',
       ellipsoid      => 'GRS80',
       distance_units => 'kilometer',
-      longitude      => 1,
-      bearing        => 0,
+      longitude_sym  => True,
+      bearing_sym    => False,
    );
 
 Keys and string values (except for the ellipsoid identifier) may be shortened
@@ -541,8 +541,8 @@ to their first three letters and are case-insensitive:
       uni => 'deg',
       ell => 'GRS80',
       dis => 'kil',
-      lon => 1,
-      bea => 0,
+      lon => False,
+      bea => False,
    );
 
 =end pod
@@ -588,13 +588,7 @@ calculations in the vicinity of some location.
 # public
 method scales($lat is copy)
 {
-  my $units = self.units;
-  if (defined $lat) {
-    $lat /= $degrees_per_radian if ($units eq 'degrees');
-  } else {
-    die("scales() method requires latitude argument; assuming 0");
-    $lat = 0;
-  }
+  $lat /= $degrees_per_radian if (self.units eq 'degrees');
 
   my $aa = self.equatorial;
   my $bb = self.polar;
@@ -635,9 +629,9 @@ as latitude, longitude pairs.
 # public
 method range($lat1, $lon1, $lat2, $lon2)
 {
-  my @a = self!_normalize_input(self.units, $lat1, $lon1, $lat2, $lon2);
+  my @a = self!_normalize_input($lat1, $lon1, $lat2, $lon2);
   my ($range, $bearing) = self!_inverse(|@a);
-  say "inverse(@a[1..4]) returns($range, $bearing)" if $DEBUG;
+  say "inverse(|@a) returns($range, $bearing)" if $DEBUG;
   return $range;
 }
 
@@ -655,9 +649,9 @@ the second. Zero bearing is true north.
 # public
 method bearing($lat1, $lon1, $lat2, $lon2)
 {
-  my @a = self!_normalize_input(self.units, $lat1, $lon1, $lat2, $lon2);
+  my @a = self!_normalize_input($lat1, $lon1, $lat2, $lon2);
   my ($range,$bearing) = self!_inverse(|@a);
-  say "inverse(@a) returns($range, $bearing)" if $DEBUG;
+  say "inverse(|@a) returns($range, $bearing)" if $DEBUG;
   my $t = $bearing;
   $bearing = self!_normalize_output('bearing_sym', $bearing);
   say "_normalize_output($t) returns($bearing)" if $DEBUG;
@@ -678,7 +672,7 @@ specified range and bearing from a given location.
 # public
 method at($lat1, $lon1, $range, $bearing)
 {
-  my ($lat, $lon, $az) = self!_normalize_input(self.units, $lat1, $lon1, $bearing);
+  my ($lat, $lon, $az) = self!_normalize_input($lat1, $lon1, $bearing);
   say "at($lat,$lon,$range,$az)" if $DEBUG;
   my ($lat2, $lon2) = self!_forward($lat, $lon, $range, $az);
   say "_forward returns ($lat2, $lon2)" if $DEBUG;
@@ -700,7 +694,7 @@ Returns (range, bearing) between two specified locations.
 # public
 method to($lat1, $lon1, $lat2, $lon2)
 {
-  my @a = self!_normalize_input(self.units, $lat1, $lon1, $lat2, $lon2);
+  my @a = self!_normalize_input($lat1, $lon1, $lat2, $lon2);
   say "to(self.units,|@a)" if $DEBUG;
   my ($range,$bearing) = self!_inverse(|@a);
   say "to: inverse(|@a) returns($range, $bearing)" if $DEBUG;
@@ -720,7 +714,7 @@ Returns range between two specified locations.
 
 method to_range($lat1, $lon1, $lat2, $lon2)
 {
-  my @a = self!_normalize_input(self.units, $lat1, $lon1, $lat2, $lon2);
+  my @a = self!_normalize_input($lat1, $lon1, $lat2, $lon2);
   my $range = self!_inverse(|@a);
   say "to(self.units, $range)" if $DEBUG;
   say "to: inverse(|@a) returns($range)" if $DEBUG;
@@ -747,7 +741,7 @@ method displacement(*@args)
 {
   my @a = @args;
   say "displacement(",join(',',@a),"" if $DEBUG;
-  @a = self!_normalize_input(self.units, |@a);
+  @a = self!_normalize_input(|@a);
   say "call self!_inverse(|@a)" if $DEBUG;
   my ($range, $bearing) = self!_inverse(|@a);
   say "disp: _inverse(@a) returns ($range,$bearing)" if $DEBUG;
@@ -908,9 +902,6 @@ method !_inverse($lat1, $lon1, $lat2, $lon2)
 # private
 method !_forward($lat1, $lon1, $range, $bearing)
 {
-
-  die "!!!" if !defined $range;
-
   if ($DEBUG) {
     printf "_forward(lat1=%.8f,lon1=%.8f,range=%.8f,bearing=%.8f)\n",
       $lat1, $lon1, $range, $bearing;
@@ -986,10 +977,10 @@ method !_forward($lat1, $lon1, $range, $bearing)
 #	less than two pi.
 #
 # private
-method !_normalize_input($units, *@args)
+method !_normalize_input(*@args)
 {
   return map {
-    $_ = self!deg2rad($_) if $units eq 'degrees';
+    $_ = self!deg2rad($_) if self.units eq 'degrees';
     while ($_ < 0) { $_ += $twopi }
     while ($_ >= $twopi) { $_ -= $twopi }
     $_
