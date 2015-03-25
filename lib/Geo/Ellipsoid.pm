@@ -768,14 +768,13 @@ displacement from a given location.
 =end pod
 
 # public
-method location($lat,$lon,$x,$y)
+method location($lat, $lon, $x, $y)
 {
-  my $units = self.units;
-  my $range = sqrt($x*$x+ $y*$y);
-  my $bearing = atan2($x,$y);
-  $bearing *= $degrees_per_radian if $units eq 'degrees';
-  say "location($lat,$lon,$x,$y,$range,$bearing)" if $DEBUG;
-  return self.at($lat,$lon,$range,$bearing);
+  my $range    = sqrt($x*$x+ $y*$y);
+  my $bearing  = atan2($x,$y);
+  $bearing     = self!deg2rad($bearing) if self.units eq 'degrees';
+  say "location($lat, $lon, $x, $y, $range, $bearing)" if $DEBUG;
+  return self.at($lat, $lon, $range, $bearing);
 }
 
 ########################################################################
