@@ -85,7 +85,6 @@ ellipsoid
 units
 distance_units
 longitude_sym
-latitude
 bearing_sym
 equatorial
 polar
@@ -130,7 +129,6 @@ our %defaults = (
   units          => 'radians',
   distance_units => 'meter',
   longitude_sym  => False,
-  latitude       => 1,	# allows use of _normalize_output
   bearing_sym    => False,
 );
 our %distance = (
@@ -199,14 +197,14 @@ is valid.
 =end pod
 
 # define the class attributes
-has $.ellipsoid      is rw;
-has $.units          is rw;
-has $.distance_units is rw;
-has $.longitude_sym  is rw;
-has $.latitude       is rw;
-has $.bearing_sym    is rw;
+has $.ellipsoid           is rw;
+has $.units               is rw;
+has $.distance_units      is rw;
+has Bool $.longitude_sym  is rw;
+has Bool $.bearing_sym    is rw;
+has Bool $.latitude_sym; # read only
 
-# following were implicit in original Perl 5 version
+# following were implicit in original Perl 5 version, some (all?) should be private
 has $.equatorial   is rw;
 has $.polar        is rw;
 has $.flattening   is rw;
@@ -220,7 +218,7 @@ submethod BUILD(
   :$!units          = %defaults<units>,          # 'radians',
   :$!distance_units = %defaults<distance_units>, # 'meter',
   :$!longitude_sym  = %defaults<longitude_sym>,  # False,
-  :$!latitude       = %defaults<latitude>,       # 1,
+  :$!latitude_sym   = False,                     # False,
   :$!bearing_sym    = %defaults<bearing_sym>,    # False,
 
   # these depend on values above
@@ -239,10 +237,10 @@ submethod BUILD(
   say "Setting distance_units..." if $DEBUG;
   self.set_distance_unit($!distance_units);
 
-  say "Setting longitude..." if $DEBUG;
+  say "Setting longitude sym..." if $DEBUG;
   self.set_longitude_symmetric($!longitude_sym);
 
-  say "Setting bearing..." if $DEBUG;
+  say "Setting bearing sym..." if $DEBUG;
   self.set_bearing_symmetric($!bearing_sym);
 
   say
@@ -657,11 +655,11 @@ the second. Zero bearing is true north.
 # public
 method bearing($lat1, $lon1, $lat2, $lon2)
 {
-  my @a = self!_normalize_input(self.units,$lat1, $lon1, $lat2, $lon2);
+  my @a = self!_normalize_input(self.units, $lat1, $lon1, $lat2, $lon2);
   my ($range,$bearing) = self!_inverse(|@a);
-  say "inverse(@a) returns($range,$bearing)" if $DEBUG;
+  say "inverse(@a) returns($range, $bearing)" if $DEBUG;
   my $t = $bearing;
-  self!_normalize_output('bearing',$bearing);
+  self!_normalize_output('bearing_sym', $bearing);
   say "_normalize_output($t) returns($bearing)" if $DEBUG;
   return $bearing;
 }
@@ -680,13 +678,12 @@ specified range and bearing from a given location.
 # public
 method at($lat1, $lon1, $range, $bearing)
 {
-  my $units = self.units;
-  my ($lat, $lon, $az) = self!_normalize_input($units,$lat1,$lon1,$bearing);
+  my ($lat, $lon, $az) = self!_normalize_input(self.units, $lat1, $lon1, $bearing);
   say "at($lat,$lon,$range,$az)" if $DEBUG;
-  my ($lat2, $lon2) = self!_forward($lat,$lon,$range,$az);
+  my ($lat2, $lon2) = self!_forward($lat, $lon, $range, $az);
   say "_forward returns ($lat2,$lon2)" if $DEBUG;
-  self!_normalize_output('longitude',$lon2);
-  self!_normalize_output('latitude',$lat2);
+  self!_normalize_output('longitude_sym',$lon2);
+  self!_normalize_output('latitude_sym',$lat2);
   return ($lat2, $lon2);
 }
 
@@ -703,13 +700,12 @@ Returns (range, bearing) between two specified locations.
 # public
 method to($lat1, $lon1, $lat2, $lon2)
 {
-  my $units = self.units;
-  my @a = self!_normalize_input($units,$lat1, $lon1, $lat2, $lon2);
-  say "to($units,|@a)" if $DEBUG;
+  my @a = self!_normalize_input(self.units, $lat1, $lon1, $lat2, $lon2);
+  say "to(self.units,|@a)" if $DEBUG;
   my ($range,$bearing) = self!_inverse(|@a);
   say "to: inverse(|@a) returns($range,$bearing)" if $DEBUG;
-  $bearing *= $degrees_per_radian if $units eq 'degrees';
-  self!_normalize_output('bearing',$bearing);
+  $bearing *= $degrees_per_radian if self.units eq 'degrees';
+  self!_normalize_output('bearing_sym', $bearing);
   return ($range, $bearing);
 }
 
@@ -1024,10 +1020,10 @@ method !_normalize_input($units, *@args)
 method !_normalize_output(*@args)
 {
   my @a = @args;
-  my $elem = shift @a;	# 'bearing' or 'longitude'
+  my $elem = shift @a;	# 'bearing_sym' or 'longitude_sym' (or 'latitude_sym')
   # adjust remaining input values by reference
   for @a <-> $_ { # <-> is 'read-write' operator
-    if (self.{$elem}) { # <======= LINE 995 =============== LINE 995
+    if self."$elem"() { # <======= LINE 995 =============== LINE 995
       # normalize to range [-pi,pi)
       while ($_ < -(pi)) { $_ += $twopi }
       while ($_ >= pi)   { $_ -= $twopi }
