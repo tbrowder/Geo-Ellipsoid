@@ -118,7 +118,7 @@ our @private_methods
 _forward
 _inverse
 _normalize_input_angles
-_normalize_output
+_normalize_output_angles
 deg2rad
 rad2deg
     >;
@@ -653,8 +653,8 @@ method bearing($lat1, $lon1, $lat2, $lon2)
   my ($range,$bearing) = self!_inverse(|@a);
   say "inverse(|@a) returns($range, $bearing)" if $DEBUG;
   my $t = $bearing;
-  $bearing = self!_normalize_output('bearing_sym', $bearing);
-  say "_normalize_output($t) returns($bearing)" if $DEBUG;
+  $bearing = self!_normalize_output_angles('bearing_sym', $bearing);
+  say "_normalize_output_angles($t) returns($bearing)" if $DEBUG;
   return $bearing;
 }
 
@@ -676,8 +676,8 @@ method at($lat1, $lon1, $range, $bearing)
   say "at($lat,$lon,$range,$az)" if $DEBUG;
   my ($lat2, $lon2) = self!_forward($lat, $lon, $range, $az);
   say "_forward returns ($lat2, $lon2)" if $DEBUG;
-  $lat2 = self!_normalize_output('latitude_sym', $lat2);
-  $lon2 = self!_normalize_output('longitude_sym', $lon2);
+  $lat2 = self!_normalize_output_angles('latitude_sym', $lat2);
+  $lon2 = self!_normalize_output_angles('longitude_sym', $lon2);
   return ($lat2, $lon2);
 }
 
@@ -698,7 +698,7 @@ method to($lat1, $lon1, $lat2, $lon2)
   say "to(self.units,|@a)" if $DEBUG;
   my ($range,$bearing) = self!_inverse(|@a);
   say "to: inverse(|@a) returns($range, $bearing)" if $DEBUG;
-  $bearing = self!_normalize_output('bearing_sym', $bearing);
+  $bearing = self!_normalize_output_angles('bearing_sym', $bearing);
   return ($range, $bearing);
 }
 
@@ -977,30 +977,28 @@ method !_forward($lat1, $lon1, $range, $bearing)
 #	less than two pi.
 #
 # private
-method !_normalize_input_angles(*@args)
+method !_normalize_input_angles(*@angles)
 {
   return map {
     $_ = self!deg2rad($_) if self.units eq 'degrees';
     while ($_ < 0) { $_ += $twopi }
     while ($_ >= $twopi) { $_ -= $twopi }
     $_
-  }, @args;
+  }, @angles;
 }
 
-#	_normalize_output
+#	_normalize_output_angles
 #
 #	Normalize a set of output angle values by converting to
 #	degrees if needed and by converting to the range [-pi,+pi) or
 #	[0,2pi) as needed.
 #
 # private
-method !_normalize_output(*@args)
+method !_normalize_output_angles($elem, *@angles)
 {
-  my @a = @args;
-  my $elem = shift @a;	# 'bearing_sym' or 'longitude_sym' or 'latitude_sym'
-
+  my @a = @angles;
   if $DEBUG {
-    say "DEBUG (_normalize_output)";
+    say "DEBUG (_normalize_output_angles)";
     say "  \$elem = '$elem'";
   }
 
