@@ -13,4 +13,5 @@ test:
 	done
 
 test-orig:
-	$(PERL) test/test_ellipsoid.pl
+	$(PERL) test/test_ellipsoid.pl > res.txt
+	diff res.txt test/results.txt
