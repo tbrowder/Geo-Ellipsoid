@@ -635,9 +635,9 @@ as latitude, longitude pairs.
 # public
 method range($lat1, $lon1, $lat2, $lon2)
 {
-  my @a = self!_normalize_input(self.units,$lat1, $lon1, $lat2, $lon2);
-  my ($range,$bearing) = self!_inverse(|@a);
-  say "inverse(@a[1..4]) returns($range,$bearing)" if $DEBUG;
+  my @a = self!_normalize_input(self.units, $lat1, $lon1, $lat2, $lon2);
+  my ($range, $bearing) = self!_inverse(|@a);
+  say "inverse(@a[1..4]) returns($range, $bearing)" if $DEBUG;
   return $range;
 }
 
@@ -659,7 +659,7 @@ method bearing($lat1, $lon1, $lat2, $lon2)
   my ($range,$bearing) = self!_inverse(|@a);
   say "inverse(@a) returns($range, $bearing)" if $DEBUG;
   my $t = $bearing;
-  self!_normalize_output('bearing_sym', $bearing);
+  $bearing = self!_normalize_output('bearing_sym', $bearing);
   say "_normalize_output($t) returns($bearing)" if $DEBUG;
   return $bearing;
 }
@@ -681,9 +681,9 @@ method at($lat1, $lon1, $range, $bearing)
   my ($lat, $lon, $az) = self!_normalize_input(self.units, $lat1, $lon1, $bearing);
   say "at($lat,$lon,$range,$az)" if $DEBUG;
   my ($lat2, $lon2) = self!_forward($lat, $lon, $range, $az);
-  say "_forward returns ($lat2,$lon2)" if $DEBUG;
-  self!_normalize_output('longitude_sym',$lon2);
-  self!_normalize_output('latitude_sym',$lat2);
+  say "_forward returns ($lat2, $lon2)" if $DEBUG;
+  $lat2 = self!_normalize_output('latitude_sym', $lat2);
+  $lon2 = self!_normalize_output('longitude_sym', $lon2);
   return ($lat2, $lon2);
 }
 
@@ -703,9 +703,8 @@ method to($lat1, $lon1, $lat2, $lon2)
   my @a = self!_normalize_input(self.units, $lat1, $lon1, $lat2, $lon2);
   say "to(self.units,|@a)" if $DEBUG;
   my ($range,$bearing) = self!_inverse(|@a);
-  say "to: inverse(|@a) returns($range,$bearing)" if $DEBUG;
-  $bearing *= $degrees_per_radian if self.units eq 'degrees';
-  self!_normalize_output('bearing_sym', $bearing);
+  say "to: inverse(|@a) returns($range, $bearing)" if $DEBUG;
+  $bearing = self!_normalize_output('bearing_sym', $bearing);
   return ($range, $bearing);
 }
 
@@ -721,10 +720,9 @@ Returns range between two specified locations.
 
 method to_range($lat1, $lon1, $lat2, $lon2)
 {
-  my $units = self.units;
-  my @a = self!_normalize_input($units,$lat1, $lon1, $lat2, $lon2);
+  my @a = self!_normalize_input(self.units, $lat1, $lon1, $lat2, $lon2);
   my $range = self!_inverse(|@a);
-  say "to($units,$range)" if $DEBUG;
+  say "to(self.units, $range)" if $DEBUG;
   say "to: inverse(|@a) returns($range)" if $DEBUG;
   return $range;
 }
@@ -749,7 +747,7 @@ method displacement(*@args)
 {
   my @a = @args;
   say "displacement(",join(',',@a),"" if $DEBUG;
-  @a = self!_normalize_input(self.units,@a);
+  @a = self!_normalize_input(self.units, |@a);
   say "call self!_inverse(|@a)" if $DEBUG;
   my ($range, $bearing) = self!_inverse(|@a);
   say "disp: _inverse(@a) returns ($range,$bearing)" if $DEBUG;
@@ -796,7 +794,7 @@ method location($lat,$lon,$x,$y)
 # private method
 method !_inverse($lat1, $lon1, $lat2, $lon2)
 {
-  say "_inverse($lat1,$lon1,$lat2,$lon2)" if $DEBUG;
+  say "_inverse($lat1, $lon1, $lat2, $lon2)" if $DEBUG;
 
   my $a = self.equatorial;
   my $f = self.flattening;
@@ -904,9 +902,9 @@ method !_inverse($lat1, $lon1, $lat2, $lon2)
 
 #	_forward
 #
-#	Calculate the location (latitue,longitude) of a point
+#	Calculate the location (latitude, longitude) of a point
 #	given a starting point and a displacement from that
-#	point as (range,bearing)
+#	point as (range, bearing)
 #
 # private
 method !_forward($lat1, $lon1, $range, $bearing)
@@ -977,7 +975,7 @@ method !_forward($lat1, $lon1, $range, $bearing)
   #$baz = atan2($sa,$baz) + pi;
 
   # return result
-  return ($lat2,$lon2);
+  return ($lat2, $lon2);
 
 }
 
@@ -991,23 +989,12 @@ method !_forward($lat1, $lon1, $range, $bearing)
 # private
 method !_normalize_input($units, *@args)
 {
-  my @ret = map( {
+  return map {
     $_ = self!deg2rad($_) if $units eq 'degrees';
     while ($_ < 0) { $_ += $twopi }
     while ($_ >= $twopi) { $_ -= $twopi }
     $_
-  }, @args);
-
-  return @ret;
-
-# original:
-#  return map {
-#    $_ = deg2rad($_) if $units eq 'degrees';
-#    while ($_ < 0) { $_ += $twopi }
-#    while ($_ >= $twopi) { $_ -= $twopi }
-#    $_
-#  } @args;
-
+  }, @args;
 }
 
 #	_normalize_output
@@ -1020,19 +1007,30 @@ method !_normalize_input($units, *@args)
 method !_normalize_output(*@args)
 {
   my @a = @args;
-  my $elem = shift @a;	# 'bearing_sym' or 'longitude_sym' (or 'latitude_sym')
+  my $elem = shift @a;	# 'bearing_sym' or 'longitude_sym' or 'latitude_sym'
+
+  if $DEBUG {
+    say "DEBUG (_normalize_output)";
+    say "  \$elem = '$elem'";
+  }
+
   # adjust remaining input values by reference
   for @a <-> $_ { # <-> is 'read-write' operator
+    say "  input \$_ = '$_'; units = 'radians'" if $DEBUG;
     if self."$elem"() { # <======= LINE 995 =============== LINE 995
+      say "    # normalize to range [-pi,pi)" if $DEBUG;
       # normalize to range [-pi,pi)
       while ($_ < -(pi)) { $_ += $twopi }
       while ($_ >= pi)   { $_ -= $twopi }
     } else {
+      say "    # normalize to range [0,2*pi)" if $DEBUG;
       # normalize to range [0,2*pi)
       while ($_ <  0)      { $_ += $twopi }
       while ($_ >= $twopi) { $_ -= $twopi }
     }
+    say "  output \$_ = '$_'; units = '{ self.units }'" if $DEBUG;
     $_ = self!rad2deg($_) if self.units eq 'degrees';
+    say "    # converting rad to degrees" if $DEBUG && self.units eq 'degrees';
   }
   return @a;
 }
