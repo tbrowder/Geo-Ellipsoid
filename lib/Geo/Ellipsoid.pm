@@ -370,9 +370,6 @@ method set_distance_unit($unit)
   my $conversion = 0;
 
   if ($unit) {
-
-    #my ($key, $val);
-    #while (($key,$val) = (%distance.kv)) { # each?) {
     for %distance.kv -> $key, $val { # each?) {
       say "key = {$key}" if $DEBUG;
       my $re = $key.substr(0, 3); #substr($key,0,3);
