@@ -14,26 +14,39 @@ use Geo::Ellipsoid;
 
 #sub MAIN ($debug, $xdebug);
 
-say "Enter test_ellipsoid\n";
-say "Using Geo::Ellipsoid version $Geo::Ellipsoid::VERSION";
-
 my $twopi = 2 * pi;
 my $halfpi = pi/2;
 my $degrees_per_radian = 180.0/pi;
 my $degree = pi/180.0;
 
 # arg/option handling
-sub MAIN (Bool :d(:$debug), Bool :x(:$xdebug), Bool :s(:$sdebug));
+sub MAIN (Bool :d(:$debug),
+	  Bool :x(:$xdebug),
+	  Bool :s(:$sdebug),
+          Bool :p(:$pdebug),
+          Bool :t(:$tdebug),
+         );
+
+my $usage = "Usage: test_ellipsoid.pl -p | -t [-d, -x, -s]";
+if !$tdebug && !$pdebug {
+  say $usage;
+  exit;
+}
+
+if ($xdebug) {
+  $Geo::Ellipsoid::DEBUG = 1;
+}
+
+test-private-methods if $pdebug;
+
+say "Enter test_ellipsoid\n";
+say "Using Geo::Ellipsoid version $Geo::Ellipsoid::VERSION";
 
 print "WGS84 ellipsoid values:\n";
 my $earth = Geo::Ellipsoid.new(
   units     => 'degrees',
   ellipsoid => 'WGS84',
 );
-
-if ($xdebug) {
-  $Geo::Ellipsoid::DEBUG = 1;
-}
 
 printf "    Equatorial radius = %.10f\n", $earth.equatorial;
 printf "         Polar radius = %.10f\n", $earth.polar;
@@ -268,4 +281,24 @@ sub polar($x, $y)
   my $range = sqrt($x*$x + $y*$y);
   my $bearing = $halfpi - atan2($y,$x);
   return ($range, $bearing);
+}
+
+sub test-private-methods {
+  say "in test-private-methods";
+
+  my $o = Geo::Ellipsoid.new();
+
+  my $_forward = $o.^private_method_table{'_forward'};
+  $o.$_forward();
+
+=begin pod
+
+_inverse
+_normalize_input_angles
+_normalize_output_angles
+
+=end pod
+
+  say "Normal exit.";
+  exit;
 }
