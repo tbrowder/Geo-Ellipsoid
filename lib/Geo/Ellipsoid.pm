@@ -902,7 +902,8 @@ method !_inverse($lat1, $lon1, $lat2, $lon2)
 #
 #	Calculate the location (latitude, longitude) of a point
 #	given a starting point and a displacement from that
-#	point as (range, bearing)
+#	point as (range, bearing) where range is in the class's
+#       current units and bearing is in degrees from true north.
 #
 # private
 method !_forward($lat1, $lon1, $range, $bearing)
