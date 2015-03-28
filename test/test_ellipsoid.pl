@@ -8,9 +8,10 @@
 
 #require '../lib/Geo/Ellipsoid.pm';
 
-use lib '../lib';
-use lib './lib';
+use lib <../lib ../lib/Geo>;
+#use blib './lib';
 use Geo::Ellipsoid;
+use Geo::Ellipsoid::GenFuncs :DEFAULT;#('to_decimal', 'to_hms');
 
 #sub MAIN ($debug, $xdebug);
 
@@ -289,7 +290,39 @@ sub test-private-methods {
   my $o = Geo::Ellipsoid.new();
 
   my $_forward = $o.^private_method_table{'_forward'};
-  $o.$_forward();
+
+  my ($lat, $lon, $rg, $bg);
+
+  # case 1
+  $lat = 90;
+  $lon =  0;
+  $rg = 10001965.7292; # m
+  $bg = 180; # deg
+  my ($lat2, $lon2) = $o.$_forward($lat, $lon, $rg, $bg);
+  say "lat2 = $lat2 (should be 0)";
+  say "lon2 = $lon2 (should be 0)";
+
+  # case 2
+  $lat = to_decimal('n32', 33, 33.33);
+  $lon = to_decimal('e33', 33, 33.33);
+  $rg = 100000;
+  $bg = 90;
+  ($lat2, $lon2) = $o.$_forward($lat, $lon, $rg, $bg);
+  $lat2 = to_hms($lat2, 'lat');
+  $lon2 = to_hms($lon2, 'lon');
+  say "lat2 = $lat2 (should be 32 33 17.09706 North)";
+  say "lon2 = $lon2 (should be 34 37 26.45221 East)";
+
+  # case 3
+  $lat = to_decimal('n32', 33, 33.33);
+  $lon = to_decimal('e33', 33, 33.33);
+  $rg = 100000;
+  $bg = -90;
+  ($lat2, $lon2) = $o.$_forward($lat, $lon, $rg, $bg);
+  $lat2 = to_hms($lat2, 'lat');
+  $lon2 = to_hms($lon2, 'lon');
+  say "lat2 = $lat2 (should be 32 33 17.09706 North)";
+  say "lon2 = $lon2 (should be 34 37 26.45221 West)";
 
 =begin pod
 
