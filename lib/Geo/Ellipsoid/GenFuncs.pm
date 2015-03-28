@@ -1,6 +1,6 @@
 module Geo::Ellipsoid::GenFuncs;
 
-sub to_decimal($deg is copy, $min, $sec) {
+sub to_decimal($deg is copy, $min, $sec) is export {
   # may have leading [nNeEsSwW]
   if $deg ~~ m/^ (<[nNeEsSwW]>**1..1) (.*) $/ {
     my $pref = $0;
@@ -14,7 +14,7 @@ sub to_decimal($deg is copy, $min, $sec) {
   }
 }
 
-sub to_hms($Deg, $typ) {
+sub to_hms($Deg, $typ) is export {
   # separate into int and decimal parts
   my $deg  = $Deg.Int;
   my $frac = $Deg - $deg;
