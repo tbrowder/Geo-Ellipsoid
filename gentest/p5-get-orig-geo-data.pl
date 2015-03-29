@@ -33,6 +33,34 @@ sub get_forward {
 
   my $res = $ua->request($req)->as_string;
   print $res;
+
+=pod
+
+# example raw output (unneeded stripped away)
+
+<h2>Output from FORWARD</h2><pre>
+
+  Ellipsoid : GRS80 / WGS84  (NAD83)
+  Equatorial axis,    a   =    6378137.0000
+  Polar axis,         b   =    6356752.3141
+  Inverse flattening, 1/f =  298.25722210088
+
+  First  Station : from
+   ----------------
+    LAT =   1  0  0.00000 North
+    LON =   0  0  0.00000 East
+
+  Second Station : to
+   ----------------
+    LAT =   0 57 17.21068 North
+    LON =   0  4 40.10559 East
+
+  Forward azimuth        FAZ = 120  0  0.0000 From North
+  Back azimuth           BAZ = 300  0  4.7780 From North
+  Ellipsoidal distance     S =     10000.0000 m
+
+=cut
+
 }
 
 sub get_inverse {
@@ -50,4 +78,32 @@ sub get_inverse {
 
   my $res = $ua->request($req)->as_string;
   print $res;
+
+=pod
+
+# example raw output (unneeded stripped away)
+
+<h2>Output from INVERSE </h2><pre>
+
+  Ellipsoid : GRS80 / WGS84  (NAD83)
+  Equatorial axis,    a   =    6378137.0000
+  Polar axis,         b   =    6356752.3141
+  Inverse flattening, 1/f =  298.25722210088
+
+  First  Station : from
+   ----------------
+    LAT =   1  0  0.00000 North
+    LON =   0  0  0.00000 East
+
+  Second Station : to
+   ----------------
+    LAT =   1  0  0.00000 South
+    LON =   0  0  0.00000 East
+
+  Forward azimuth        FAZ = 180  0  0.0000 From North
+  Back azimuth           BAZ =   0  0  0.0000 From North
+  Ellipsoidal distance     S =    221148.7771 m
+
+=cut
+
 }
