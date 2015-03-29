@@ -119,28 +119,36 @@ sub parse {
     chomp $line;
     if ($line =~ m{ Output \s+ from \s+ (INVERSE|FORWARD)}xms) {
       my $dir = $1;
-      print "DEBUG: $line\n"
+      print "DEBUG: $line\n";
+      print "  ($dir)\n";
     }
-    elsif ($line =~ m{\A \s* Ellipsoid\s\: ([\d\D\S\s]*) \z}xms) {
-      print "DEBUG: $line\n"
+    elsif ($line =~ m{\A \s* Ellipsoid \s \: \s* ([\S\s]+) \s* \z}xms) {
+      print "DEBUG: $line\n";
+      print "  ($1)\n";
     }
-    elsif ($line =~ m{\A \s* Equatorial\saxis, \s+ a \s+ = \s+ ([\d\D\S]*) \s* \z}xms) {
-      print "DEBUG: $line\n"
+    elsif ($line =~ m{\A \s* Equatorial \s axis, \s+ a \s+ = \s+ (\S+) \s* \z}xms) {
+      print "DEBUG: $line\n";
+      print "  ($1)\n";
     }
-    elsif ($line =~ m{\A \s* Polar\saxis, \s+ b \s+ = \s+ ([\d\D\S]*) \s* \z}xms) {
-      print "DEBUG: $line\n"
+    elsif ($line =~ m{\A \s* Polar \s axis, \s+ b \s+ = \s+ (\S+) \s* \z}xms) {
+      print "DEBUG: $line\n";
+      print "  ($1)\n";
     }
-    elsif ($line =~ m{\A \s* Inverse\sflattening, \s+ 1/f \s+ = \s+  ([\d\D\S]*) \s* \z}xms) {
-      print "DEBUG: $line\n"
+    elsif ($line =~ m{\A \s* Inverse \s flattening, \s+ 1/f \s+ = \s+ (\S+) \s* \z}xms) {
+      print "DEBUG: $line\n";
+      print "  ($1)\n";
     }
-    elsif ($line =~ m{\A \s* (LAT|LON) \s = \s+ ([\d\D\S]*) \s+ ([\d\D\S]*) \s+ ([\d\D\S]*) \s+ ([\d\D\S]*) \s* \z}xms) {
-      print "DEBUG: $line\n"
+    elsif ($line =~ m{\A \s* (LAT|LON) \s+ = \s+ (\S+) \s+ (\S+) \s+ (\S+) \s+ (\S+) \s* \z}xms) {
+      print "DEBUG: $line\n";
+      print "  ($1) ($2) ($3) ($4) ($5)\n";
     }
-    elsif ($line =~ m{\A \s* (Forward|Back) \s azimuth \s+ (?:FAZ|BAZ) \s = \s+ ([\d\D\S]*) \s+ ([\d\D\S]*) \s+ ([\d\D\S]*) \s+ ([\d\D\S]*) \s* \z}xms) {
-      print "DEBUG: $line\n"
+    elsif ($line =~ m{\A \s* (Forward|Back) \s azimuth \s+ (FAZ|BAZ) \s = \s+ (\S+) \s+ (\S+) \s+ (S+) \s+ (\S+) \s+ (\S+) \s* \z}xms) {
+      print "DEBUG: $line\n";
+      print "  ($1) ($2) ($3) ($4) ($5) ($6) ($7)\n";
     }
-    elsif ($line =~ m{\A \s* Ellipsoidal\sdistance \s+ S \s+ ([\d\D\S]*) \s+ ([\d\D\S]*) \s* \z}xms) {
-      print "DEBUG: $line\n"
+    elsif ($line =~ m{\A \s* Ellipsoidal \s distance \s+ S \s+ = \s+(\S+) \s+ (\S+) \s* \z}xms) {
+      print "DEBUG: $line\n";
+      print "  ($1) ($2)\n";
     }
 
     #chomp $line;
