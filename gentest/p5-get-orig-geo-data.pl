@@ -32,7 +32,9 @@ sub get_forward {
   ];
 
   my $res = $ua->request($req)->as_string;
-  print $res;
+
+  parse($res);
+  #print $res;
 
 =pod
 
@@ -106,4 +108,43 @@ sub get_inverse {
 
 =cut
 
+}
+
+sub parse {
+  my $s = shift @_;
+  # split on newline
+  my @lines = split /^/, $s;
+
+  foreach my $line (@lines) {
+    chomp $line;
+    if ($line =~ m{ Output \s+ from \s+ (INVERSE|FORWARD)}xms) {
+      my $dir = $1;
+      print "DEBUG: $line\n"
+    }
+    elsif ($line =~ m{\A \s* Ellipsoid\s\: ([\d\D\S\s]*) \z}xms) {
+      print "DEBUG: $line\n"
+    }
+    elsif ($line =~ m{\A \s* Equatorial\saxis, \s+ a \s+ = \s+ ([\d\D\S]*) \s* \z}xms) {
+      print "DEBUG: $line\n"
+    }
+    elsif ($line =~ m{\A \s* Polar\saxis, \s+ b \s+ = \s+ ([\d\D\S]*) \s* \z}xms) {
+      print "DEBUG: $line\n"
+    }
+    elsif ($line =~ m{\A \s* Inverse\sflattening, \s+ 1/f \s+ = \s+  ([\d\D\S]*) \s* \z}xms) {
+      print "DEBUG: $line\n"
+    }
+    elsif ($line =~ m{\A \s* (LAT|LON) \s = \s+ ([\d\D\S]*) \s+ ([\d\D\S]*) \s+ ([\d\D\S]*) \s+ ([\d\D\S]*) \s* \z}xms) {
+      print "DEBUG: $line\n"
+    }
+    elsif ($line =~ m{\A \s* (Forward|Back) \s azimuth \s+ (?:FAZ|BAZ) \s = \s+ ([\d\D\S]*) \s+ ([\d\D\S]*) \s+ ([\d\D\S]*) \s+ ([\d\D\S]*) \s* \z}xms) {
+      print "DEBUG: $line\n"
+    }
+    elsif ($line =~ m{\A \s* Ellipsoidal\sdistance \s+ S \s+ ([\d\D\S]*) \s+ ([\d\D\S]*) \s* \z}xms) {
+      print "DEBUG: $line\n"
+    }
+
+    #chomp $line;
+    #print "  $line\n";
+  }
+  die "DEBUG exit";
 }
