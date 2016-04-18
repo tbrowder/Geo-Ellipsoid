@@ -1,5 +1,7 @@
 #!/usr/bin/env perl
 
+# this is a Perl 5 program
+
 use strict;
 use warnings;
 
