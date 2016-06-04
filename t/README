@@ -1,0 +1,13 @@
+There are some differences between test functions in Perl 5's Test::?? and Perl 6's Test modules.
+
+As used in the Perl 5 version for testing Geo::Ellipsoid:
+
+  delta_within()
+
+  delta_ok()
+
+Those translate to the Perl 6 versions:
+
+  is-approx()
+
+  is-approx()
