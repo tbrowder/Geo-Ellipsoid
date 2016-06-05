@@ -14,7 +14,11 @@ TESTING
 
    $ make test
 
-2. To compare the results of this module to the CPAN Perl 5 version:
+2. To run an individual test:
+
+   $ perl6 t/test-filename.t
+
+3. To compare the results of this module to the CPAN Perl 5 version:
 
    $ make test-orig > res.txt
    $ diff res.txt test/results.txt
