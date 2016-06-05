@@ -1,4 +1,5 @@
-There are some differences between test functions in Perl 5's Test::Number::Delta and Perl 6's Test modules.
+There are some differences between test functions in Perl 5's
+"Test::Number::Delta: and Perl 6's "Test" modules.
 
 As used in the Perl 5 version for testing Geo::Ellipsoid:
 
@@ -18,14 +19,17 @@ As used in the Perl 5 version for testing Geo::Ellipsoid:
 
 Those translate to the Perl 6 versions:
 
+WRONG!!! CHECK!!!
 1.  # Equality test with default tolerance [absolute]
-    is-approx()
+    is-approx($got, $expected) # default tolerance: 1e-6
 
 2.  # Provide specific tolerance [absolute]
-    is-approx()
+    is-approx($got, $expected, $abs_tol)
 
 3.  # Set a different default tolerance [absolute]
-    is-approx()
+    # NO EQUIVALENT: SET ABSOLUTE TOL EXPLICITLY
+    is-approx($got, $expected, $abs_tol)
  
 4.  # Set a relative tolerance [relative]
-    is-approx()
+    # NO EQUIVALENT: SET RELATIVE TOL EXPLICITLY
+    is-approx($got, $expected, 0, $rel_tol)
