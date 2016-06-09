@@ -11,7 +11,7 @@
 
 use v6;
 
-class Geo::Ellipsoid;
+unit class Geo::Ellipsoid;
 
 =begin pod
 
