@@ -16,11 +16,8 @@
     "provides" : {
 	"Geo::Ellipsoid" : "lib/Geo/Ellipsoid.pm"
     },
-    "build-depends"     : [
-	"Test::Meta"
-    ],
     "test-depends"     : [
-	"Test::Meta"
+	"Test::META"
     ],
     "depends" : [],
     "resources" : [
