@@ -27,3 +27,5 @@ perl6:
 install:
     - rakudobrew build-panda
     - panda installdeps .
+    - PERL6LIB=lib prove -v -r --exec=perl6 t/*.t
+    - panda install .
