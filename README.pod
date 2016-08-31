@@ -6,7 +6,8 @@
 
 Longitude and latitude calculations using an ellipsoid model.
 
-=for HTML <a href="https://travis-ci.org/tbrowder/Geo-Ellipsoid-Perl6"><img src="https://travis-ci.org/tbrowder/Geo-Ellipsoid-Perl6.svg?branch=master"></a>
+=for HTML <a href="https://travis-ci.org/tbrowder/Geo-Ellipsoid-Perl6">
+          <img src="https://travis-ci.org/tbrowder/Geo-Ellipsoid-Perl6.svg?branch=master"></a>
 
 =head2 INSTALLATION
 
