@@ -1,31 +1,4 @@
-# copied mostly from zef, with mods as needed
-
-branches:
-    only:
-        - master
-
-language: perl6
-
-os:
-    - linux
-    - osx
-
-env:
-    - BACKEND=moar
-    - BACKEND=jvm
-
-matrix:
-    allow_failures:
-        - env: BACKEND=jvm
-    fast_finish: true
-
 sudo: false
-
+language: perl6
 perl6:
     - latest
-
-install:
-    - rakudobrew build-panda
-    - panda installdeps .
-    - PERL6LIB=lib prove -v -r --exec=perl6 t/*.t
-    - panda install .
