@@ -961,7 +961,7 @@ method !_forward($lat1, $lon1, $range, $bearing)
     printf "baz=%.8f, sf=%.8f, cf=%.8f\n", $baz, $sf, $cf;
     printf "cu=%.8f, su=%.8f, sa=%.8f\n", $cu, $su, $sa;
     printf "x=%.8f, c=%.8f, y=%.8f\n", $x, $c, $y;
-  }
+ ' }
 
   my ($cy, $cz, $e, $sy);
   repeat {
@@ -992,18 +992,18 @@ method !_forward($lat1, $lon1, $range, $bearing)
 
 }
 
-#	_normalize_input_angles
+#	normalize_input_angles
 #
 #	Normalize a set of input angle values by converting to
 #	radians if given in degrees and by converting to the
 #	range [0,2pi), i.e., greater than or equal to zero and
 #	less than two pi.
 #
-# private
-method !_normalize_input_angles(*@angles)
+# NOT private any longer
+sub normalize_input_angles($units, *@angles) is export(:extra)
 {
   my @nangles = map {
-    $_ = deg2rad($_) if self.units eq 'degrees';
+    $_ = deg2rad($_) if $units eq 'degrees';
     while ($_ < 0) { $_ += $twopi }
     while ($_ >= $twopi) { $_ -= $twopi }
     $_
@@ -1011,18 +1011,18 @@ method !_normalize_input_angles(*@angles)
   return (|@nangles);
 }
 
-#	_normalize_output_angles
+#	normalize_output_angles
 #
 #	Normalize a set of output angle values by converting to
 #	degrees if needed and by converting to the range [-pi,+pi) or
 #	[0,2pi) as needed.
 #
-# private
-method !_normalize_output_angles($elem, *@angles)
+# NOT private any longer
+sub normalize_output_angles($elem, *@angles) is export(:extra)
 {
   my @a = @angles;
   if $DEBUG {
-    say "DEBUG (_normalize_output_angles)";
+    say "DEBUG (normalize_output_angles)";
     say "  \$elem = '$elem'";
   }
 
@@ -1047,11 +1047,12 @@ method !_normalize_output_angles($elem, *@angles)
   return (|@a);
 }
 
-sub rad2deg($rad) is export {
+# the following two functions are provided by module Math::Trig
+# but, as of 2016-09-02, it causes a rakudo exceptio
+sub rad2deg($rad) is export(:extra) {
     return $rad * 180 / pi;
 }
-
-sub deg2rad($deg) is export {
+sub deg2rad($deg) is export(:extra) {
     return $deg * pi / 180;
 }
 
