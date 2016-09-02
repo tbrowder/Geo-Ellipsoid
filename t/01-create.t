@@ -6,7 +6,16 @@ use lib <./lib ../lib ../../lib>;
 
 use Geo::Ellipsoid;
 
-# perl 5 tests use relative epsilon of 1e-6;
+# This original Perl 5 test used the following test functions (the
+# resulting Perl 6 versions are shown after the fat comma):
+#
+#   ok           => ok
+#   delta_ok     => is-approx($a, $b, :$rel-tol)
+#   delta_within => is-approx($a, $b, :abs-tol<?>)
+#
+#  From the Perl 5 test file:
+#    use Test::Number::Delta relative => 1e-6;
+#  which translates to:
 my $rel-tol = 1e-6;
 
 plan 153;
@@ -233,5 +242,5 @@ ok($e22.isa('Geo::Ellipsoid'));
 ok($e22.ellipsoid eq 'SPHERE');
 is-approx($e22.equatorial, 6378137, :$rel-tol);
 is-approx($e22.polar, 6378137, :$rel-tol);
-#delta_within($e22.flattening, 0, 1e-6);
+is-approx($e22.flattening, 0, :abs-tol<1e-6>); #delta_within($e22.flattening, 0, 1e-6);
 ok(%Geo::Ellipsoid::ellipsoids{'SPHERE'}:exists);

@@ -6,8 +6,15 @@ use lib <./lib ../lib ../../lib>;
 
 use Geo::Ellipsoid;
 
-# original Perl 5 module uses relative tolerance of 1e-6 for delta_ok
-
+# This original Perl 5 test used the following test functions (the
+# resulting Perl 6 versions are shown after the fat comma):
+#
+#   ok       => ok
+#   delta_ok => is-approx($a, $b, :$rel-tol)
+#
+#  From the Perl 5 test file:
+#    use Test::Number::Delta relative => 1e-6;
+#  which translates to:
 my $rel-tol = 1e-6;
 
 plan 190; # 192;
