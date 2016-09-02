@@ -1,4 +1,4 @@
-module Geo::Ellipsoid::GenFuncs;
+unit module Geo::Ellipsoid::GenFuncs;
 
 sub to_decimal($deg is copy, $min, $sec) is export {
   # may have leading [nNeEsSwW]
