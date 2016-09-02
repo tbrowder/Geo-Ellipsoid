@@ -642,11 +642,34 @@ the second. Zero bearing is true north.
 method bearing($lat1, $lon1, $lat2, $lon2)
 {
   my @a = self!_normalize_input_angles($lat1, $lon1, $lat2, $lon2);
-  my ($range,$bearing) = self!_inverse(|@a);
+  my ($range, $bearing) = self!_inverse(|@a);
+
+  if $DEBUG {
+      say "DEBUG: =======================";
+      say "\$range, \$bearing";
+      say $range.WHAT;
+      say $bearing.WHAT;
+  }
+
   say "inverse(|@a) returns($range, $bearing)" if $DEBUG;
+
   my $t = $bearing;
+
+  if $DEBUG {
+      say "\$t";
+      say $t.WHAT;
+  }
+
   $bearing = self!_normalize_output_angles('bearing_sym', $bearing);
-  say "_normalize_output_angles($t) returns($bearing)" if $DEBUG;
+
+  if $DEBUG {
+      say "orig bearing: $t";
+      say "normalized bearing: $bearing";
+      say "\$bearing";
+      say $bearing.WHAT;
+      say "_normalize_output_angles($t) returns($bearing)";
+  }
+
   return $bearing;
 }
 
@@ -886,7 +909,8 @@ method !_inverse($lat1, $lon1, $lat2, $lon2)
   }
 
   # return result
-  my @disp = (($s/self.conversion), $faz);
+  #my @disp = (($s/self.conversion), $faz);
+  my @disp = ($s/self.conversion, $faz);
   print "disp = (@disp)\n" if $DEBUG;
   return (|@disp);
 }
