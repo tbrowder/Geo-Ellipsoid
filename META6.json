@@ -19,9 +19,6 @@
     "test-depends"     : [
 	"Test::META"
     ],
-    "depends" : [
-	"Math::Trig"
-    ],
     "resources" : [
     ]
 }
