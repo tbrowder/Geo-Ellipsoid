@@ -18,7 +18,7 @@ use Geo::Ellipsoid;
 #  which translates to:
 my $rel-tol = 1e-6;
 
-plan 153;
+plan 154;
 
 my $n = 0;
 

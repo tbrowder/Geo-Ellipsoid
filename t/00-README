@@ -21,19 +21,23 @@ As used in the Perl 5 version for testing Geo::Ellipsoid:
 
 Those translate to the Perl 6 versions:
 
-WRONG!!! CHECK!!!
 1.  # Equality test with default tolerance [absolute]
-    is-approx($got, $expected) # default tolerance: 1e-6
+    # delta_ok
+    my $abs-tol = 1e-6;
+    is-approx($got, $expected, :$abs-tol) # default tolerance: 1e-6
 
 2.  # Provide specific tolerance [absolute]
-    is-approx($got, $expected, $abs_tol)
+    # delta_within
+    is-approx($got, $expected, :abs-tol<1e-6>)
 
 3.  # Set a different default tolerance [absolute]
-    # NO EQUIVALENT: SET ABSOLUTE TOL EXPLICITLY
-    is-approx($got, $expected, $abs_tol)
+    # delta_ok
+    my $abs-tol = 1e-6;
+    is-approx($got, $expected, :$abs-tol)
 
 4.  # Set a relative tolerance [relative]
-    # NO EQUIVALENT: SET RELATIVE TOL EXPLICITLY
-    is-approx($got, $expected, 0, $rel_tol)
+    # delta_ok
+    my $rel-tol = 1e-6;
+    is-approx($got, $expected, :$rel-tol)
 
 =end pod
