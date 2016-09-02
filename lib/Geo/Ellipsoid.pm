@@ -1,15 +1,17 @@
 #	Geo::Ellipsoid
 #
-#	This package implements an Ellipsoid class to perform latitude 
+#	This package implements an Ellipsoid class to perform latitude
 #	and longitude calculations on the surface of an ellipsoid.
 #
 #	This is a Perl conversion of existing Fortran code (see
-#	ACKNOWLEDGEMENTS) and the author of this class makes no 
-#	claims of originality. Nor can he even vouch for the 
-#	results of the calculations, although they do seem to 
+#	ACKNOWLEDGEMENTS) and the author of this class makes no
+#	claims of originality. Nor can he even vouch for the
+#	results of the calculations, although they do seem to
 #	work for him and have been tested against other methods.
 
 use v6;
+
+#use Math::Trig;
 
 unit class Geo::Ellipsoid;
 
@@ -119,8 +121,6 @@ _forward
 _inverse
 _normalize_input_angles
 _normalize_output_angles
-deg2rad
-rad2deg
     >;
 
 # these may disappear with proper Perl 6 class def
@@ -247,19 +247,6 @@ submethod BUILD(
     "Ellipsoid(units=>{self.units},distance_units=>" ~
     "{self.distance_units},ellipsoid=>{self.ellipsoid}," ~
     "longitude_sym=>{self.longitude_sym},bearing_sym=>{self.bearing_sym})" if $DEBUG;
-}
-
-# temp until provided by core
-method !deg2rad($deg)
-{
-  my $rad = ($deg * pi / 180);
-  return $rad;
-}
-
-method !rad2deg($rad)
-{
-  my $deg = $rad * 180 / pi;
-  return $deg;
 }
 
 =begin pod
@@ -589,7 +576,7 @@ calculations in the vicinity of some location.
 method scales($lat is copy)
 {
   # convert to radians for calculations
-  $lat = self!deg2rad($lat) if (self.units eq 'degrees');
+  $lat = deg2rad($lat) if (self.units eq 'degrees');
 
   my $aa = self.equatorial;
   my $bb = self.polar;
@@ -683,6 +670,12 @@ method at($lat1, $lon1, $range, $bearing)
   say "_forward returns ($lat2, $lon2)" if $DEBUG;
   $lat2 = self!_normalize_output_angles('latitude_sym', $lat2);
   $lon2 = self!_normalize_output_angles('longitude_sym', $lon2);
+
+  #say "DEBUG: \$lat2:";
+  #say $lat2.WHAT;
+  #say "DEBUG: \$lon2:";
+  #say $lon2.WHAT;
+
   return ($lat2, $lon2);
 }
 
@@ -771,7 +764,7 @@ method location($lat, $lon, $x, $y)
 {
   my $range    = sqrt($x*$x+ $y*$y);
   my $bearing  = atan2($x,$y);
-  $bearing     = self!deg2rad($bearing) if self.units eq 'degrees';
+  $bearing     = deg2rad($bearing) if self.units eq 'degrees';
   say "location($lat, $lon, $x, $y, $range, $bearing)" if $DEBUG;
   return self.at($lat, $lon, $range, $bearing);
 }
@@ -895,7 +888,7 @@ method !_inverse($lat1, $lon1, $lat2, $lon2)
   # return result
   my @disp = (($s/self.conversion), $faz);
   print "disp = (@disp)\n" if $DEBUG;
-  return @disp;
+  return (|@disp);
 }
 
 #	_forward
@@ -985,12 +978,13 @@ method !_forward($lat1, $lon1, $range, $bearing)
 # private
 method !_normalize_input_angles(*@angles)
 {
-  return map {
-    $_ = self!deg2rad($_) if self.units eq 'degrees';
+  my @nangles = map {
+    $_ = deg2rad($_) if self.units eq 'degrees';
     while ($_ < 0) { $_ += $twopi }
     while ($_ >= $twopi) { $_ -= $twopi }
     $_
   }, @angles;
+  return (|@nangles);
 }
 
 #	_normalize_output_angles
@@ -1023,17 +1017,25 @@ method !_normalize_output_angles($elem, *@angles)
       while ($_ >= $twopi) { $_ -= $twopi }
     }
     say "  output \$_ = '$_'; units = '{ self.units }'" if $DEBUG;
-    $_ = self!rad2deg($_) if self.units eq 'degrees';
+    $_ = rad2deg($_) if self.units eq 'degrees';
     say "    # converting rad to degrees" if $DEBUG && self.units eq 'degrees';
   }
-  return @a;
+  return (|@a);
+}
+
+sub rad2deg($rad) is export {
+    return $rad * 180 / pi;
+}
+
+sub deg2rad($deg) is export {
+    return $deg * pi / 180;
 }
 
 =begin pod
 
 =head1 DEFINED ELLIPSOIDS
 
-The following ellipsoids are defined in Geo::Ellipsoid, with the 
+The following ellipsoids are defined in Geo::Ellipsoid, with the
 semi-major axis in meters and the reciprocal flattening as shown.
 The default ellipsoid is WGS84.
 
