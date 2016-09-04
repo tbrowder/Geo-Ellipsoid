@@ -14,7 +14,8 @@
         "source"     : "https://github.com/tbrowder/Geo-Ellipsoid-Perl6"
     },
     "provides" : {
-	"Geo::Ellipsoid" : "lib/Geo/Ellipsoid.pm"
+	"Geo::Ellipsoid"        : "lib/Geo/Ellipsoid.pm6",
+	"Geo::Ellipsoid::Utils" : "lib/Geo/Ellipsoid/Utils.pm6"
     },
     "test-depends"     : [
 	"Test::META"
