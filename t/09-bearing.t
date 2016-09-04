@@ -2,7 +2,7 @@
 
 use v6;
 use Test;
-use lib <./lib ../lib ../../lib>;
+#use lib <./lib ../lib ../../lib>;
 
 use Geo::Ellipsoid;
 
