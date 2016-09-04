@@ -1,4 +1,4 @@
-PERL  := perl6
+PERL6  := perl6
 
 .PHONY: test test-orig
 
@@ -9,7 +9,7 @@ TESTS := t/*.t
 # the original test suite (i.e., 'make test')
 test:
 	for f in $(TESTS) ; do \
-	    prove --exec=$(PERL) $$f ; \
+	    prove --exec=$(PERL6) $$f ; \
 	done
 
 test-orig:
