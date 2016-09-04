@@ -12,7 +12,7 @@
 use v6;
 
 #use Math::Trig;
-#use Geo::Ellipsoid::Utils;
+use Geo::Ellipsoid::Utils :constants;
 
 unit class Geo::Ellipsoid;
 
@@ -73,13 +73,6 @@ See L<"DEFINED ELLIPSOIDS"> below for the ellipsoid survey values
 that may be selected for use by Geo::Ellipsoid.
 
 =end pod
-
-# class data and constants
-constant $degrees_per_radian is export = 180/pi;
-constant $eps is export = 1.0e-23;
-constant $max_loop_count is export = 20;
-constant $twopi is export = 2 * pi;
-constant $halfpi is export = pi/2;
 
 # arrays for use during testing
 our @rw_attributes
