@@ -9,7 +9,7 @@ TESTS := t/*.t
 # the original test suite (i.e., 'make test')
 test:
 	for f in $(TESTS) ; do \
-	  $(PERL) $$f ; \
+	    prove --exec=$(PERL) $$f ; \
 	done
 
 test-orig:
