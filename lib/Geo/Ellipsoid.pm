@@ -12,6 +12,7 @@
 use v6;
 
 #use Math::Trig;
+#use Geo::Ellipsoid::Utils;
 
 unit class Geo::Ellipsoid;
 
@@ -35,7 +36,7 @@ our $DEBUG = 0;
 =head1 SYNOPSIS
 
   use Geo::Ellipsoid;
-  $geo = Geo::Ellipsoid.new(ellipsoid=>'NAD27', units=>'degrees');
+  $geo = Geo::Ellipsoid.new(ellipsoid => 'NAD27', units => 'degrees');
   @origin = (37.619002, -122.374843);    # SFO
   @dest = (33.942536, -118.408074);      # LAX
   ($range, $bearing) = $geo.to(@origin, @dest);
@@ -46,7 +47,7 @@ our $DEBUG = 0;
 =head1 DESCRIPTION
 
 Geo::Ellipsoid performs geometrical calculations on the surface of
-an ellipsoid. An ellipsoid is a three-dimension object formed from
+an ellipsoid. An ellipsoid is a three-dimensional object formed from
 the rotation of an ellipse about one of its axes. The approximate
 shape of the earth is an ellipsoid, so Geo::Ellipsoid can accurately
 calculate distance and bearing between two widely-separated locations
@@ -74,11 +75,11 @@ that may be selected for use by Geo::Ellipsoid.
 =end pod
 
 # class data and constants
-our $degrees_per_radian = 180/pi;
-our $eps = 1.0e-23;
-our $max_loop_count = 20;
-our $twopi = 2 * pi;
-our $halfpi = pi/2;
+constant $degrees_per_radian is export = 180/pi;
+constant $eps is export = 1.0e-23;
+constant $max_loop_count is export = 20;
+constant $twopi is export = 2 * pi;
+constant $halfpi is export = pi/2;
 
 # arrays for use during testing
 our @rw_attributes
@@ -621,7 +622,7 @@ as latitude, longitude pairs.
 # public
 method range($lat1, $lon1, $lat2, $lon2)
 {
-  my @a = self!_normalize_input_angles($lat1, $lon1, $lat2, $lon2);
+  my @a = normalize_input_angles(self.units, $lat1, $lon1, $lat2, $lon2);
   my ($range, $bearing) = self!_inverse(|@a);
   say "inverse(|@a) returns($range, $bearing)" if $DEBUG;
   return $range;
@@ -641,7 +642,7 @@ the second. Zero bearing is true north.
 # public
 method bearing($lat1, $lon1, $lat2, $lon2)
 {
-  my @a = self!_normalize_input_angles($lat1, $lon1, $lat2, $lon2);
+  my @a = normalize_input_angles(self.units, $lat1, $lon1, $lat2, $lon2);
   my ($range, $bearing) = self!_inverse(|@a);
 
   if $DEBUG {
@@ -660,14 +661,14 @@ method bearing($lat1, $lon1, $lat2, $lon2)
       say $t.WHAT;
   }
 
-  $bearing = self!_normalize_output_angles('bearing_sym', $bearing);
+  $bearing = normalize_output_angles(:ang-type<bearing_sym>, :units{self.units}, $bearing);
 
   if $DEBUG {
       say "orig bearing: $t";
       say "normalized bearing: $bearing";
       say "\$bearing";
       say $bearing.WHAT;
-      say "_normalize_output_angles($t) returns($bearing)";
+      say "normalize_output_angles($t) returns($bearing)";
   }
 
   return $bearing;
@@ -687,12 +688,12 @@ specified range and bearing from a given location.
 # public
 method at($lat1, $lon1, $range, $bearing)
 {
-  my ($lat, $lon, $az) = self!_normalize_input_angles($lat1, $lon1, $bearing);
+  my ($lat, $lon, $az) = normalize_input_angles(self.units, $lat1, $lon1, $bearing);
   say "at($lat,$lon,$range,$az)" if $DEBUG;
   my ($lat2, $lon2) = self!_forward($lat, $lon, $range, $az);
   say "_forward returns ($lat2, $lon2)" if $DEBUG;
-  $lat2 = self!_normalize_output_angles('latitude_sym', $lat2);
-  $lon2 = self!_normalize_output_angles('longitude_sym', $lon2);
+  $lat2 = normalize_output_angles(:ang-type<latitude_sym>, :units{self.units}, $lat2);
+  $lon2 = normalize_output_angles(:ang-type<longitude_sym>, :units{self.units}, $lon2);
 
   #say "DEBUG: \$lat2:";
   #say $lat2.WHAT;
@@ -715,11 +716,11 @@ Returns (range, bearing) between two specified locations.
 # public
 method to($lat1, $lon1, $lat2, $lon2)
 {
-  my @a = self!_normalize_input_angles($lat1, $lon1, $lat2, $lon2);
+  my @a = normalize_input_angles(self.units, $lat1, $lon1, $lat2, $lon2);
   say "to(self.units,|@a)" if $DEBUG;
   my ($range,$bearing) = self!_inverse(|@a);
   say "to: inverse(|@a) returns($range, $bearing)" if $DEBUG;
-  $bearing = self!_normalize_output_angles('bearing_sym', $bearing);
+  $bearing = normalize_output_angles(:ang-type<bearing_sym>, :units{self.units}, $bearing);
   return ($range, $bearing);
 }
 
@@ -735,7 +736,7 @@ Returns range between two specified locations.
 
 method to_range($lat1, $lon1, $lat2, $lon2)
 {
-  my @a = self!_normalize_input_angles($lat1, $lon1, $lat2, $lon2);
+  my @a = normalize_input_angles($lat1, $lon1, $lat2, $lon2);
   my $range = self!_inverse(|@a);
   say "to(self.units, $range)" if $DEBUG;
   say "to: inverse(|@a) returns($range)" if $DEBUG;
@@ -762,7 +763,7 @@ method displacement(*@args)
 {
   my @a = @args;
   say "displacement(",join(',',@a),"" if $DEBUG;
-  @a = self!_normalize_input_angles(|@a);
+  @a = normalize_input_angles(self.units, |@a);
   say "call self!_inverse(|@a)" if $DEBUG;
   my ($range, $bearing) = self!_inverse(|@a);
   say "disp: _inverse(@a) returns ($range,$bearing)" if $DEBUG;
@@ -899,6 +900,7 @@ method !_inverse($lat1, $lon1, $lat2, $lon2)
 
   printf "s=%.8f\n", $s if $DEBUG;
 
+  # REPLACE THIS WITH FUNCTION CALL!!
   # adjust azimuth to (0,360) or (-180,180) as specified
   if (self.bearing_sym) {
     $faz += $twopi if $faz < -(pi);
@@ -938,6 +940,11 @@ method !_forward($lat1, $lon1, $range, $bearing)
   my $tu = $r * sin($lat1) / cos($lat1);
   my $faz = $bearing;
   my $s = self.conversion * $range;
+
+  say "DEBUG: \$faz = $faz";
+  say $faz.WHAT;
+
+
   my $sf = sin($faz);
   my $cf = cos($faz);
 
@@ -961,7 +968,7 @@ method !_forward($lat1, $lon1, $range, $bearing)
     printf "baz=%.8f, sf=%.8f, cf=%.8f\n", $baz, $sf, $cf;
     printf "cu=%.8f, su=%.8f, sa=%.8f\n", $cu, $su, $sa;
     printf "x=%.8f, c=%.8f, y=%.8f\n", $x, $c, $y;
- ' }
+  }
 
   my ($cy, $cz, $e, $sy);
   repeat {
@@ -990,70 +997,6 @@ method !_forward($lat1, $lon1, $range, $bearing)
   # return result
   return ($lat2, $lon2);
 
-}
-
-#	normalize_input_angles
-#
-#	Normalize a set of input angle values by converting to
-#	radians if given in degrees and by converting to the
-#	range [0,2pi), i.e., greater than or equal to zero and
-#	less than two pi.
-#
-# NOT private any longer
-sub normalize_input_angles($units, *@angles) is export(:extra)
-{
-  my @nangles = map {
-    $_ = deg2rad($_) if $units eq 'degrees';
-    while ($_ < 0) { $_ += $twopi }
-    while ($_ >= $twopi) { $_ -= $twopi }
-    $_
-  }, @angles;
-  return (|@nangles);
-}
-
-#	normalize_output_angles
-#
-#	Normalize a set of output angle values by converting to
-#	degrees if needed and by converting to the range [-pi,+pi) or
-#	[0,2pi) as needed.
-#
-# NOT private any longer
-sub normalize_output_angles($elem, *@angles) is export(:extra)
-{
-  my @a = @angles;
-  if $DEBUG {
-    say "DEBUG (normalize_output_angles)";
-    say "  \$elem = '$elem'";
-  }
-
-  # adjust remaining input values by reference
-  for @a <-> $_ { # <-> is 'read-write' operator
-    say "  input \$_ = '$_'; units = 'radians'" if $DEBUG;
-    if self."$elem"() { # <======= LINE 995 =============== LINE 995
-      say "    # normalize to range [-pi,pi)" if $DEBUG;
-      # normalize to range [-pi,pi)
-      while ($_ < -(pi)) { $_ += $twopi }
-      while ($_ >= pi)   { $_ -= $twopi }
-    } else {
-      say "    # normalize to range [0,2*pi)" if $DEBUG;
-      # normalize to range [0,2*pi)
-      while ($_ <  0)      { $_ += $twopi }
-      while ($_ >= $twopi) { $_ -= $twopi }
-    }
-    say "  output \$_ = '$_'; units = '{ self.units }'" if $DEBUG;
-    $_ = rad2deg($_) if self.units eq 'degrees';
-    say "    # converting rad to degrees" if $DEBUG && self.units eq 'degrees';
-  }
-  return (|@a);
-}
-
-# the following two functions are provided by module Math::Trig
-# but, as of 2016-09-02, it causes a rakudo exceptio
-sub rad2deg($rad) is export(:extra) {
-    return $rad * 180 / pi;
-}
-sub deg2rad($deg) is export(:extra) {
-    return $deg * pi / 180;
 }
 
 =begin pod
