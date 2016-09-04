@@ -16,6 +16,14 @@ use v6;
 
 unit module Geo::Ellipsoid::Utils;
 
+# constants
+constant $degrees_per_radian is export(:constants) = 180/pi;
+constant $eps is export(:constants)                = 1.0e-23;
+constant $max_loop_count is export(:constants)     = 20;
+constant $twopi is export(:constants)              = 2 * pi;
+constant $halfpi is export(:constants)             = pi/2;
+
+
 #	normalize_input_angles
 #
 #	Normalize a set of input angle values by converting to
@@ -93,4 +101,3 @@ sub deg2rad($deg) is export {
     return $deg * pi / 180;
 }
 #=end pod
-
