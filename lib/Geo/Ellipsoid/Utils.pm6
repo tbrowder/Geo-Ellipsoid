@@ -12,7 +12,6 @@
 use v6;
 
 #use Math::Trig;
-#use Geo::Ellipsoid::Utils;
 
 unit module Geo::Ellipsoid::Utils;
 
