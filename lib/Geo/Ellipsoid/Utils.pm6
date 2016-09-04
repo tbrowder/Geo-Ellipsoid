@@ -23,6 +23,8 @@ constant $max_loop_count is export(:constants)     = 20;
 constant $twopi is export(:constants)              = 2 * pi;
 constant $halfpi is export(:constants)             = pi/2;
 
+my $DEBUG = False;
+
 
 #	normalize_input_angles
 #
