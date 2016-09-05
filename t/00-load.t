@@ -3,7 +3,7 @@
 use v6;
 use Test;
 
-plan 21; # 32; # 33;
+plan 21;
 
 use Geo::Ellipsoid;
 
@@ -18,7 +18,8 @@ use Geo::Ellipsoid;
 #  which translates ro:
 my $rel-tol = 1e-6;
 
-BEGIN { use-ok('Geo::Ellipsoid'); }
+#BEGIN { use-ok('Geo::Ellipsoid'); }
+use-ok('Geo::Ellipsoid');
 my $e0 = Geo::Ellipsoid.new();
 isa-ok($e0, 'Geo::Ellipsoid');
 my $e1 = Geo::Ellipsoid.new(units => 'degrees');
