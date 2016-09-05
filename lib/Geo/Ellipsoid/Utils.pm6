@@ -68,7 +68,7 @@ sub normalize_output_angles(:$ang-type!, :$units!, *@angles) is export
     say "  input \$_ = '$_'; units = 'radians'" if $DEBUG;
 
     # what determines desired range of values???
-    if $ang-type ~~ /lat|bearing/ { # ???? <======= LINE 995 =============== LINE 995
+    if $ang-type ~~ /long|bearing/ { # ???? <======= LINE 995 =============== LINE 995
       say "    # normalize to range [-pi,pi)" if $DEBUG;
       # normalize to range [-pi,pi)
       while ($_ < -(pi)) { $_ += $twopi }
