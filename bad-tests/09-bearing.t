@@ -2,7 +2,8 @@
 
 use v6;
 use Test;
-#use lib <./lib ../lib ../../lib>;
+
+plan 432;
 
 use Geo::Ellipsoid;
 
@@ -15,8 +16,6 @@ use Geo::Ellipsoid;
 #    use Test::Number::Delta relative => 1e-6;
 #  which translates to:
 my $rel-tol = 1e-6;
-
-plan 432;
 
 my $e_pos = Geo::Ellipsoid.new(units=>'degrees');
 my $e_sym = Geo::Ellipsoid.new(units=>'degrees',bearing_sym=>True);

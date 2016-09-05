@@ -2,7 +2,8 @@
 
 use v6;
 use Test;
-#use lib <./lib ../lib ../../lib>;
+
+plan 404;
 
 use Geo::Ellipsoid;
 
@@ -17,8 +18,6 @@ use Geo::Ellipsoid;
 my $rel-tol = 1e-6;
 
 #$Geo::Ellipsoid::DEBUG = 1;
-
-plan 404;
 
 my $e1 = Geo::Ellipsoid.new(units=>'degrees');
 my $e2 = Geo::Ellipsoid.new(units=>'degrees',longitude_sym => True);

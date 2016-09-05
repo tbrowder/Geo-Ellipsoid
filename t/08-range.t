@@ -17,7 +17,6 @@ use Geo::Ellipsoid;
 #  which translates to:
 my $rel-tol = 1e-6;
 
-
 my $e_meter = Geo::Ellipsoid.new(units=>'degrees');
 my $e_kilo = Geo::Ellipsoid.new(units=>'degrees',distance_units=>'kilo');
 my $e_mile = Geo::Ellipsoid.new(units=>'degrees',distance_units=>'mile');
