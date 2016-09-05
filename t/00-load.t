@@ -2,7 +2,8 @@
 
 use v6;
 use Test;
-use lib <./lib ../lib ../../lib>;
+
+plan 21; # 32; # 33;
 
 use Geo::Ellipsoid;
 
@@ -16,8 +17,6 @@ use Geo::Ellipsoid;
 #    use Test::Number::Delta relative => 1e-6;
 #  which translates ro:
 my $rel-tol = 1e-6;
-
-plan 21; # 32; # 33;
 
 BEGIN { use-ok('Geo::Ellipsoid'); }
 my $e0 = Geo::Ellipsoid.new();
