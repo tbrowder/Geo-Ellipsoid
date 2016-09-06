@@ -15,12 +15,14 @@ use v6;
 
 unit module Geo::Ellipsoid::Utils;
 
-# constants
-constant $degrees_per_radian is export(:constants) = 180/pi;
+# THESE CONSTANTS ARE ONLY FOR THE ELLIPSOID MODULE
 constant $eps is export(:constants)                = 1.0e-23;
 constant $max_loop_count is export(:constants)     = 20;
-constant $twopi is export(:constants)              = 2 * pi;
-constant $halfpi is export(:constants)             = pi/2;
+
+# constants
+constant $degrees_per_radian is export = 180/pi;
+constant $twopi is export              = 2 * pi;
+constant $halfpi is export             = pi/2;
 
 my $DEBUG = False;
 
@@ -34,18 +36,18 @@ my $DEBUG = False;
 #
 sub normalize_input_angles($units, *@angles) is export
 {
-  my @nangles = map {
+  my @angs = map {
     $_ = deg2rad($_) if $units eq 'degrees';
-    while ($_ < 0) { $_ += $twopi }
-    while ($_ >= $twopi) { $_ -= $twopi }
+    while $_ < 0       { $_ += $twopi }
+    while $_ >= $twopi { $_ -= $twopi }
     $_
   }, @angles;
 
-  if @nangles.elems < 2 {
-      return @nangles.shift;
+  if @angs.elems < 2 {
+      return @angs.shift;
   }
   else {
-      return (|@nangles);
+      return (|@angs);
   }
 }
 
@@ -55,40 +57,42 @@ sub normalize_input_angles($units, *@angles) is export
 #	degrees if needed and by converting to the range [-pi,+pi) or
 #	[0,2pi) as needed. Input angles MUST be in radians.
 #
-sub normalize_output_angles(:$ang-type!, :$units!, *@angles) is export
+sub normalize_output_angles(Bool :$symmetric = False!, :$units!, *@angles) is export
 {
-  my @a = @angles;
+  my @angs = @angles;
   if $DEBUG {
     say "DEBUG (normalize_output_angles)";
-    say "  \$ang-type = '$ang-type'";
+    say "  \$symmetric = '$symmetric'";
   }
 
   # adjust remaining input values by reference
-  for @a <-> $_ { # <-> is 'read-write' operator
-    say "  input \$_ = '$_'; units = 'radians'" if $DEBUG;
+  for @angs <-> $ang { # <-> is 'read-write' operator
+    say "  input \$ang = '$_'; units = 'radians'" if $DEBUG;
 
     # what determines desired range of values???
-    if $ang-type ~~ /long|bearing/ { # ???? <======= LINE 995 =============== LINE 995
+    # the caller declares whether the symmetric or complete range is wanted
+    if $ymmetric {
       say "    # normalize to range [-pi,pi)" if $DEBUG;
       # normalize to range [-pi,pi)
-      while ($_ < -(pi)) { $_ += $twopi }
-      while ($_ >= pi)   { $_ -= $twopi }
-    } else {
+      while $ang < -pi { $ang += $twopi }
+      while $ang >= pi { $ang -= $twopi }
+    }
+    else {
       say "    # normalize to range [0,2*pi)" if $DEBUG;
       # normalize to range [0,2*pi)
-      while ($_ <  0)      { $_ += $twopi }
-      while ($_ >= $twopi) { $_ -= $twopi }
+      while $ang <  0       { $ang += $twopi }
+      while ($ang >= $twopi { $ang -= $twopi }
     }
-    say "  output \$_ = '$_'; units = '{ $units }'" if $DEBUG;
-    $_ = rad2deg($_) if $units eq 'degrees';
+    say "  output \$ang = '$ang'; units = '{ $units }'" if $DEBUG;
+    $ang = rad2deg($ang) if $units eq 'degrees';
     say "    # converting rad to degrees" if $DEBUG && $units eq 'degrees';
   }
 
-  if @a.elems < 2 {
-      return @a.shift;
+  if @angs.elems < 2 {
+      return @angs.shift;
   }
   else {
-      return (|@a);
+      return (|@angs);
   }
 }
 
