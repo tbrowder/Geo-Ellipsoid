@@ -3,7 +3,7 @@
 use v6;
 use Test;
 
-plan 190;
+plan 192;
 
 use Geo::Ellipsoid;
 
@@ -24,14 +24,14 @@ ok($e1.ellipsoid eq 'WGS84');
 ok($e1.units eq 'radians');
 ok($e1.distance_units eq 'meter');
 ok($e1.longitude_sym == False);
-#ok($e1.latitude == 1); # not used (not needed I believe--may need to change my mind!!)
+ok($e1.latitude_sym); # should always be true
 ok($e1.bearing_sym == False);
 $e1.set_defaults(
-  ellipsoid => 'NAD27',
-  units => 'degrees',
-  distance_units => 'kilometer',
-  longitude_sym => True,
-  bearing_sym => True
+    ellipsoid      => 'NAD27',
+    units          => 'degrees',
+    distance_units => 'kilometer',
+    longitude_sym  => True,
+    bearing_sym    => True
 );
 
 # tests 7-12
@@ -40,7 +40,7 @@ ok($e2.ellipsoid eq 'NAD27');
 ok($e2.units eq 'degrees');
 ok($e2.distance_units eq 'kilometer');
 ok({$e2.longitude_sym ?? True !! False});
-#ok($e2.latitude == 1); # not used (not needed I believe--may need to change my mind!!)
+ok($e2.latitude_sym); # should always be true
 ok({$e2.bearing_sym ?? True !! False});
 
 # tests 13-21
