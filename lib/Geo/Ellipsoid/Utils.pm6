@@ -96,6 +96,18 @@ sub normalize_output_angles(Bool :$symmetric = False!, :$units!, *@angles) is ex
   }
 }
 
+# convert latitude in degrees, minutes, seconds to degrees
+sub lat-hms2deg() is export {
+}
+# convert longitude in degrees, minutes, seconds to degrees
+sub lon-hms2deg() is export {
+}
+
+
+#
+
+
+
 #=begin pod
 # the following two functions are provided by module Math::Trig
 # but, as of 2016-09-03, it causes a rakudo exception

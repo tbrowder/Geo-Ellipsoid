@@ -12,10 +12,9 @@
 use v6;
 
 #use Math::Trig;
-#use Geo::Ellipsoid::Utils :constants;
-use Geo::Ellipsoid::Utils :ALL;
+use Geo::Ellipsoid::Utils;
 
-unit class Geo::Ellipsoid;
+unit class Geo::Ellipsoid:ver<1.0.0>;
 
 =begin pod
 # constants
@@ -34,11 +33,10 @@ Geo::Ellipsoid - Longitude and latitude calculations using an ellipsoid model.
 
 =head1 VERSION
 
-Version 0.1.0, not released.
+Version 1.0.0, not yet released.
 
 =end pod
 
-our $VERSION = '1.12.1';
 our $DEBUG = 0;
 
 =begin pod
@@ -206,7 +204,7 @@ has $.units               is rw;
 has $.distance_units      is rw;
 has Bool $.longitude_sym  is rw;
 has Bool $.bearing_sym    is rw;
-has Bool $.latitude_sym; # read only
+has Bool $.latitude_sym;  # read only
 
 # following were implicit in original Perl 5 version, some (all?) should be private
 has $.equatorial   is rw;
@@ -222,7 +220,7 @@ submethod BUILD(
   :$!units          = %defaults<units>,          # 'radians',
   :$!distance_units = %defaults<distance_units>, # 'meter',
   :$!longitude_sym  = %defaults<longitude_sym>,  # False,
-  :$!latitude_sym   = False,                     # False,
+  :$!latitude_sym   = True,                      # always true
   :$!bearing_sym    = %defaults<bearing_sym>,    # False,
 
   # these depend on values above
@@ -255,6 +253,7 @@ submethod BUILD(
 
 =begin pod
 
+TODO PUT IN PROPER P6 FORMAT AS USED IN THE CODE
 sub new
 {
   my ($class, %args) = @_;
