@@ -16,14 +16,9 @@ use Geo::Ellipsoid::Utils;
 
 unit class Geo::Ellipsoid:ver<1.0.0>;
 
-=begin pod
-# constants
-constant $degrees_per_radian is export(:constants) = 180/pi;
-constant $eps is export(:constants)                = 1.0e-23;
-constant $max_loop_count is export(:constants)     = 20;
-constant $twopi is export(:constants)              = 2 * pi;
-constant $halfpi is export(:constants)             = pi/2;
-=end pod
+# constants for this module
+constant $eps            = 1.0e-23;
+constant $max_loop_count = 20;
 
 =begin pod
 
@@ -316,7 +311,7 @@ method set_units($units)
     }
     elsif $units ~~ m:i/rad/ {
         self.units = 'radians';
-    } 
+    }
     else {
         die("Invalid units specifier '$units' - please use either " ~
             "degrees or radians (the default)") unless $units ~~ m:i/rad/;
@@ -823,33 +818,33 @@ method location($lat, $lon, $x, $y)
 #	current specified distance unit and bearing in radians.
 #
 # pseudo "private" method
-method !_inverse($lat1, $lon1, $lat2, $lon2)
+method _inverse($lat1, $lon1, $lat2, $lon2)
 {
-  say "_inverse($lat1, $lon1, $lat2, $lon2)" if $DEBUG;
+    say "_inverse($lat1, $lon1, $lat2, $lon2)" if $DEBUG;
 
-  my $a = self.equatorial;
-  my $f = self.flattening;
+    my $a = self.equatorial;
+    my $f = self.flattening;
 
-  my $r = 1.0 - $f;
-  my $tu1 = $r * sin($lat1) / cos($lat1);
-  my $tu2 = $r * sin($lat2) / cos($lat2);
-  my $cu1 = 1.0 / (sqrt(($tu1*$tu1) + 1.0));
-  my $su1 = $cu1 * $tu1;
-  my $cu2 = 1.0 / (sqrt(($tu2*$tu2) + 1.0));
-  my $s = $cu1 * $cu2;
-  my $baz = $s * $tu2;
-  my $faz = $baz * $tu1;
-  my $dlon = $lon2 - $lon1;
+    my $r = 1.0 - $f;
+    my $tu1 = $r * sin($lat1) / cos($lat1);
+    my $tu2 = $r * sin($lat2) / cos($lat2);
+    my $cu1 = 1.0 / (sqrt(($tu1*$tu1) + 1.0));
+    my $su1 = $cu1 * $tu1;
+    my $cu2 = 1.0 / (sqrt(($tu2*$tu2) + 1.0));
+    my $s = $cu1 * $cu2;
+    my $baz = $s * $tu2;
+    my $faz = $baz * $tu1;
+    my $dlon = $lon2 - $lon1;
 
-  if ($DEBUG) {
-    printf "lat1=%.8f, lon1=%.8f\n", $lat1, $lon1;
-    printf "lat2=%.8f, lon2=%.8f\n", $lat2, $lon2;
-    printf "r=%.8f, tu1=%.8f, tu2=%.8f\n", $r, $tu1, $tu2;
-    printf "faz=%.8f, dlon=%.8f\n", $faz, $dlon;
-  }
+    if $DEBUG {
+	printf "lat1=%.8f, lon1=%.8f\n", $lat1, $lon1;
+	printf "lat2=%.8f, lon2=%.8f\n", $lat2, $lon2;
+	printf "r=%.8f, tu1=%.8f, tu2=%.8f\n", $r, $tu1, $tu2;
+	printf "faz=%.8f, dlon=%.8f\n", $faz, $dlon;
+    }
 
-  my $x = $dlon;
-  my $cnt = 0;
+    my $x = $dlon;
+    my $cnt = 0;
   print "enter loop:\n" if $DEBUG;
   my ($c2a, $c, $cx, $cy, $cz, $d, $del, $e, $sx, $sy, $y);
   repeat {
@@ -931,7 +926,7 @@ method !_inverse($lat1, $lon1, $lat2, $lon2)
   my @disp = ($s/self.conversion, $faz);
   print "disp = (@disp)\n" if $DEBUG;
   return (|@disp);
-}
+} # _inverse
 
 #	_forward
 #
@@ -941,7 +936,7 @@ method !_inverse($lat1, $lon1, $lat2, $lon2)
 #       current units and bearing is in degrees from true north.
 #
 # pseudo "private" method
-method !_forward($lat1, $lon1, $range, $bearing)
+method _forward($lat1, $lon1, $range, $bearing)
 {
   if ($DEBUG) {
     printf "_forward(lat1=%.8f,lon1=%.8f,range=%.8f,bearing=%.8f)\n",
@@ -1013,7 +1008,7 @@ method !_forward($lat1, $lon1, $range, $bearing)
   # return result
   return ($lat2, $lon2);
 
-}
+} # _forward
 
 =begin pod
 
@@ -1090,90 +1085,4 @@ under the same terms as Perl itself.
 
 Geo::Distance, Geo::Ellipsoids
 
-=end pod
-
-=begin pod
-
-#========================================================
-# TEMP CHUNK UNTIL SINGLE MODULE IS WORKING
-#========================================================
-#my $DEBUG = False;
-
-#	normalize_input_angles
-#
-#	Normalize a set of input angle values by converting to
-#	radians if given in degrees and by converting to the
-#	range [0,2pi), i.e., greater than or equal to zero and
-#	less than two pi.
-#
-sub normalize_input_angles($units, *@angles) is export
-{
-  my @nangles = map {
-    $_ = deg2rad($_) if $units eq 'degrees';
-    while ($_ < 0) { $_ += $twopi }
-    $_
-  }, @angles;
-
-  if @nangles.elems < 2 {
-      return @nangles.shift;
-  }
-  else {
-      return (|@nangles);
-  }
-}
-
-#	normalize_output_angles
-#
-#	Normalize a set of output angle values by converting to
-#	degrees if needed and by converting to the range [-pi,+pi) or
-#	[0,2pi) as needed. Input angles MUST be in radians.
-#
-sub normalize_output_angles(Bool :$symmetric!, :$units!, *@angles) is export
-{
-  my @a = @angles;
-  if $DEBUG {
-    say "DEBUG (normalize_output_angles)";
-    say "  \$ang-type = '$ang-type'";
-  }
-
-  # adjust remaining input values by reference
-  for @a <-> $_ { # <-> is 'read-write' operator
-    say "  input \$_ = '$_'; units = 'radians'" if $DEBUG;
-
-    # what determines desired range of values???
-    if $ang-type ~~ /lat|bearing/ { # ???? <======= LINE 995 =============== LINE 995
-      say "    # normalize to range [-pi,pi)" if $DEBUG;
-      # normalize to range [-pi,pi)
-      while ($_ < -(pi)) { $_ += $twopi }
-      while ($_ >= pi)   { $_ -= $twopi }
-    } else {
-      say "    # normalize to range [0,2*pi)" if $DEBUG;
-      # normalize to range [0,2*pi)
-      while ($_ <  0)      { $_ += $twopi }
-      while ($_ >= $twopi) { $_ -= $twopi }
-    }
-    say "  output \$_ = '$_'; units = '{ $units }'" if $DEBUG;
-    $_ = rad2deg($_) if $units eq 'degrees';
-    say "    # converting rad to degrees" if $DEBUG && $units eq 'degrees';
-  }
-
-  if @a.elems < 2 {
-      return @a.shift;
-  }
-  else {
-      return (|@a);
-  }
-}
-=end pod
-
-
-=begin pod
-# the following two functions are provided by module Math::Trig
-# but, as of 2016-09-03, it causes a rakudo exception
-sub rad2deg($rad) is export {
-    return $rad * 180 / pi;
-}
-sub deg2rad($deg) is export {
-    return $deg * pi / 180;
-}
 =end pod
