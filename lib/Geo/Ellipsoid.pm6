@@ -312,14 +312,16 @@ values.
 # public method
 method set_units($units)
 {
-  if ($units ~~ m:i/deg/) {
-    self.units = 'degrees';
-  } elsif ($units ~~ m:i/rad/) {
-    self.units = 'radians';
-  } else {
-    die("Invalid units specifier '$units' - please use either " ~
-      "degrees or radians (the default)") unless $units ~~ m:i/rad/;
-  }
+    if $units ~~ m:i/deg/ {
+        self.units = 'degrees';
+    }
+    elsif $units ~~ m:i/rad/ {
+        self.units = 'radians';
+    } 
+    else {
+        die("Invalid units specifier '$units' - please use either " ~
+            "degrees or radians (the default)") unless $units ~~ m:i/rad/;
+    }
 }
 
 =begin pod
@@ -354,40 +356,42 @@ The distance conversion factors used by this module are as follows:
 # public
 method set_distance_unit($unit)
 {
-  say "distance unit = { $unit }" if $DEBUG;
+    say "distance unit = '$unit'" if $DEBUG;
 
-  my $conversion = 0;
+    my $conversion = 0;
 
-  if ($unit) {
-    for %distance.kv -> $key, $val { # each?) {
-      say "key = {$key}" if $DEBUG;
-      my $re = $key.substr(0, 3); #substr($key,0,3);
-      print "trying ($key,$re,$val)\n" if $DEBUG;
-      if ($unit ~~ m:i/^$re/) {
-        self.distance_units = $unit;
-        $conversion = $val;
+    if $unit {
+        for %distance.kv -> $key, $val { # each?) {
+            say "key = '$key'" if $DEBUG;
+            my $re = $key.substr(0, 3); #substr($key,0,3);
+            say "trying ($key, $re, $val)" if $DEBUG;
+            if $unit ~~ m:i/^$re/ {
+                self.distance_units = $unit;
+                $conversion = $val;
 
-	# finish iterating to reset 'each' function call
-	#while (%distance.each) {}
-	last;
-      }
+	        # finish iterating to reset 'each' function call
+	        #while (%distance.each) {}
+	        last;
+            }
+        }
+
+        if $conversion == 0 {
+            if $unit.WHAT ~~ Num {
+                $conversion = $unit;
+            }
+            else {
+                die("Unknown argument to set_distance_unit: $unit\nAssuming meters");
+                $conversion = 1.0;
+            }
+        }
+    }
+    else {
+         die("Missing or undefined argument to set_distance_unit: " ~
+         "$unit\nAssuming meters");
+         $conversion = 1.0;
     }
 
-    if ($conversion == 0) {
-      if $unit.WHAT ~~ Num {
-        $conversion = $unit;
-      } else {
-        die("Unknown argument to set_distance_unit: $unit\nAssuming meters");
-        $conversion = 1.0;
-      }
-    }
-  } else {
-    die("Missing or undefined argument to set_distance_unit: " ~
-      "$unit\nAssuming meters");
-    $conversion = 1.0;
-  }
-
-  self.conversion = $conversion;
+    self.conversion = $conversion;
 }
 
 =begin pod
@@ -414,12 +418,13 @@ method set_ellipsoid($ell)
   self.ellipsoid = $ellipsoid;
   my ($major, $recip) = @(%ellipsoids{$ellipsoid});
   self.equatorial = $major;
-  if ($recip == 0) {
-    say("# WARNING: Infinite flattening specified by ellipsoid -- assuming a sphere.");
+  if $recip == 0 {
+    say "# WARNING: Infinite flattening specified by ellipsoid--assuming a sphere.";
     self.polar        = self.equatorial;
     self.flattening   = 0;
     self.eccentricity = 0;
-  } else {
+  }
+  else {
     self.flattening   = (1.0 / %ellipsoids{$ellipsoid}[1]);
     self.polar        = self.equatorial * (1.0  - self.flattening);
     self.eccentricity = sqrt(2.0 * self.flattening -
@@ -465,15 +470,17 @@ a false or undefined argument, sets the output angle range to be
 multi method set_longitude_symmetric($sym)
 {
   # see if argument is true
-  if ($sym) {
+  if $sym {
     # yes -- set to true
     self.longitude_sym = True;
-  } else {
+  }
+  else {
     # no -- set to false
     self.longitude_sym = False;
   }
 }
-multi method set_longitude_symmetric
+
+multi method set_longitude_symmetric()
 {
   # no arg -- set to true
   self.longitude_sym = True;
@@ -496,15 +503,17 @@ a false or undefined argument, sets the output angle range to be
 multi method set_bearing_symmetric($sym)
 {
   # see if argument is true
-  if ($sym) {
+  if $sym {
     # yes -- set to true
     self.bearing_sym = True;
-  } else {
+  }
+  else {
     # no -- set to false
     self.bearing_sym = False;
   }
 }
-multi method set_bearing_symmetric
+
+multi method set_bearing_symmetric()
 {
   # no arg -- set to true
   self.bearing_sym = True;
@@ -539,21 +548,26 @@ to their first three letters and are case-insensitive:
 =end pod
 
 # public
-method set_defaults(*%_)
+method set_defaults(*%a)
 {
-  my %args = %_;
+  my %args = %a;
   for %args.kv -> $key, $val {
-    if ($key ~~ m:i/^ell/) {
+    if $key ~~ m:i/^ell/ {
       %defaults<ellipsoid> = uc $val;
-    } elsif ($key ~~ m:i/^uni/) {
+    }
+    elsif $key ~~ m:i/^uni/ {
       %defaults<units> = $val;
-    } elsif ($key ~~ m:i/^dis/) {
+    }
+    elsif $key ~~ m:i/^dis/ {
       %defaults<distance_units> = $val;
-    } elsif ($key ~~ m:i/^lon/) {
+    }
+    elsif $key ~~ m:i/^lon/ {
       %defaults<longitude_sym> = $val;
-    } elsif ($key ~~ m:i/^bea/) {
+    }
+    elsif $key ~~ m:i/^bea/ {
       %defaults<bearing_sym> = $val;
-    } else {
+    }
+    else {
       die("Geo::Ellipsoid::set_defaults called with invalid key: $key");
     }
   }
@@ -596,12 +610,12 @@ method scales($lat is copy)
   my $latscl = ($n1 * $n1) / ($d3 * $d4 * self.conversion);
   my $lonscl = ($aa * $d1) / ($d4 * self.conversion);
 
-  if ($DEBUG) {
+  if $DEBUG {
     say "lat=$lat, aa=$aa, bb=$bb\nd1=$d1, d2=$d2, d3=$d3, d4=$d4";
     say "latscl=$latscl, lonscl=$lonscl";
   }
 
-  if (self.units eq 'degrees') {
+  if self.units eq 'degrees' {
     # convert back to distance per degree for output
     # dist/rad  / deg/rad => dist/rad X rad/deg => dist/deg
     $latscl /= $degrees_per_radian;
@@ -626,7 +640,7 @@ as latitude, longitude pairs.
 method range($lat1, $lon1, $lat2, $lon2)
 {
   my @a = normalize_input_angles(self.units, $lat1, $lon1, $lat2, $lon2);
-  my ($range, $bearing) = self!_inverse(|@a);
+  my ($range, $bearing) = self._inverse(|@a);
   say "inverse(|@a) returns($range, $bearing)" if $DEBUG;
   return $range;
 }
@@ -646,7 +660,7 @@ the second. Zero bearing is true north.
 method bearing($lat1, $lon1, $lat2, $lon2)
 {
   my @a = normalize_input_angles(self.units, $lat1, $lon1, $lat2, $lon2);
-  my ($range, $bearing) = self!_inverse(|@a);
+  my ($range, $bearing) = self._inverse(|@a);
 
   if $DEBUG {
       say "DEBUG: =======================";
@@ -693,10 +707,10 @@ method at($lat1, $lon1, $range, $bearing)
 {
   my ($lat, $lon, $az) = normalize_input_angles(self.units, $lat1, $lon1, $bearing);
   say "at($lat,$lon,$range,$az)" if $DEBUG;
-  my ($lat2, $lon2) = self!_forward($lat, $lon, $range, $az);
+  my ($lat2, $lon2) = self._forward($lat, $lon, $range, $az);
   say "_forward returns ($lat2, $lon2)" if $DEBUG;
-  $lat2 = normalize_output_angles(:ang-type<latitude_sym>, :units{self.units}, $lat2);
-  $lon2 = normalize_output_angles(:ang-type<longitude_sym>, :units{self.units}, $lon2);
+  $lat2 = normalize_output_angles(:symmetric{self.latitude_sym}, :units{self.units}, $lat2);
+  $lon2 = normalize_output_angles(:symmetric{self.longitude_sym}, :units{self.units}, $lon2);
 
   #say "DEBUG: \$lat2:";
   #say $lat2.WHAT;
@@ -721,9 +735,9 @@ method to($lat1, $lon1, $lat2, $lon2)
 {
   my @a = normalize_input_angles(self.units, $lat1, $lon1, $lat2, $lon2);
   say "to(self.units,|@a)" if $DEBUG;
-  my ($range,$bearing) = self!_inverse(|@a);
+  my ($range,$bearing) = self._inverse(|@a);
   say "to: inverse(|@a) returns($range, $bearing)" if $DEBUG;
-  $bearing = normalize_output_angles(:ang-type<bearing_sym>, :units{self.units}, $bearing);
+  $bearing = normalize_output_angles(:symmetric{self.bearing_sym}, :units{self.units}, $bearing);
   return ($range, $bearing);
 }
 
@@ -740,7 +754,7 @@ Returns range between two specified locations.
 method to_range($lat1, $lon1, $lat2, $lon2)
 {
   my @a = normalize_input_angles($lat1, $lon1, $lat2, $lon2);
-  my $range = self!_inverse(|@a);
+  my $range = self._inverse(|@a);
   say "to(self.units, $range)" if $DEBUG;
   say "to: inverse(|@a) returns($range)" if $DEBUG;
   return $range;
@@ -767,8 +781,8 @@ method displacement(*@args)
   my @a = @args;
   say "displacement(",join(',',@a),"" if $DEBUG;
   @a = normalize_input_angles(self.units, |@a);
-  say "call self!_inverse(|@a)" if $DEBUG;
-  my ($range, $bearing) = self!_inverse(|@a);
+  say "call self._inverse(|@a)" if $DEBUG;
+  my ($range, $bearing) = self._inverse(|@a);
   say "disp: _inverse(@a) returns ($range,$bearing)" if $DEBUG;
   my $x = $range * sin($bearing);
   my $y = $range * cos($bearing);
@@ -808,8 +822,8 @@ method location($lat, $lon, $x, $y)
 #
 #	Return the results as the list (range,bearing) with range in the
 #	current specified distance unit and bearing in radians.
-
-# private method
+#
+# pseudo "private" method
 method !_inverse($lat1, $lon1, $lat2, $lon2)
 {
   say "_inverse($lat1, $lon1, $lat2, $lon2)" if $DEBUG;
@@ -927,7 +941,7 @@ method !_inverse($lat1, $lon1, $lat2, $lon2)
 #	point as (range, bearing) where range is in the class's
 #       current units and bearing is in degrees from true north.
 #
-# private
+# pseudo "private" method
 method !_forward($lat1, $lon1, $range, $bearing)
 {
   if ($DEBUG) {
@@ -1079,7 +1093,7 @@ Geo::Distance, Geo::Ellipsoids
 
 =end pod
 
-#=begin pod
+=begin pod
 
 #========================================================
 # TEMP CHUNK UNTIL SINGLE MODULE IS WORKING
@@ -1115,7 +1129,7 @@ sub normalize_input_angles($units, *@angles) is export
 #	degrees if needed and by converting to the range [-pi,+pi) or
 #	[0,2pi) as needed. Input angles MUST be in radians.
 #
-sub normalize_output_angles(:$ang-type!, :$units!, *@angles) is export
+sub normalize_output_angles(Bool :$symmetric!, :$units!, *@angles) is export
 {
   my @a = @angles;
   if $DEBUG {
@@ -1151,7 +1165,7 @@ sub normalize_output_angles(:$ang-type!, :$units!, *@angles) is export
       return (|@a);
   }
 }
-#=end pod
+=end pod
 
 
 =begin pod
