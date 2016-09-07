@@ -93,22 +93,22 @@ sub normalize_output_angles(Bool :$symmetric = False, Str :$units!, *@angles) is
 }
 
 # convert latitude in degrees, minutes, seconds to degrees
-sub lat-hms2deg(*@hmsdata) is export {
+sub lat-hms2deg($hmsdata) is export {
     # Allowable entries must be in one of the forms:
     #   D or DM or DMS
     # where a missing element is taken to be zero.
-    # Commas or blanks must be used between the DMS entries.
+    # Enter data as a string with commas or spaces between the DMS entries.
 
     # latitude entries:
     # Hemisphere h = (blank,N,n,+   or  S,s,-)
     # Nominal : degrees, minutes & seconds ( hDD MM SS.sssss )
     # The result will retain the resulting numerical sign of the D entry.
 
-    # stringify input
-    my $s = |@hmsdata;
-    say "DEBUG: stringifiedinput = '$s'";
+    # copy input
+    my $s = $hmsdata;
+    say "DEBUG: input = '$s'";
 
-    # substitute spaces for any commas
+    # substitute spaces for any ommas
     $s ~~ s:g/','/' '/;
     say "DEBUG: input after subs spaces for commas = '$s'";
 
@@ -145,23 +145,23 @@ sub lat-hms2deg(*@hmsdata) is export {
 }
 
 # convert longitude in degrees, minutes, seconds to degrees
-multi sub long-hms2deg(*@hmsdata) is export {
-    return lon-hms2deg(@hmsdata);
+multi sub long-hms2deg($hmsdata) is export {
+    return lon-hms2deg($hmsdata);
 }
-sub lon-hms2deg(*@hmsdata) is export {
+sub lon-hms2deg($hmsdata) is export {
     # Allowable entries must be in one of the forms:
     #   D or DM or DMS
     # where a missing element is taken to be zero.
-    # Commas or blanks must be used between the DMS entries.
+    # Enter data as a string with commas or spaces between the DMS entries.
 
     # longitude entries:
     # Hemisphere h = (E,e,+   or  blank,W,w,-)
     # Nominal : degrees, minutes & seconds ( hDDD MM SS.sssss )
     # The result will retain the resulting numerical sign of the D entry.
 
-    # stringify input
-    my $s = |@hmsdata;
-    say "DEBUG: stringifiedinput = '$s'";
+    # copy input
+    my $s = $hmsdata;
+    say "DEBUG: input = '$s'";
 
     # substitute spaces for any commas
     $s ~~ s:g/','/' '/;
@@ -200,12 +200,21 @@ sub lon-hms2deg(*@hmsdata) is export {
 }
 
 # convert degrees in DMS to decimal degrees
-sub hms2deg(*@hmsdata) is export {
+sub hms2deg($h, $m, $sec) is export {
     # Allowable entries must be in one of the forms:
     #   D or DM or DMS
     # where a missing element is taken to be zero.
-    # Commas or blanks must be used between the DMS entries.
+    # Commas must be used between the DMS entries.
     # The result will retain the numerical sign of the D entry.
+ 
+    # turn the numbers into a string
+    my $s = $h;
+    $s ~= " $m" if $m;
+    $s ~= " $sec" if $sec;
+ 
+    # now string is in a form to use the longitude function
+    return lon-hms2deg($s); 
+    
 }
 
 sub extract-hms-match-values($h, $m, $s, :$sign!) {
