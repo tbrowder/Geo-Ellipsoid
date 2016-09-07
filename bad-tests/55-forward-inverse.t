@@ -7,14 +7,45 @@ use Geo::Ellipsoid;
 
 # Test pseudo "private" methods
 
-# use the default ellpisoid and test against original NOAA/NGS code test results
-my $e = Geo::Ellipsoid.new();
+# tests against original NOAA/NGS code test results
 
-# _forward
+my ($faz, $baz, $dist);
+my ($FAZ, $BAZ, $DIST);
+
+#=====================================
+# GRS80 / WGS84 (NAD83) (default)
+# station Jones
+my $lat-11 = lat-hms2deg(n34  0 12.12345);
+my $lon-11 = lon-hms2deg(w111 0 12.12345);
+# station Smith 
+my $lat-12 = lat-hms2deg(n33  22 11.54321);
+my $lon-12 = lon-hms2deg(w112 55 44.33333);
+
+
+#=====================================
+# Clark 1866 (NAD27)
+# station Charlie
+my $lat-21 = lat-hms2deg(n45 0 12.00000);
+my $lon-21 = lon-hms2deg(w68 0  0.00000);
+# station Sam
+my $lat-22 = lat-hms2deg(n33 22 11.54321);
+my $lon-22 = lon-hms2deg(w70 12 34.78900);
+
+
+# FROM: station Bill
+my $lat-31 = lat-hms2deg(+34 0 0.0);
+my $lon-31 = lon-hms2deg(+68 0 0.0);
+my $EHT-3 = 76.0;
+my $DH-3  = -22.0;
+my $FAZ-3 = hms2deg(+245 0 34.7);
+my $S-3 = 123456.7891;
+# TO: station George
+# results
+my $lat-32 = lat-hms2deg( n33 31 25.93490);
+my $lon-32 = lon-hms2deg(w112 12 16.40986);
 
 
 
-# _inverse
 
 
 =begin pod
