@@ -199,7 +199,7 @@ has $.units               is rw;
 has $.distance_units      is rw;
 has Bool $.longitude_sym  is rw;
 has Bool $.bearing_sym    is rw;
-has Bool $.latitude_sym;  # read only
+has Bool $.latitude_sym   is readonly;  # NOTE!!
 
 # following were implicit in original Perl 5 version, some (all?) should be private
 has $.equatorial   is rw;
@@ -672,7 +672,7 @@ method bearing($lat1, $lon1, $lat2, $lon2)
       say $t.WHAT;
   }
 
-  $bearing = normalize_output_angles(:ang-type<bearing_sym>, :units{self.units}, $bearing);
+  $bearing = normalize_output_angles(:symmetric(self.bearing_sym), :units(self.units), $bearing);
 
   if $DEBUG {
       say "orig bearing: $t";
@@ -703,8 +703,8 @@ method at($lat1, $lon1, $range, $bearing)
   say "at($lat,$lon,$range,$az)" if $DEBUG;
   my ($lat2, $lon2) = self._forward($lat, $lon, $range, $az);
   say "_forward returns ($lat2, $lon2)" if $DEBUG;
-  $lat2 = normalize_output_angles(:symmetric{self.latitude_sym}, :units{self.units}, $lat2);
-  $lon2 = normalize_output_angles(:symmetric{self.longitude_sym}, :units{self.units}, $lon2);
+  $lat2 = normalize_output_angles(:symmetric(self.latitude_sym), :units(self.units), $lat2);
+  $lon2 = normalize_output_angles(:symmetric(self.longitude_sym), :units(self.units), $lon2);
 
   #say "DEBUG: \$lat2:";
   #say $lat2.WHAT;
@@ -731,7 +731,7 @@ method to($lat1, $lon1, $lat2, $lon2)
   say "to(self.units,|@a)" if $DEBUG;
   my ($range,$bearing) = self._inverse(|@a);
   say "to: inverse(|@a) returns($range, $bearing)" if $DEBUG;
-  $bearing = normalize_output_angles(:symmetric{self.bearing_sym}, :units{self.units}, $bearing);
+  $bearing = normalize_output_angles(:symmetric(self.bearing_sym), :units(self.units), $bearing);
   return ($range, $bearing);
 }
 
