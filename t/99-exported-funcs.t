@@ -5,12 +5,68 @@ use Test;
 
 #use Geo::Ellipsoid :constants;
 #use Geo::Ellipsoid::Utils :constants;
-use Geo::Ellipsoid::Utils :ALL;
+use Geo::Ellipsoid::Utils;
 
 plan 22;
 
 # This series of tests is for the functions now-exported from the class.
 
+#===== hms
+my @lats =
+# ' Nn+' = positive; 'Ss-' = negative
+' 10 30',
+'N10 30',
+'n10 30',
+'+10 30',
+
+'S10 30',
+'s10 30',
+'-10 30';
+# expected results
+my @lats2degs =
+'10.5',
+'10.5',
+'10.5',
+'10.5',
+
+'-10.5',
+'-10.5',
+'-10.5';
+my @lons =
+# 'Ee+' = positive; ' Ww-' = negative (blank negative!!!!)
+'E10 30',
+'e10 30',
+'+10 30',
+
+' 10 30',
+'W10 30',
+'w10 30',
+'-10 30',
+# expected results
+my @lons2degs =
+'10.5',
+'10.5',
+'10.5',
+
+'-10.5',
+'-10.5',
+'-10.5',
+'-10.5';
+my @hms =
+# ' +' = positive; '-' = negative (opposite from NGS function convention above)
+' 10 30',
+'+10 30',
+
+'-10 30';
+# expected results
+my @hms2degs =
+'10.5',
+'10.5',
+
+'-10.5';
+
+
+# THESE SHOULD BE PROVIDED BY MATH::TRIG BUT THAT FAILS AT THE MOMENT
 #===== constants
 is $twopi, '6.28318530717959', "twice pi";
 is $halfpi, '1.5707963267949', "one-half pi";

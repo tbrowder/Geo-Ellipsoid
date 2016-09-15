@@ -30,10 +30,11 @@ my $DEBUG = False;
 #	range [0,2pi), i.e., greater than or equal to zero and
 #	less than two pi.
 #
-sub normalize_input_angles($units, *@angles) is export
+sub normalize-input-angles($units, *@angles) is export
 {
     my @angs = map {
 	$_ = deg2rad($_) if $units eq 'degrees';
+        # use sub normalize-angle for following code:
 	while $_ < 0       { $_ += $twopi }
 	while $_ >= $twopi { $_ -= $twopi }
 	$_
@@ -45,15 +46,15 @@ sub normalize_input_angles($units, *@angles) is export
     else {
 	return (|@angs);
     }
-} # normalize_input_angles
+} # normalize-input-angles
 
-#	normalize_output_angles
+#	normalize-output-angles
 #
 #	Normalize a set of output angle values by converting to
 #	degrees if needed and by converting to the range [-pi,+pi) or
 #	[0,2pi) as needed. Input angles MUST be in radians.
 #
-sub normalize_output_angles(Bool :$symmetric = False, Str :$units!, *@angles) is export
+sub normalize-output-angles(Bool :$symmetric = False, Str :$units!, *@angles) is export
 {
     my @angs = @angles;
     if $DEBUG {
@@ -69,12 +70,14 @@ sub normalize_output_angles(Bool :$symmetric = False, Str :$units!, *@angles) is
 	if $symmetric {
 	    say "    # normalize to range [-pi,pi)" if $DEBUG;
 	    # normalize to range [-pi,pi)
+            # use sub normalize-angle for following code:
 	    while $ang < -pi { $ang += $twopi }
 	    while $ang >= pi { $ang -= $twopi }
 	}
 	else {
 	    say "    # normalize to range [0,2*pi)" if $DEBUG;
 	    # normalize to range [0,2*pi)
+            # use sub normalize-angle for following code:
 	    while $ang <  0       { $ang += $twopi }
 	    while $ang >= $twopi { $ang -= $twopi }
 		  
@@ -145,7 +148,7 @@ sub lat-hms2deg($hmsdata) is export {
 }
 
 # convert longitude in degrees, minutes, seconds to degrees
-multi sub long-hms2deg($hmsdata) is export {
+sub long-hms2deg($hmsdata) is export {
     return lon-hms2deg($hmsdata);
 }
 sub lon-hms2deg($hmsdata) is export {
@@ -206,15 +209,12 @@ sub hms2deg($h, $m, $sec) is export {
     # where a missing element is taken to be zero.
     # Commas must be used between the DMS entries.
     # The result will retain the numerical sign of the D entry.
+
+    # The result is NOT constrained to any range. For that, pass
+    # the result to the normalize-angle function.
  
-    # turn the numbers into a string
-    my $s = $h;
-    $s ~= " $m" if $m;
-    $s ~= " $sec" if $sec;
- 
-    # now string is in a form to use the longitude function
-    return lon-hms2deg($s); 
-    
+    my $deg = $h + $m / 60 + $s / 3600;
+    return $deg;
 }
 
 sub extract-hms-match-values($h, $m, $s, :$sign!) {
@@ -249,6 +249,14 @@ sub extract-hms-match-values($h, $m, $s, :$sign!) {
         $degrees *= $sign;
 
         return $degrees;
+}
+
+enum AngUnits { Degrees => 1, Radians = 2 }
+enum RangeType { OnePi => 1, TwoPi => 2 }
+sub normalize-angle(AngUnits :$ang-units, RangeType :$range-type, $ang) is export {
+    # make the named args enums:
+    #   ang-units an enum for degrees or radians (or?)
+    #   range-type an enum for pi or two-pi
 }
 
 

@@ -17,7 +17,7 @@ use Geo::Ellipsoid;
 #  which translates to:
 my $rel-tol = 1e-6;
 
-#$Geo::Ellipsoid::DEBUG = 1;
+$Geo::Ellipsoid::DEBUG = 1;
 
 my $e1 = Geo::Ellipsoid.new(units=>'degrees');
 my $e2 = Geo::Ellipsoid.new(units=>'degrees',longitude_sym => True);
@@ -40,6 +40,9 @@ is-approx($lat1,  -38.3656166574817, :$rel-tol);
 is-approx($lon1,  190.880662670944, :$rel-tol);
 is-approx($lat2,  -38.3656166574817, :$rel-tol);
 is-approx($lon2, -169.119337329056, :$rel-tol);
+
+say "DEBUG exit";
+exit;
 
 ($lat1,$lon1) = $e1.at(-14.608137,30.094655,6390.954467,5.838786);
 ($lat2,$lon2) = $e2.at(-14.608137,30.094655,6390.954467,5.838786);
