@@ -5,10 +5,9 @@ Longitude and latitude calculations using an ellipsoid model.
 
 INSTALLATION
 
-To install this module, run one of the following commands:
+To install this module, run the following command:
 
-    zef install Geo::Ellipsoid
-    panda install Geo::Ellipsoid
+    $ zef install Geo::Ellipsoid
 
 TESTING
 
