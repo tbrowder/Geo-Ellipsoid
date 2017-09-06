@@ -13,7 +13,7 @@ use v6;
 
 #use Math::Trig;
 
-unit module Geo::Ellipsoid::Utils:ver<1.0.0>;
+unit module Geo::Ellipsoid::Utils:auth<github:tbrowder>;
 
 # constants for export
 constant $degrees_per_radian is export = 180/pi;
@@ -80,7 +80,7 @@ sub normalize-output-angles(Bool :$symmetric = False, Str :$units!, *@angles) is
             # use sub normalize-angle for following code:
 	    while $ang <  0       { $ang += $twopi }
 	    while $ang >= $twopi { $ang -= $twopi }
-		  
+
 	    say "  output \$ang = '$ang'; units = '{ $units }'" if $DEBUG;
 	    $ang = rad2deg($ang) if $units eq 'degrees';
 	    say "    # converting rad to degrees" if $DEBUG && $units eq 'degrees';
@@ -111,12 +111,12 @@ sub lat-hms2deg($hmsdata) is export {
     my $s = $hmsdata;
     say "DEBUG: input = '$s'";
 
-    # substitute spaces for any ommas
+    # substitute spaces for any commas
     $s ~~ s:g/','/' '/;
     say "DEBUG: input after subs spaces for commas = '$s'";
 
     # check for validity and process
-    if $s !~~ m:i/ 
+    if $s !~~ m:i/
                 (<[\s N S \+ \-]>?)  # sign of degrees, optional
                 (\d+)                # degrees, mandatory
                 \s+ (\d+)            # ws, minutes, optional
@@ -171,7 +171,7 @@ sub lon-hms2deg($hmsdata) is export {
     say "DEBUG: input after subs spaces for commas = '$s'";
 
     # check for validity and process
-    if $s !~~ m:i/ 
+    if $s !~~ m:i/
                 (<[\s E W \+ \-]>?)  # sign of degrees, optional
                 (\d+)                # degrees, mandatory
                 \s+ (\d+)            # ws, minutes, optional
@@ -187,7 +187,7 @@ sub lon-hms2deg($hmsdata) is export {
                ; # ok: $sign *= +1;
            }
            elsif $c ~~ m:i/<[\s W \-]>/ {
-               # negative values 
+               # negative values
                $sign *= -1;
            }
            else {
@@ -212,8 +212,8 @@ sub hms2deg($h, $m, $sec) is export {
 
     # The result is NOT constrained to any range. For that, pass
     # the result to the normalize-angle function.
- 
-    my $deg = $h + $m / 60 + $s / 3600;
+
+    my $deg = $h + $m / 60 + $sec / 3600;
     return $deg;
 }
 
@@ -251,9 +251,10 @@ sub extract-hms-match-values($h, $m, $s, :$sign!) {
         return $degrees;
 }
 
-enum AngUnits { Degrees => 1, Radians = 2 }
-enum RangeType { OnePi => 1, TwoPi => 2 }
-sub normalize-angle(AngUnits :$ang-units, RangeType :$range-type, $ang) is export {
+enum AngUnits  ( Degrees => 1, Radians => 2 );
+enum RangeType ( OnePi => 1, TwoPi => 2 );
+
+sub normalize-angle($ang, AngUnits :$ang-units, RangeType :$range-type) is export {
     # make the named args enums:
     #   ang-units an enum for degrees or radians (or?)
     #   range-type an enum for pi or two-pi

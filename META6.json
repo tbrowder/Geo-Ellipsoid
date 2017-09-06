@@ -6,7 +6,7 @@
     "authors" : [ "Tom Browder <tom.browder@gmail.com> (translator Perl 5 to Perl 6, current maintainer)",
                   "Jim Gibson (CPAN Perl 5 author, v1.12)"
 		],
-    "license"     : "Artistic 2.0",
+    "license"     : "Artistic-2.0",
     "source-type" : "git",
     "source-url" : "git://github.com/tbrowder/Geo-Ellipsoid-Perl6.git",
     "support"     : {

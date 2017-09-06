@@ -14,7 +14,18 @@ use v6;
 #use Math::Trig;
 use Geo::Ellipsoid::Utils;
 
-unit class Geo::Ellipsoid:ver<1.0.0>;
+unit class Geo::Ellipsoid:auth<github:tbrowder>;
+
+# export a debug var for users
+our $DEBUG = False;
+BEGIN {
+    if %*ENV<GEO_ELLIPSOID_DEBUG> {
+	$DEBUG = True;
+    }
+    else {
+	$DEBUG = False;
+    }
+}
 
 # constants for this module
 constant $eps            = 1.0e-23;
@@ -31,8 +42,6 @@ Geo::Ellipsoid - Longitude and latitude calculations using an ellipsoid model.
 Version 1.0.0, not yet released.
 
 =end pod
-
-our $DEBUG = 0;
 
 =begin pod
 
@@ -633,7 +642,7 @@ as latitude, longitude pairs.
 # public
 method range($lat1, $lon1, $lat2, $lon2)
 {
-  my @a = normalize_input_angles(self.units, $lat1, $lon1, $lat2, $lon2);
+  my @a = normalize-input-angles(self.units, $lat1, $lon1, $lat2, $lon2);
   my ($range, $bearing) = self._inverse(|@a);
   say "inverse(|@a) returns($range, $bearing)" if $DEBUG;
   return $range;
@@ -653,7 +662,7 @@ the second. Zero bearing is true north.
 # public
 method bearing($lat1, $lon1, $lat2, $lon2)
 {
-  my @a = normalize_input_angles(self.units, $lat1, $lon1, $lat2, $lon2);
+  my @a = normalize-input-angles(self.units, $lat1, $lon1, $lat2, $lon2);
   my ($range, $bearing) = self._inverse(|@a);
 
   if $DEBUG {
@@ -672,7 +681,7 @@ method bearing($lat1, $lon1, $lat2, $lon2)
       say $t.WHAT;
   }
 
-  $bearing = normalize_output_angles(:symmetric(self.bearing_sym), :units(self.units), $bearing);
+  $bearing = normalize-output-angles(:symmetric(self.bearing_sym), :units(self.units), $bearing);
 
   if $DEBUG {
       say "orig bearing: $t";
@@ -699,12 +708,12 @@ specified range and bearing from a given location.
 # public
 method at($lat1, $lon1, $range, $bearing)
 {
-  my ($lat, $lon, $az) = normalize_input_angles(self.units, $lat1, $lon1, $bearing);
+  my ($lat, $lon, $az) = normalize-input-angles(self.units, $lat1, $lon1, $bearing);
   say "at($lat,$lon,$range,$az)" if $DEBUG;
   my ($lat2, $lon2) = self._forward($lat, $lon, $range, $az);
   say "_forward returns ($lat2, $lon2)" if $DEBUG;
-  $lat2 = normalize_output_angles(:symmetric(self.latitude_sym), :units(self.units), $lat2);
-  $lon2 = normalize_output_angles(:symmetric(self.longitude_sym), :units(self.units), $lon2);
+  $lat2 = normalize-output-angles(:symmetric(self.latitude_sym), :units(self.units), $lat2);
+  $lon2 = normalize-output-angles(:symmetric(self.longitude_sym), :units(self.units), $lon2);
 
   #say "DEBUG: \$lat2:";
   #say $lat2.WHAT;
@@ -727,11 +736,11 @@ Returns (range, bearing) between two specified locations.
 # public
 method to($lat1, $lon1, $lat2, $lon2)
 {
-  my @a = normalize_input_angles(self.units, $lat1, $lon1, $lat2, $lon2);
+  my @a = normalize-input-angles(self.units, $lat1, $lon1, $lat2, $lon2);
   say "to(self.units,|@a)" if $DEBUG;
   my ($range,$bearing) = self._inverse(|@a);
   say "to: inverse(|@a) returns($range, $bearing)" if $DEBUG;
-  $bearing = normalize_output_angles(:symmetric(self.bearing_sym), :units(self.units), $bearing);
+  $bearing = normalize-output-angles(:symmetric(self.bearing_sym), :units(self.units), $bearing);
   return ($range, $bearing);
 }
 
@@ -747,7 +756,7 @@ Returns range between two specified locations.
 
 method to_range($lat1, $lon1, $lat2, $lon2)
 {
-  my @a = normalize_input_angles($lat1, $lon1, $lat2, $lon2);
+  my @a = normalize-input-angles($lat1, $lon1, $lat2, $lon2);
   my $range = self._inverse(|@a);
   say "to(self.units, $range)" if $DEBUG;
   say "to: inverse(|@a) returns($range)" if $DEBUG;
@@ -774,7 +783,7 @@ method displacement(*@args)
 {
   my @a = @args;
   say "displacement(",join(',',@a),"" if $DEBUG;
-  @a = normalize_input_angles(self.units, |@a);
+  @a = normalize-input-angles(self.units, |@a);
   say "call self._inverse(|@a)" if $DEBUG;
   my ($range, $bearing) = self._inverse(|@a);
   say "disp: _inverse(@a) returns ($range,$bearing)" if $DEBUG;
