@@ -1,15 +1,14 @@
-Geo::Ellipsoid
-[![Build Status](https://travis-ci.org/tbrowder/Geo-Ellipsoid-Perl6.svg?branch=master)](https://travis-ci.org/tbrowder/Geo-Ellipsoid-Perl6)
+# Geo::Ellipsoid [![Build Status](https://travis-ci.org/tbrowder/Geo-Ellipsoid-Perl6.svg?branch=master)](https://travis-ci.org/tbrowder/Geo-Ellipsoid-Perl6)
 
 Longitude and latitude calculations using an ellipsoid model.
 
-INSTALLATION
+# INSTALLATION
 
 To install this module, run the following command:
 
     $ zef install Geo::Ellipsoid
 
-TESTING
+# TESTING
 
 1. To run the test suite:
 
@@ -24,16 +23,16 @@ TESTING
    $ make test-orig > res.txt
    $ diff res.txt test/results.txt
 
-RELEASE NOTES
+# RELEASE NOTES
 
 This is version 1.0, the initial port of the CPAN Perl 5 version to
 Perl 6.
 
-RELEASE NOTES (from the original CPAN version)
+# RELEASE NOTES (from the original CPAN version)
 
 This module is a port of existing Fortran subroutines to Perl.
 
-COPYRIGHT AND LICENCE
+# COPYRIGHT AND LICENCE
 
 Copyright (C) 2015-2017 Tom Browder <tom.browder@gmail.com>
 Copyright (C) 2005-2008 Jim Gibson
