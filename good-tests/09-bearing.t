@@ -33,8 +33,7 @@ is-approx($azp, 178.999390582928, :abs-tol<0.1>); #delta_within($azp, 178.999390
 $azs = $e_sym.bearing(-88.000000,1.000000,-88.000000,179.000000);
 is-approx($azs, 178.999390582928, :abs-tol<0.1>); #delta_within($azs, 178.999390582928, 0.1);
 
-say "DEBUG exit";
-exit;
+#say "DEBUG exit"; exit;
 
 $azp = $e_pos.bearing(-88.000000,1.000000,-88.000000,268.000000);
 is-approx($azp, 223.517433140781, :abs-tol<0.1>); #delta_within($azp, 223.517433140781, 0.1);

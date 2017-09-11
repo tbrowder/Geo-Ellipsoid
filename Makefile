@@ -4,7 +4,8 @@ PERL6     := perl6
 LIBPATH   := ./lib
 
 # set below to 0 for no effect, 1 for debugging messages
-DEBUG := GEO_ELLIPSOID_DEBUG=1
+DEBUG := GEO_ELLIPSOID_DEBUG=0
+#DEBUG := GEO_ELLIPSOID_DEBUG=1
 
 # set below to 0 for no effect, 1 to die on first failure
 EARLYFAIL := PERL6_TEST_DIE_ON_FAIL=0

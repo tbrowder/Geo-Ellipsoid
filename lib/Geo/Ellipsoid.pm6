@@ -118,15 +118,15 @@ set_ellipsoid
 set_longitude_symmetric
 set_units
 to
-to_range
+to-range
     >;
 
 our @private_methods
   = <
 _forward
 _inverse
-normalize_input_angles
-normalize_output_angles
+normalize-input-angles
+normalize-output-angle
     >;
 
 # these may disappear with proper Perl 6 class def
@@ -137,6 +137,7 @@ our %defaults = (
   longitude_sym  => False,
   bearing_sym    => False,
 );
+
 our %distance = (
   'foot'      => 0.3048,
   'kilometer' => 1_000,
@@ -597,7 +598,7 @@ calculations in the vicinity of some location.
 method scales($lat is copy)
 {
   # convert to radians for calculations
-  $lat = deg2rad($lat) if (self.units eq 'degrees');
+  $lat = deg2rad($lat) if self.units eq 'degrees';
 
   my $aa = self.equatorial;
   my $bb = self.polar;
@@ -734,11 +735,11 @@ Returns (range, bearing) between two specified locations.
 =end pod
 
 # public
-method to($lat1, $lon1, $lat2, $lon2)
+method to($lat1, $lon1, $lat2, $lon2 --> List)
 {
   my @a = normalize-input-angles(self.units, $lat1, $lon1, $lat2, $lon2);
   say "to(self.units,|@a)" if $DEBUG;
-  my ($range,$bearing) = self._inverse(|@a);
+  my ($range, $bearing) = self._inverse(|@a);
   say "to: inverse(|@a) returns($range, $bearing)" if $DEBUG;
   $bearing = normalize-output-angle($bearing, :symmetric(self.bearing_sym), :units(self.units));
   return ($range, $bearing);
@@ -750,11 +751,11 @@ method to($lat1, $lon1, $lat2, $lon2)
 
 Returns range between two specified locations.
 
-    my $dist = $geo.to_range($lat1, $lon1, $lat2, $lon2);
+    my $dist = $geo.to-range($lat1, $lon1, $lat2, $lon2);
 
 =end pod
 
-method to_range($lat1, $lon1, $lat2, $lon2)
+method to-range($lat1, $lon1, $lat2, $lon2 --> Real)
 {
   my @a = normalize-input-angles(self.units, $lat1, $lon1, $lat2, $lon2);
   my $range = self._inverse(|@a);
@@ -779,7 +780,7 @@ or more, the concept of X and Y on a curved surface loses its meaning.
 =end pod
 
 # public
-method displacement(*@args)
+method displacement(*@args --> List)
 {
   my @a = @args;
   say "displacement(",join(',',@a),"" if $DEBUG;
@@ -799,7 +800,8 @@ method displacement(*@args)
 Returns the list (latitude,longitude) of a location at a given (x,y)
 displacement from a given location.
 
-	my @loc = $geo.location($lat, $lon, $x, $y);
+	#my @loc = $geo.location($lat, $lon, $x, $y);
+	my @loc = $geo.location($x, $y);
 
 =end pod
 
@@ -809,7 +811,8 @@ method location($lat, $lon, $x, $y)
   my $range    = sqrt($x*$x+ $y*$y);
   my $bearing  = atan2($x,$y);
   $bearing     = deg2rad($bearing) if self.units eq 'degrees';
-  say "location($lat, $lon, $x, $y, $range, $bearing)" if $DEBUG;
+  #say "location($lat, $lon, $x, $y, $range, $bearing)" if $DEBUG;
+  say "location($x, $y, $range, $bearing)" if $DEBUG;
   return self.at($lat, $lon, $range, $bearing);
 }
 
@@ -827,9 +830,16 @@ method location($lat, $lon, $x, $y)
 #	current specified distance unit and bearing in radians.
 #
 # pseudo "private" method
-method _inverse($lat1, $lon1, $lat2, $lon2)
+method _inverse($lat1 is copy, $lon1 is copy, $lat2 is copy, $lon2 is copy)
 {
+    #die "FATAL: angle units need to be in radians, units: {self.units}" if self.units eq 'degrees';
     say "_inverse($lat1, $lon1, $lat2, $lon2)" if $DEBUG;
+    if self.units eq 'degrees' {
+        $lat1 = deg2rad $lat1;
+        $lon1 = deg2rad $lon1;
+        $lat2 = deg2rad $lat2;
+        $lon2 = deg2rad $lon2;
+    } 
 
     my $a = self.equatorial;
     my $f = self.flattening;
@@ -923,7 +933,7 @@ method _inverse($lat1, $lon1, $lat2, $lon2)
 
     # REPLACE THIS WITH FUNCTION CALL!!
     # adjust azimuth to (0,360) or (-180,180) as specified
-    warn "WARNING: check units here:\n";
+    warn "WARNING: check units here:\n" if $DEBUG;
     die "FATAL: units are {self.units} instead of degrees" if self.units ne 'degrees';
     if self.bearing_sym {
         $faz += $twopi if $faz < -(pi);
@@ -933,6 +943,10 @@ method _inverse($lat1, $lon1, $lat2, $lon2)
         $faz += $twopi if $faz < 0;
         $faz -= $twopi if $faz >= $twopi;
     }
+
+    if self.units eq 'degrees' {
+        $faz = rad2deg $faz;
+    } 
 
     # return result
     #my @disp = (($s/self.conversion), $faz);
@@ -949,8 +963,15 @@ method _inverse($lat1, $lon1, $lat2, $lon2)
 #       current units and bearing is in degrees from true north.
 #
 # pseudo "private" method
-method _forward($lat1, $lon1, $range, $bearing)
+method _forward($lat1 is copy, $lon1 is copy, $range, $bearing is copy)
 {
+  #die "FATAL: need to use radians for trig funcs, units are: {self.units}" if self.units eq 'degrees';
+  if self.units eq 'degrees' {
+      $lat1 = deg2rad $lat1;
+      $lon1 = deg2rad $lon1;
+      $bearing = deg2rad $bearing;
+  }
+
   if $DEBUG {
     printf "_forward(lat1=%.8f,lon1=%.8f,range=%.8f,bearing=%.8f)\n",
       $lat1, $lon1, $range, $bearing;
@@ -1017,6 +1038,11 @@ method _forward($lat1, $lon1, $range, $bearing)
   $d = (((($e*$cy*$c) + $cz)*$sy*$c)+$y)*$sa;
   my $lon2 = $lon1 + $x - (1.0-$c)*$d*$f;
   #$baz = atan2($sa,$baz) + pi;
+
+  if self.units eq 'degrees' {
+      $lat2 = deg2rad $lat2;
+      $lon2 = deg2rad $lon2;
+  }
 
   # return result
   return ($lat2, $lon2);

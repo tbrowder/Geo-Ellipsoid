@@ -3,7 +3,8 @@
 use v6;
 use Test;
 
-plan 21;
+#plan 21;
+plan 47;
 
 use Geo::Ellipsoid;
 
@@ -49,21 +50,23 @@ can-ok($e0, 'at');
 can-ok($e0, 'to');
 can-ok($e0, 'displacement');
 can-ok($e0, 'location');
-say "DEBUG early exit"; exit;
 
-=begin pod
+#say "DEBUG early exit"; exit;
+
+#=begin pod
 
 my $e5 = Geo::Ellipsoid.new();
 
 # check public methods
 for @Geo::Ellipsoid::public_methods -> $m {
-  can-ok($e5.can($m), "public method '$m'");
+  #can-ok($e5.can($m), "public method '$m'");
+  can-ok($e5, $m, "public method '$m'");
 }
 
 # check rw attributes
 for @Geo::Ellipsoid::rw_attributes -> $a {
   my $val = $e5."$a"();
-  if (defined $val) {
+  if defined $val {
     ok(True, "attribute '$a'");
   }
   else {
@@ -71,4 +74,4 @@ for @Geo::Ellipsoid::rw_attributes -> $a {
   }
 }
 
-=end pod
+#=end pod
