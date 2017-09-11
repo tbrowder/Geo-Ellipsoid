@@ -255,7 +255,7 @@ submethod BUILD(
     "longitude_sym=>{self.longitude_sym},bearing_sym=>{self.bearing_sym})" if $DEBUG;
 }
 
-=begin pod
+=begin comment
 
 TODO PUT IN PROPER P6 FORMAT AS USED IN THE CODE
 sub new
@@ -293,7 +293,7 @@ sub new
   return $self;
 }
 
-=end pod
+=end comment
 
 =begin pod
 
@@ -681,14 +681,14 @@ method bearing($lat1, $lon1, $lat2, $lon2)
       say $t.WHAT;
   }
 
-  $bearing = normalize-output-angles(:symmetric(self.bearing_sym), :units(self.units), $bearing);
+  $bearing = normalize-output-angle($bearing, :symmetric(self.bearing_sym), :units(self.units));
 
   if $DEBUG {
       say "orig bearing: $t";
       say "normalized bearing: $bearing";
       say "\$bearing";
       say $bearing.WHAT;
-      say "normalize_output_angles($t) returns($bearing)";
+      say "normalize-output-angles($t) returns($bearing)";
   }
 
   return $bearing;
@@ -712,8 +712,8 @@ method at($lat1, $lon1, $range, $bearing)
   say "at($lat,$lon,$range,$az)" if $DEBUG;
   my ($lat2, $lon2) = self._forward($lat, $lon, $range, $az);
   say "_forward returns ($lat2, $lon2)" if $DEBUG;
-  $lat2 = normalize-output-angles(:symmetric(self.latitude_sym), :units(self.units), $lat2);
-  $lon2 = normalize-output-angles(:symmetric(self.longitude_sym), :units(self.units), $lon2);
+  $lat2 = normalize-output-angle($lat2, :symmetric(self.latitude_sym), :units(self.units));
+  $lon2 = normalize-output-angle($lon2, :symmetric(self.longitude_sym), :units(self.units));
 
   #say "DEBUG: \$lat2:";
   #say $lat2.WHAT;
@@ -740,7 +740,7 @@ method to($lat1, $lon1, $lat2, $lon2)
   say "to(self.units,|@a)" if $DEBUG;
   my ($range,$bearing) = self._inverse(|@a);
   say "to: inverse(|@a) returns($range, $bearing)" if $DEBUG;
-  $bearing = normalize-output-angles(:symmetric(self.bearing_sym), :units(self.units), $bearing);
+  $bearing = normalize-output-angle($bearing, :symmetric(self.bearing_sym), :units(self.units));
   return ($range, $bearing);
 }
 
@@ -756,7 +756,7 @@ Returns range between two specified locations.
 
 method to_range($lat1, $lon1, $lat2, $lon2)
 {
-  my @a = normalize-input-angles($lat1, $lon1, $lat2, $lon2);
+  my @a = normalize-input-angles(self.units, $lat1, $lon1, $lat2, $lon2);
   my $range = self._inverse(|@a);
   say "to(self.units, $range)" if $DEBUG;
   say "to: inverse(|@a) returns($range)" if $DEBUG;
@@ -854,87 +854,91 @@ method _inverse($lat1, $lon1, $lat2, $lon2)
 
     my $x = $dlon;
     my $cnt = 0;
-  print "enter loop:\n" if $DEBUG;
-  my ($c2a, $c, $cx, $cy, $cz, $d, $del, $e, $sx, $sy, $y);
-  repeat {
-    printf "  x=%.8f\n", $x if $DEBUG;
-    $sx = sin($x);
-    $cx = cos($x);
-    $tu1 = $cu2*$sx;
-    $tu2 = $baz - ($su1*$cu2*$cx);
+    say "enter loop:" if $DEBUG;
+    my ($c2a, $c, $cx, $cy, $cz, $d, $del, $e, $sx, $sy, $y);
+    repeat {
+        printf "  x=%.8f\n", $x if $DEBUG;
+        $sx = sin($x);
+        $cx = cos($x);
+        $tu1 = $cu2*$sx;
+        $tu2 = $baz - ($su1*$cu2*$cx);
 
-    printf "    sx=%.8f, cx=%.8f, tu1=%.8f, tu2=%.8f\n",
-      $sx, $cx, $tu1, $tu2 if $DEBUG;
+        printf "    sx=%.8f, cx=%.8f, tu1=%.8f, tu2=%.8f\n",
+        $sx, $cx, $tu1, $tu2 if $DEBUG;
 
-    $sy = sqrt($tu1*$tu1 + $tu2*$tu2);
-    $cy = $s*$cx + $faz;
-    $y = atan2($sy,$cy);
-    my $sa;
-    if ($sy == 0.0) {
-      $sa = 1.0;
-    } else {
-      $sa = ($s*$sx) / $sy;
+        $sy = sqrt($tu1*$tu1 + $tu2*$tu2);
+        $cy = $s*$cx + $faz;
+        $y = atan2($sy,$cy);
+        my $sa;
+        if $sy == 0.0 {
+            $sa = 1.0;
+        } 
+        else {
+            $sa = ($s*$sx) / $sy;
+        }
+
+        printf "    sy=%.8f, cy=%.8f, y=%.8f, sa=%.8f\n", $sy, $cy, $y, $sa 
+            if $DEBUG;
+
+        $c2a = 1.0 - ($sa*$sa);
+        $cz = $faz + $faz;
+        if $c2a > 0.0 {
+            $cz = ((-$cz)/$c2a) + $cy;
+        }
+        $e = (2.0 * $cz * $cz) - 1.0;
+        $c = (((((-3.0 * $c2a) + 4.0)*$f) + 4.0) * $c2a * $f)/16.0;
+        $d = $x;
+        $x = (($e * $cy * $c + $cz) * $sy * $c + $y) * $sa;
+        $x = (1.0 - $c) * $x * $f + $dlon;
+        $del = $d - $x;
+
+        if $DEBUG {
+            printf "    c2a=%.8f, cz=%.8f\n", $c2a, $cz;
+            printf "    e=%.8f, d=%.8f\n", $e, $d;
+            printf "    (d-x)=%.8g\n", $del;
+        }
+
+    } while ((abs($del) > $eps) && (++$cnt <= $max_loop_count));
+
+    $faz = atan2($tu1,$tu2);
+    $baz = atan2($cu1*$sx,($baz*$cx - $su1*$cu2)) + pi;
+    $x = sqrt(((1.0/($r*$r)) -1.0) * $c2a+1.0) + 1.0;
+    $x = ($x-2.0)/$x;
+    $c = 1.0 - $x;
+    $c = (($x*$x)/4.0 + 1.0)/$c;
+    $d = ((0.375*$x*$x) - 1.0)*$x;
+    $x = $e*$cy;
+
+    if $DEBUG {
+        printf "e=%.8f, cy=%.8f, x=%.8f\n", $e, $cy, $x;
+        printf "sy=%.8f, c=%.8f, d=%.8f\n", $sy, $c, $d;
+        printf "cz=%.8f, a=%.8f, r=%.8f\n", $cz, $a, $r;
     }
 
-    printf "    sy=%.8f, cy=%.8f, y=%.8f, sa=%.8f\n", $sy, $cy, $y, $sa
-      if $DEBUG;
-
-    $c2a = 1.0 - ($sa*$sa);
-    $cz = $faz + $faz;
-    if ($c2a > 0.0) {
-      $cz = ((-$cz)/$c2a) + $cy;
-    }
-    $e = (2.0 * $cz * $cz) - 1.0;
-    $c = (((((-3.0 * $c2a) + 4.0)*$f) + 4.0) * $c2a * $f)/16.0;
-    $d = $x;
-    $x = (($e * $cy * $c + $cz) * $sy * $c + $y) * $sa;
-    $x = (1.0 - $c) * $x * $f + $dlon;
-    $del = $d - $x;
-
-    if ($DEBUG) {
-      printf "    c2a=%.8f, cz=%.8f\n", $c2a, $cz;
-      printf "    e=%.8f, d=%.8f\n", $e, $d;
-      printf "    (d-x)=%.8g\n", $del;
-    }
-
-  } while ((abs($del) > $eps) && (++$cnt <= $max_loop_count));
-
-  $faz = atan2($tu1,$tu2);
-  $baz = atan2($cu1*$sx,($baz*$cx - $su1*$cu2)) + pi;
-  $x = sqrt(((1.0/($r*$r)) -1.0) * $c2a+1.0) + 1.0;
-  $x = ($x-2.0)/$x;
-  $c = 1.0 - $x;
-  $c = (($x*$x)/4.0 + 1.0)/$c;
-  $d = ((0.375*$x*$x) - 1.0)*$x;
-  $x = $e*$cy;
-
-  if ($DEBUG) {
-    printf "e=%.8f, cy=%.8f, x=%.8f\n", $e, $cy, $x;
-    printf "sy=%.8f, c=%.8f, d=%.8f\n", $sy, $c, $d;
-    printf "cz=%.8f, a=%.8f, r=%.8f\n", $cz, $a, $r;
-  }
-
-  $s = 1.0 - $e - $e;
-  $s = (((((((($sy * $sy * 4.0) - 3.0) * $s * $cz * $d/6.0) - $x) *
+    $s = 1.0 - $e - $e;
+    $s = (((((((($sy * $sy * 4.0) - 3.0) * $s * $cz * $d/6.0) - $x) *
     $d /4.0) + $cz) * $sy * $d) + $y) * $c * $a * $r;
 
-  printf "s=%.8f\n", $s if $DEBUG;
+    printf "s=%.8f\n", $s if $DEBUG;
 
-  # REPLACE THIS WITH FUNCTION CALL!!
-  # adjust azimuth to (0,360) or (-180,180) as specified
-  if (self.bearing_sym) {
-    $faz += $twopi if $faz < -(pi);
-    $faz -= $twopi if $faz >= pi;
-  } else {
-    $faz += $twopi if $faz < 0;
-    $faz -= $twopi if $faz >= $twopi;
-  }
+    # REPLACE THIS WITH FUNCTION CALL!!
+    # adjust azimuth to (0,360) or (-180,180) as specified
+    warn "WARNING: check units here:\n";
+    die "FATAL: units are {self.units} instead of degrees" if self.units ne 'degrees';
+    if self.bearing_sym {
+        $faz += $twopi if $faz < -(pi);
+        $faz -= $twopi if $faz >= pi;
+    } 
+    else {
+        $faz += $twopi if $faz < 0;
+        $faz -= $twopi if $faz >= $twopi;
+    }
 
-  # return result
-  #my @disp = (($s/self.conversion), $faz);
-  my @disp = ($s/self.conversion, $faz);
-  print "disp = (@disp)\n" if $DEBUG;
-  return (|@disp);
+    # return result
+    #my @disp = (($s/self.conversion), $faz);
+    my @disp = ($s/self.conversion, $faz);
+    print "disp = (@disp)\n" if $DEBUG;
+    return (|@disp);
 } # _inverse
 
 #	_forward
@@ -947,7 +951,7 @@ method _inverse($lat1, $lon1, $lat2, $lon2)
 # pseudo "private" method
 method _forward($lat1, $lon1, $range, $bearing)
 {
-  if ($DEBUG) {
+  if $DEBUG {
     printf "_forward(lat1=%.8f,lon1=%.8f,range=%.8f,bearing=%.8f)\n",
       $lat1, $lon1, $range, $bearing;
   }
@@ -969,7 +973,7 @@ method _forward($lat1, $lon1, $range, $bearing)
   my $cf = cos($faz);
 
   my $baz = 0.0;
-  $baz = 2.0 * atan2($tu,$cf) if ($cf != 0.0);
+  $baz = 2.0 * atan2($tu,$cf) if $cf != 0.0;
 
   my $cu = 1.0 / sqrt(1.0 + $tu*$tu);
   my $su = $tu * $cu;
@@ -983,7 +987,7 @@ method _forward($lat1, $lon1, $range, $bearing)
   $tu = (($s/$r)/$a)/$c;
   my $y = $tu;
 
-  if ($DEBUG) {
+  if $DEBUG {
     printf "r=%.8f, tu=%.8f, faz=%.8f\n", $r, $tu, $faz;
     printf "baz=%.8f, sf=%.8f, cf=%.8f\n", $baz, $sf, $cf;
     printf "cu=%.8f, su=%.8f, sa=%.8f\n", $cu, $su, $sa;

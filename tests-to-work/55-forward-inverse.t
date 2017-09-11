@@ -17,14 +17,10 @@ my ($FAZ, $BAZ, $DIST);
 # GRS80 / WGS84 (NAD83) (default)
 # station Jones
 my $lat_11 = lat-hms2deg('n34  0 12.12345');
-
-say "DEBUG: \$lat_11 = $lat_11"; die "DEBUG exit";
-
 my $lon_11 = lon-hms2deg('w111 0 12.12345');
 # station Smith
 my $lat_12 = lat-hms2deg('n33  22 11.54321');
 my $lon_12 = lon-hms2deg('w112 55 44.33333');
-
 
 #=====================================
 # Clark 1866 (NAD27)
@@ -48,14 +44,16 @@ my $S_3 = 123456.7891;
 my $lat_32 = lat-hms2deg(' n33 31 25.93490');
 my $lon_32 = lon-hms2deg('w112 12 16.40986');
 
+#say "DEBUG: \$lat_11 = $lat_11"; die "DEBUG exit";
 
 
 =begin pod
 
 =head1 Original Test Data
 
-Following are the verbatim contents from the readme.doc included with the
-original fortran source code from NOAA/NGS.  The test data contained below
+Following are the nearly verbatim contents from the readme.doc included with the
+original fortran source code from NOAA/NGS (some spelling errors were corrected 
+and some formatting was tidied).  The test data contained below
 are used to verify the Perl 6 versions of the _forward and _inverse functions
 in module Geo::Ellipsoid.
 
@@ -110,7 +108,6 @@ Once all the prompts have been answered, the output will appear
 on the screen.  A prompt is given for saving the output into a
 file, if desired.
 
-
 Programs INVERSE and FORWARD allow the user to select from the
 following list of reference ellipsoids for the computations:
 
@@ -151,7 +148,6 @@ distances are also in meters.
 Programs INVERS3D and FORWRD3D work exclusively on the GRS80
 ellipsoid and the units are meters.
 
-
 Note 1 :
 
 Program FORWRD3D will do a conversion from mark-to-mark distance
@@ -177,14 +173,9 @@ computations.  The conversion is done as follows:
 
 radians = ( pi / 180 )* (degrees + minutes/60 + seconds/3600)
 
-
-
 The programs return the input values after :
      1. Converting them into degrees, minutes, and seconds and
      2. Checking d,m,s for the correct within range.
-
-
-
 
 Some example latitude inputs are :
 
@@ -231,14 +222,6 @@ Some example latitude inputs are :
      s26.630073253                               26 37 48.26371 South
 
 =======================================================================
-
-
-
-
-
-
-
-
 
 Some example longitude inputs are :
 
@@ -289,19 +272,9 @@ Some example longitude inputs are :
 
 =======================================================================
 
-
-
-
-
-
-
-
-
-
-
-
+=======================================================================
 Sample Outputs From Programs INVERSE and FORWARD
-
+=======================================================================
 
   Ellipsoid : GRS80 / WGS84  (NAD83)
   Equatorial radius,  a   =    6378137.0000
@@ -322,9 +295,11 @@ Sample Outputs From Programs INVERSE and FORWARD
   Back azimuth           BAZ =  67 59 11.1619 From North
   Ellipsoidal distance     S =    191872.1190 m
 
+=end pod
+# tests:
+=begin pod
+
 =================================================
-
-
 
   Ellipsoid : Clarke 1866    (NAD27)
   Equatorial radius,  a   =    6378206.4000
@@ -345,12 +320,11 @@ Sample Outputs From Programs INVERSE and FORWARD
   Back azimuth           BAZ =  73  9 21.3315 From North
   Ellipsoidal distance     S =    182009.1679 m
 
+=end pod
+# tests:
+=begin pod
+
 =================================================
-
-
-
-
-
 
 Sample Inputs
 
@@ -386,6 +360,10 @@ Sample Outputs From Program FORWRD3D
   DX =   -114550.6754 m   DN =    -52153.4448 m
   DY =     13813.5242 m   DE =   -111892.5928 m
   DZ =    -43917.4619 m   DU =     -1216.5690 m
+
+=end pod
+# tests:
+=begin pod
 
 =================================================
 
@@ -426,6 +404,10 @@ Sample Output From Programs INVERS3D
 
   Zenith (mk-to-mk)       ZD =  92 25 30.56
   Apparent zenith distance   =  92 19 55.21
+
+=end pod
+# tests:
+=begin pod
 
 =================================================
 

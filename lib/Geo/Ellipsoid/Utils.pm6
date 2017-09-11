@@ -29,6 +29,7 @@ my $DEBUG = %*ENV<GEO_ELLIPSOID_DEBUG>:exists && %*ENV<GEO_ELLIPSOID_DEBUG> ne '
 #	radians if given in degrees and by converting to the
 #	range [0,2pi), i.e., greater than or equal to zero and
 #	less than two pi.
+#       Angles are returned in the original units.
 #
 sub normalize-input-angles($units, *@angles) is export
 {
@@ -37,62 +38,51 @@ sub normalize-input-angles($units, *@angles) is export
         # use sub normalize-angle for following code:
 	while $_ < 0       { $_ += $twopi }
 	while $_ >= $twopi { $_ -= $twopi }
+        # convert back to input unit
+        $_ = rad2deg($_) if $units eq 'degrees';
 	$_
     }, @angles;
 
-    if @angs.elems < 2 {
-	return @angs.shift;
-    }
-    else {
-	return (|@angs);
-    }
+    return (|@angs);
 } # normalize-input-angles
 
-#	normalize-output-angles
+#	normalize-output-angle
 #
-#	Normalize a set of output angle values by converting to
+#	Normalize an output angle value by converting to
 #	degrees if needed and by converting to the range [-pi,+pi) or
-#	[0,2pi) as needed. Input angles MUST be in radians.
+#	[0,2pi) as needed.
+#       Output angle is converted to the input unit.
 #
-sub normalize-output-angles(Bool :$symmetric = False, Str :$units!, *@angles) is export
+sub normalize-output-angle($ang is copy, Bool :$symmetric = False, Str :$units!) is export
 {
-    my @angs = @angles;
     if $DEBUG {
-	say "DEBUG (normalize_output_angles)";
+	say "DEBUG (normalize-output-angle)";
 	say "  \$symmetric = '$symmetric'";
     }
 
-    # adjust remaining input values by reference
-    for @angs <-> $ang { # <-> is 'read-write' operator
-	say "  input \$ang = '$_'; units = 'radians'" if $DEBUG;
-
-	# the caller declares whether the symmetric or complete range is wanted
-	if $symmetric {
-	    say "    # normalize to range [-pi,pi)" if $DEBUG;
-	    # normalize to range [-pi,pi)
-            # use sub normalize-angle for following code:
-	    while $ang < -pi { $ang += $twopi }
-	    while $ang >= pi { $ang -= $twopi }
-	}
-	else {
-	    say "    # normalize to range [0,2*pi)" if $DEBUG;
-	    # normalize to range [0,2*pi)
-            # use sub normalize-angle for following code:
-	    while $ang <  0       { $ang += $twopi }
-	    while $ang >= $twopi { $ang -= $twopi }
-
-	    say "  output \$ang = '$ang'; units = '{ $units }'" if $DEBUG;
-	    $ang = rad2deg($ang) if $units eq 'degrees';
-	    say "    # converting rad to degrees" if $DEBUG && $units eq 'degrees';
-	}
-
-	if @angs.elems < 2 {
-	    return @angs.shift;
-	}
-	else {
-	    return (|@angs);
-	}
+    # adjust input value
+    say "  input \$ang = '$ang'; units = '$units'" if $DEBUG;
+    # the caller declares whether the symmetric or complete range is wanted
+    $ang = deg2rad($ang) if $units eq 'degrees';
+    if $symmetric {
+        say "    # normalize to range [-pi,pi)" if $DEBUG;
+        # normalize to range [-pi,pi)
+        # use sub normalize-angle for following code:
+        while $ang < -pi { $ang += $twopi }
+        while $ang >= pi { $ang -= $twopi }
     }
+    else {
+        say "    # normalize to range [0,2*pi)" if $DEBUG;
+        # normalize to range [0,2*pi)
+        # use sub normalize-angle for following code:
+        while $ang <  0       { $ang += $twopi }
+        while $ang >= $twopi  { $ang -= $twopi }
+    }
+
+    say "    # converting rad back to degrees" if $DEBUG && $units eq 'degrees';
+    $ang = rad2deg($ang) if $units eq 'degrees';
+    say "  output \$ang = '$ang'; units = '{ $units }'" if $DEBUG;
+    return $ang;
 }
 
 # convert latitude in degrees, minutes, seconds to degrees
@@ -127,7 +117,7 @@ sub lat-hms2deg($hmsdata --> Real) is export {
                 (\d+)        # degrees, mandatory
                 /
     {
-        say "DEBUG: 0: $0, 1: $1" if $DEBUG; 
+        say "DEBUG: 0: $0, 1: $1" if $DEBUG;
         my $c0 = $0;
         my $c1 = $1;
         if $c0 {
@@ -137,7 +127,7 @@ sub lat-hms2deg($hmsdata --> Real) is export {
            }
            elsif $c0 ~~ m:i/<[S-]>/ {
                # negative values
-               $sign *= -1;
+               $sign = -1;
            }
            else {
                # error
@@ -148,19 +138,17 @@ sub lat-hms2deg($hmsdata --> Real) is export {
 
         if $c1 {
             say "DEBUG: \$c1 = '$c1'" if $DEBUG;
-            $d = $c1; 
+            $d = $c1;
         }
         else {
             die "unexpected error: undef \$1 (\$D = '$D'; \$str = '$str')";
         }
 
+	my $degrees = extract-hms-match-values($d, $m, $s, :$sign);
+	return $degrees:
     }
-    else {
-        die "unexpected error: unknown \$D '$D'";
-    }
+    die "unexpected error: \$D = '$D'; \$str = '$str')";
 
-    my $degrees = extract-hms-match-values($d, $m, $s, :$sign);
-    return $degrees:
 }
 
 # convert longitude in degrees, minutes, seconds to degrees
@@ -180,44 +168,57 @@ sub lon-hms2deg($hmsdata --> Real) is export {
 
     # copy input
     my $str = $hmsdata;
-    say "DEBUG: input = '$s'" if $DEBUG;
+    say "DEBUG: input = '$str'" if $DEBUG;
 
     # substitute spaces for any commas
     $str ~~ s:g/','/' '/;
     say "DEBUG: input after subs spaces for commas = '$str'" if $DEBUG;
 
-    # check for validity and process
-    if $s ~~ m:i/
-                (<[\s E W \+ \-]>?)  # sign of degrees, optional
-                (\d+)                # degrees, mandatory
-                \s+ (\d+)            # ws, minutes, optional
-                \s+ (\d+ \.? \d*)    # ws, seconds, optional
-                /
-         {
+    my @v = $str.words;
+    my $D = shift @v;
+    my ($d, $m, $s) = (0, 0, 0);
+    $m = shift @v if @v;
+    $s = shift @v if @v;
 
-        my $sign = +1;
-        if $0 {
-           my $c = ~$0;
-           if $c ~~ m:i/<[E \+]>/ {
+    my $sign = -1; # default for NO sign
+    if $D ~~ m:i/
+                (<[EW+-]>?)  # sign of degrees, optional
+                (\d+)                # degrees, mandatory
+                /
+    {
+        say "DEBUG: 0: $0, 1: $1" if $DEBUG;
+        my $c0 = $0;
+        my $c1 = $1;
+        if $c0 {
+           if $c0 ~~ m:i/<[E+]>/ {
                # positive values
-               ; # ok: $sign *= +1;
+               $sign = +1;
            }
-           elsif $c ~~ m:i/<[\s W \-]>/ {
+           elsif $c0 ~~ m:i/<[W-]>/ {
                # negative values
-               $sign *= -1;
+               $sign = -1;
            }
            else {
                # error
+               die "Unexpected error!";
            }
         }
 
-        my $degrees = extract-hms-match-values(:$sign, $1, $2, $3);
+        if $c1 {
+            say "DEBUG: \$c1 = '$c1'" if $DEBUG;
+            $d = $c1;
+        }
+        else {
+            die "unexpected error: undef \$1 (\$D = '$D'; \$str = '$str')";
+        }
 
+        my $degrees = extract-hms-match-values(:$sign, $s, $m, $s, :$sign);
         return $degrees:
     }
-    # error
+    die "unexpected error: \$D = '$D'; \$str = '$str')";
 }
 
+=begin comment
 # convert degrees in DMS to decimal degrees
 sub hms2deg($h, $m, $sec) is export {
     # Allowable entries must be in one of the forms:
@@ -232,6 +233,7 @@ sub hms2deg($h, $m, $sec) is export {
     my $deg = $h + $m / 60 + $sec / 3600;
     return $deg;
 }
+=end comment
 
 sub extract-hms-match-values($h, $m, $s, :$sign!) {
         my $degrees = 0;

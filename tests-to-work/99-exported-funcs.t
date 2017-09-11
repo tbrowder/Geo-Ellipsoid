@@ -9,7 +9,7 @@ use Geo::Ellipsoid::Utils;
 
 plan 22;
 
-# This series of tests is for the functions now-exported from the class.
+# This series of tests is for the functions exported from the class.
 
 #===== hms
 my @lats =

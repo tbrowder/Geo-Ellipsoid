@@ -1,5 +1,6 @@
 unit module Geo::Ellipsoid::GenFuncs:auth<github:tbrowder>;
 
+=begin comment
 sub to_decimal($deg is copy, $min, $sec) is export {
   # may have leading [nNeEsSwW]
   if $deg ~~ m/^ (<[nNeEsSwW]>**1..1) (.*) $/ {
@@ -12,6 +13,7 @@ sub to_decimal($deg is copy, $min, $sec) is export {
   if $sec {
     $deg += $sec / 3600;
   }
+  return $deg;
 }
 
 sub to_hms($Deg, $typ) is export {
@@ -29,3 +31,4 @@ sub to_hms($Deg, $typ) is export {
   }
   return "$pref $deg $min $sec";
 }
+=end comment

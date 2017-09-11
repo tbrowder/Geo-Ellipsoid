@@ -20,6 +20,8 @@ my $rel-tol = 1e-6;
 
 #BEGIN { use-ok('Geo::Ellipsoid'); }
 use-ok('Geo::Ellipsoid');
+
+
 my $e0 = Geo::Ellipsoid.new();
 isa-ok($e0, 'Geo::Ellipsoid');
 my $e1 = Geo::Ellipsoid.new(units => 'degrees');
@@ -30,6 +32,7 @@ my $e3 = Geo::Ellipsoid.new(bearing => 1);
 isa-ok($e3, 'Geo::Ellipsoid');
 my $e4 = Geo::Ellipsoid.new(longitude => 1);
 isa-ok($e4, 'Geo::Ellipsoid');
+
 
 can-ok($e0, 'new');
 can-ok($e0, 'set_units');
@@ -46,6 +49,7 @@ can-ok($e0, 'at');
 can-ok($e0, 'to');
 can-ok($e0, 'displacement');
 can-ok($e0, 'location');
+say "DEBUG early exit"; exit;
 
 =begin pod
 
