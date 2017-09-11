@@ -20,7 +20,7 @@ constant $degrees_per_radian is export = 180/pi;
 constant $twopi is export              = 2 * pi;
 constant $halfpi is export             = pi/2;
 
-my $DEBUG = False;
+my $DEBUG = %*ENV<GEO_ELLIPSOID_DEBUG>:exists && %*ENV<GEO_ELLIPSOID_DEBUG> ne '0' ?? True !! False;
 
 
 #	normalize_input_angles
@@ -96,7 +96,7 @@ sub normalize-output-angles(Bool :$symmetric = False, Str :$units!, *@angles) is
 }
 
 # convert latitude in degrees, minutes, seconds to degrees
-sub lat-hms2deg($hmsdata) is export {
+sub lat-hms2deg($hmsdata --> Real) is export {
     # Allowable entries must be in one of the forms:
     #   D or DM or DMS
     # where a missing element is taken to be zero.
@@ -108,50 +108,66 @@ sub lat-hms2deg($hmsdata) is export {
     # The result will retain the resulting numerical sign of the D entry.
 
     # copy input
-    my $s = $hmsdata;
-    say "DEBUG: input = '$s'";
+    my $str = $hmsdata;
+    say "DEBUG: input = '$str'" if $DEBUG;
 
     # substitute spaces for any commas
-    $s ~~ s:g/','/' '/;
-    say "DEBUG: input after subs spaces for commas = '$s'";
+    $str ~~ s:g/','/' '/;
+    say "DEBUG: input after subs spaces for commas = '$str'" if $DEBUG;
 
-    # check for validity and process
-    if $s !~~ m:i/
-                (<[\s N S \+ \-]>?)  # sign of degrees, optional
-                (\d+)                # degrees, mandatory
-                \s+ (\d+)            # ws, minutes, optional
-                \s+ (\d+ \.? \d*)    # ws, seconds, optional
+    my @v = $str.words;
+    my $D = shift @v;
+    my ($d, $m, $s) = (0, 0, 0);
+    $m = shift @v if @v;
+    $s = shift @v if @v;
+
+    my $sign = +1;
+    if $D ~~ m:i/
+                (<[NS+-]>?)  # sign of degrees, optional
+                (\d+)        # degrees, mandatory
                 /
-         {
-
-        my $sign = +1;
-        if $0 {
-           my $c = ~$0;
-           if $c ~~ m:i/<[\s N \+]>/ {
+    {
+        say "DEBUG: 0: $0, 1: $1" if $DEBUG; 
+        my $c0 = $0;
+        my $c1 = $1;
+        if $c0 {
+           if $c0 ~~ m:i/<[N+]>/ {
                # positive values
                ; # ok: $sign *= +1;
            }
-           elsif $c ~~ m:i/<[S \-]>/ {
+           elsif $c0 ~~ m:i/<[S-]>/ {
                # negative values
                $sign *= -1;
            }
            else {
                # error
+               die "Unexpected error!";
            }
+           say "DEBUG: \$c0 = '$c0'" if $DEBUG;
         }
 
-        my $degrees = extract-hms-match-values($1, $2, $3, :$sign);
+        if $c1 {
+            say "DEBUG: \$c1 = '$c1'" if $DEBUG;
+            $d = $c1; 
+        }
+        else {
+            die "unexpected error: undef \$1 (\$D = '$D'; \$str = '$str')";
+        }
 
-        return $degrees:
     }
-    # error
+    else {
+        die "unexpected error: unknown \$D '$D'";
+    }
+
+    my $degrees = extract-hms-match-values($d, $m, $s, :$sign);
+    return $degrees:
 }
 
 # convert longitude in degrees, minutes, seconds to degrees
 sub long-hms2deg($hmsdata) is export {
     return lon-hms2deg($hmsdata);
 }
-sub lon-hms2deg($hmsdata) is export {
+sub lon-hms2deg($hmsdata --> Real) is export {
     # Allowable entries must be in one of the forms:
     #   D or DM or DMS
     # where a missing element is taken to be zero.
@@ -163,15 +179,15 @@ sub lon-hms2deg($hmsdata) is export {
     # The result will retain the resulting numerical sign of the D entry.
 
     # copy input
-    my $s = $hmsdata;
-    say "DEBUG: input = '$s'";
+    my $str = $hmsdata;
+    say "DEBUG: input = '$s'" if $DEBUG;
 
     # substitute spaces for any commas
-    $s ~~ s:g/','/' '/;
-    say "DEBUG: input after subs spaces for commas = '$s'";
+    $str ~~ s:g/','/' '/;
+    say "DEBUG: input after subs spaces for commas = '$str'" if $DEBUG;
 
     # check for validity and process
-    if $s !~~ m:i/
+    if $s ~~ m:i/
                 (<[\s E W \+ \-]>?)  # sign of degrees, optional
                 (\d+)                # degrees, mandatory
                 \s+ (\d+)            # ws, minutes, optional
@@ -242,8 +258,8 @@ sub extract-hms-match-values($h, $m, $s, :$sign!) {
             # error
         }
 
-        $degrees += $minutes / 60;
-        $degrees += $seconds / 3600;
+        $degrees += $minutes / 60.0;
+        $degrees += $seconds / 3600.0;
 
         # now apply the sign
         $degrees *= $sign;

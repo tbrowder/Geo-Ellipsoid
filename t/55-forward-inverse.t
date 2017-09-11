@@ -1,10 +1,10 @@
 use v6;
 use Test;
 
-plan 2;
-
 use Geo::Ellipsoid;
 use Geo::Ellipsoid::Utils;
+
+#plan 2;
 
 # Test pseudo "private" methods
 
@@ -17,6 +17,9 @@ my ($FAZ, $BAZ, $DIST);
 # GRS80 / WGS84 (NAD83) (default)
 # station Jones
 my $lat_11 = lat-hms2deg('n34  0 12.12345');
+
+say "DEBUG: \$lat_11 = $lat_11"; die "DEBUG exit";
+
 my $lon_11 = lon-hms2deg('w111 0 12.12345');
 # station Smith
 my $lat_12 = lat-hms2deg('n33  22 11.54321');

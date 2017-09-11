@@ -1,8 +1,9 @@
-PERL6     := perl6
+#PERL6     := perl6
+PERL6     := 'perl6-debug'
 LIBPATH   := ../lib,./lib
 
-# set below to 1 for no effect, 1 for debugging messages
-DEBUG := GEO_ELLIPSOID_DEBUG=0
+# set below to 0 for no effect, 1 for debugging messages
+DEBUG := GEO_ELLIPSOID_DEBUG=1
 
 # set below to 0 for no effect, 1 to die on first failure
 EARLYFAIL := PERL6_TEST_DIE_ON_FAIL=0
@@ -25,12 +26,12 @@ test-funcs:
 # the original test suite (i.e., 'make test')
 test:
 	for f in $(TESTS) ; do \
-	    $(DEBUG) $(TA) $(EARLYFAIL) $(EARLYFAIL) PERL6LIB=$(LIBPATH) prove -v --exec=$(PERL6) $$f ; \
+	    $(DEBUG) $(TA) $(EARLYFAIL) PERL6LIB=$(LIBPATH) prove -v --exec=$(PERL6) $$f ; \
 	done
 
 bad:
 	for f in $(BADTESTS) ; do \
-	    $(DEBUG) $(TA) $(EARLYFAIL) $(EARLYFAIL) PERL6LIB=$(LIBPATH) prove -v --exec=$(PERL6) $$f ; \
+	    $(DEBUG) $(TA) $(EARLYFAIL) PERL6LIB=$(LIBPATH) prove -v --exec=$(PERL6) $$f ; \
 	done
 
 good:
