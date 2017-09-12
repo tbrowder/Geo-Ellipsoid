@@ -31,6 +31,8 @@ is-approx($lon1,  0.0, :$rel-tol);
 is-approx($lat2,  0.0, :$rel-tol);
 is-approx($lon2,  0.0, :$rel-tol);
 
+say "DEBUG exit"; exit;
+
 #exit;
 
 # tests 1-4
@@ -40,9 +42,6 @@ is-approx($lat1,  -38.3656166574817, :$rel-tol);
 is-approx($lon1,  190.880662670944, :$rel-tol);
 is-approx($lat2,  -38.3656166574817, :$rel-tol);
 is-approx($lon2, -169.119337329056, :$rel-tol);
-
-say "DEBUG exit";
-exit;
 
 ($lat1,$lon1) = $e1.at(-14.608137,30.094655,6390.954467,5.838786);
 ($lat2,$lon2) = $e2.at(-14.608137,30.094655,6390.954467,5.838786);

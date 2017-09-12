@@ -29,6 +29,8 @@ is-approx($y, 393.690589875639, :abs-tol<1.0>); #delta_within($y, 393.6905898756
 is-approx($x, 650.150163064452, :abs-tol<1.0>); #delta_within($x, 650.150163064452, 1.0);
 is-approx($y, 6357.79865738339, :abs-tol<1.0>); #delta_within($y, 6357.79865738339, 1.0);
 
+#say "DEBUG exit"; exit;
+
 ($x, $y) = $e1.displacement(-41.623677,208.834416,-41.625005,208.853655);
 is-approx($x, 1603.25828998005, :abs-tol<1.0>); #delta_within($x, 1603.25828998005, 1.0);
 is-approx($y, -147.740698437479, :abs-tol<1.0>); #delta_within($y, -147.740698437479, 1.0);

@@ -788,6 +788,12 @@ method displacement(*@args --> List)
   say "call self._inverse(|@a)" if $DEBUG;
   my ($range, $bearing) = self._inverse(|@a);
   say "disp: _inverse(@a) returns ($range,$bearing)" if $DEBUG;
+
+  # check angle units:
+  if self.units eq 'degrees' {
+      $bearing = deg2rad $bearing;
+  }
+
   my $x = $range * sin($bearing);
   my $y = $range * cos($bearing);
   return ($x,$y);
@@ -967,8 +973,8 @@ method _forward($lat1 is copy, $lon1 is copy, $range, $bearing is copy)
 {
   #die "FATAL: need to use radians for trig funcs, units are: {self.units}" if self.units eq 'degrees';
   if self.units eq 'degrees' {
-      $lat1 = deg2rad $lat1;
-      $lon1 = deg2rad $lon1;
+      $lat1    = deg2rad $lat1;
+      $lon1    = deg2rad $lon1;
       $bearing = deg2rad $bearing;
   }
 
@@ -1040,8 +1046,8 @@ method _forward($lat1 is copy, $lon1 is copy, $range, $bearing is copy)
   #$baz = atan2($sa,$baz) + pi;
 
   if self.units eq 'degrees' {
-      $lat2 = deg2rad $lat2;
-      $lon2 = deg2rad $lon2;
+      $lat2 = rad2deg $lat2;
+      $lon2 = rad2deg $lon2;
   }
 
   # return result
