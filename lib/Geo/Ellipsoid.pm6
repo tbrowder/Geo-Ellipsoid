@@ -816,7 +816,7 @@ method location($lat, $lon, $x, $y)
 {
   my $range    = sqrt($x*$x+ $y*$y);
   my $bearing  = atan2($x,$y);
-  $bearing     = deg2rad($bearing) if self.units eq 'degrees';
+  $bearing     = rad2deg($bearing) if self.units eq 'degrees';
   #say "location($lat, $lon, $x, $y, $range, $bearing)" if $DEBUG;
   say "location($x, $y, $range, $bearing)" if $DEBUG;
   return self.at($lat, $lon, $range, $bearing);
@@ -939,8 +939,7 @@ method _inverse($lat1 is copy, $lon1 is copy, $lat2 is copy, $lon2 is copy)
 
     # REPLACE THIS WITH FUNCTION CALL!!
     # adjust azimuth to (0,360) or (-180,180) as specified
-    warn "WARNING: check units here:\n" if $DEBUG;
-    die "FATAL: units are {self.units} instead of degrees" if self.units ne 'degrees';
+    # units MUST be radians at this point
     if self.bearing_sym {
         $faz += $twopi if $faz < -(pi);
         $faz -= $twopi if $faz >= pi;
@@ -992,9 +991,10 @@ method _forward($lat1 is copy, $lon1 is copy, $range, $bearing is copy)
   my $faz = $bearing;
   my $s = self.conversion * $range;
 
-  say "DEBUG: \$faz = $faz";
-  say $faz.WHAT;
-
+  if $DEBUG {
+      say "DEBUG: \$faz = $faz";
+      say $faz.WHAT;
+  }
 
   my $sf = sin($faz);
   my $cf = cos($faz);

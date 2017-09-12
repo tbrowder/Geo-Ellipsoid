@@ -3,7 +3,7 @@
 use v6;
 use Test;
 
-plan 404;
+plan 400;
 
 use Geo::Ellipsoid;
 
@@ -17,23 +17,11 @@ use Geo::Ellipsoid;
 #  which translates to:
 my $rel-tol = 1e-6;
 
-$Geo::Ellipsoid::DEBUG = 1;
+#$Geo::Ellipsoid::DEBUG = 1;
 
 my $e1 = Geo::Ellipsoid.new(units=>'degrees');
 my $e2 = Geo::Ellipsoid.new(units=>'degrees',longitude_sym => True);
 my ($lat1, $lon1, $lat2, $lon2, $x, $y);
-
-# new tests for debugging:
-($lat1,$lon1) = $e1.at(0.0, 0.0, 10000.0, 90.0);
-($lat2,$lon2) = $e2.at(0.0, 0.0, 10000.0, 90.0);
-is-approx($lat1,  0.0, :$rel-tol);
-is-approx($lon1,  0.0, :$rel-tol);
-is-approx($lat2,  0.0, :$rel-tol);
-is-approx($lon2,  0.0, :$rel-tol);
-
-say "DEBUG exit"; exit;
-
-#exit;
 
 # tests 1-4
 ($lat1,$lon1) = $e1.at(-38.369163, 190.874558, 663.027183, 53.574472);
