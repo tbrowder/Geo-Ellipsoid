@@ -1,8 +1,13 @@
 use v6;
 use Test;
 
+use Test::META;
+
 plan 1;
 
+meta-ok :relaxed-name;
+
+=begin comment
 constant AUTHOR = ?%*ENV<TEST_AUTHOR>; 
 
 if AUTHOR { 
@@ -14,3 +19,5 @@ else {
      skip-rest "Skipping author test";
      exit;
 }
+=end comment
+
