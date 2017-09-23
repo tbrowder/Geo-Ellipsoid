@@ -43,6 +43,7 @@ This module is a port of existing Fortran subroutines to Perl.
 # COPYRIGHT AND LICENCE
 
 Copyright (C) 2015-2017 Tom Browder <tom.browder@gmail.com>
+
 Copyright (C) 2005-2008 Jim Gibson
 
 This program is free software; you can redistribute it or modify it
