@@ -6,13 +6,19 @@ Longitude and latitude calculations using an ellipsoid model.
 
 To install this module, run the following command:
 
-    $ zef install Geo::Ellipsoid
+``` perl6
+$ zef install Geo::Ellipsoid
+
+```
+
 
 # TESTING
 
 1. To run the test suite:
 
+``` perl6
    $ make test
+```
 
 2. To run an individual test:
 
@@ -38,4 +44,3 @@ Copyright (C) 2005-2008 Jim Gibson
 
 This program is free software; you can redistribute it or modify it
 under the same terms as Perl itself.
-
