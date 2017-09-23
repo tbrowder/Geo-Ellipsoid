@@ -8,7 +8,6 @@ To install this module, run the following command:
 
 ``` perl6
 $ zef install Geo::Ellipsoid
-
 ```
 
 
@@ -17,16 +16,20 @@ $ zef install Geo::Ellipsoid
 1. To run the test suite:
 
 ``` perl6
-   $ make test
+$ make test
 ```
 
 2. To run an individual test:
 
-   $ perl6 -Ilib t/test-filename.t
+``` perl6
+$ perl6 -Ilib t/test-filename.t
+```
 
 3. To compare the results of this module to the CPAN Perl 5 version:
 
-   $ make test-orig
+``` perl6
+$ make test-orig
+```
 
 # RELEASE NOTES
 
