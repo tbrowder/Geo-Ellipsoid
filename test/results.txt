@@ -1,4 +1,4 @@
-Enter test_ellipsoid
+Enter test-ellipsoid
 
 Using Geo::Ellipsoid version 1.12
 WGS84 ellipsoid values:

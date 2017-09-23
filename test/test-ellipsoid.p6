@@ -8,10 +8,10 @@
 
 #require '../lib/Geo/Ellipsoid.pm';
 
-use lib <../lib ../lib/Geo>;
+#use lib <../lib ../lib/Geo>;
 #use blib './lib';
 use Geo::Ellipsoid;
-use Geo::Ellipsoid::GenFuncs :DEFAULT;#('to_decimal', 'to_hms');
+use Geo::Ellipsoid::GenFuncs :ALL; #('to_decimal', 'to_hms');
 
 #sub MAIN ($debug, $xdebug);
 
@@ -28,7 +28,7 @@ sub MAIN (Bool :d(:$debug),
           Bool :t(:$tdebug),
          );
 
-my $usage = "Usage: test_ellipsoid.pl -p | -t [-d, -x, -s]";
+my $usage = "Usage: $*PROGRAM.basename -p | -t [-d, -x, -s]";
 if !$tdebug && !$pdebug {
   say $usage;
   exit;
@@ -40,8 +40,8 @@ if ($xdebug) {
 
 test-private-methods if $pdebug;
 
-say "Enter test_ellipsoid\n";
-say "Using Geo::Ellipsoid version $Geo::Ellipsoid::VERSION";
+say "Enter test-ellipsoid\n";
+say "Using Geo::Ellipsoid version 1.12";
 
 print "WGS84 ellipsoid values:\n";
 my $earth = Geo::Ellipsoid.new(

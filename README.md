@@ -20,12 +20,11 @@ To install this module, run the following command:
 
 3. To compare the results of this module to the CPAN Perl 5 version:
 
-   $ make test-orig > res.txt
-   $ diff res.txt test/results.txt
+   $ make test-orig
 
 # RELEASE NOTES
 
-This is version 1.0, the initial port of the CPAN Perl 5 version to
+This is the port of the CPAN Perl 5 version to
 Perl 6.
 
 # RELEASE NOTES (from the original CPAN version)
