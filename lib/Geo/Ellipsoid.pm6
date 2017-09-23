@@ -1110,18 +1110,20 @@ may be obtained from
 =head1 AUTHOR
 
 Jim Gibson, C<< <Jim@Gibson.org> >>
+Tom Browder, C<< <tom.browder@gmail.com> >>
 
 =head1 BUGS
 
 See LIMITATIONS, above.
 
-Please report any bugs or feature requests to
-C<bug-geo-ellipsoid@rt.cpan.org>, or through the web interface at
-L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Geo-Ellipsoid>.
+Please enter any bugs or feature requests to the issues 
+ through the web interface at
+L<https://github.com/tbrowder/Geo-Ellipsoid-Perl6>.
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2005-2008 Jim Gibson, all rights reserved.
+Copyright (c) 2005-2008 Jim Gibson, all rights reserved.
+Copyright (c) 2015-2017 Tom Browder, all rights reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

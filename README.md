@@ -16,7 +16,7 @@ To install this module, run the following command:
 
 2. To run an individual test:
 
-   $ perl6 t/test-filename.t
+   $ perl6 -Ilib t/test-filename.t
 
 3. To compare the results of this module to the CPAN Perl 5 version:
 

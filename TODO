@@ -3,16 +3,10 @@ TODO list for Perl module Geo::Ellipsoid
 - Figure out what to do if _forward or _inverse does not converge
   because points are opposite each other
 
-BEFORE RELEASE
-
 - See if arg values should be constrained in some cases.
-
-- Ensure all test suite scripts have a plan.
 
 - Emulate or otherwise find some way to have an equivalent to the
   'delta_within' function.
-
-- Make README.md instructions correct for the ecosystem.
 
 - Ensure there is a test for bad invalid inputs for
   Geo::Ellipsoid.new, e.g., 'distance' instead of 'distance_units'.
