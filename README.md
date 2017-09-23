@@ -40,11 +40,16 @@ Perl 6.
 
 This module is a port of existing Fortran subroutines to Perl.
 
-# COPYRIGHT AND LICENCE
+
+# COPYRIGHT
 
 Copyright (C) 2015-2017 Tom Browder <tom.browder@gmail.com>
 
 Copyright (C) 2005-2008 Jim Gibson
+
+# LICENSE
+
+Artistic-2.0
 
 This program is free software; you can redistribute it or modify it
 under the same terms as Perl itself.
