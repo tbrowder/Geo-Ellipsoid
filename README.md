@@ -1,4 +1,4 @@
-# Geo::Ellipsoid [![Build Status](https://travis-ci.org/tbrowder/Geo-Ellipsoid-Perl6.svg)](https://travis-ci.org/tbrowder/Geo-Ellipsoid-Perl6)
+# Geo::Ellipsoid [![Build Status](https://travis-ci.org/tbrowder/Geo-Ellipsoid-Perl6.svg?branch=master)](https://travis-ci.org/tbrowder/Geo-Ellipsoid-Perl6)
 
 Longitude and latitude calculations using an ellipsoid model.
 

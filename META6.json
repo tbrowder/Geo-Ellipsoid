@@ -1,7 +1,7 @@
 {
     "perl" : "6.c",
     "name" : "Geo::Ellipsoid",
-    "version" : "0.2.0",
+    "version" : "0.3.0",
     "auth"    : "github:tbrowder",
     "author"    : "github:tbrowder",
     "description" : "Accurate latitude/longitude calculations",
