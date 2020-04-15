@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/tbrowder/Geo-Ellipsoid-Perl6.svg?branch=master)](https://travis-ci.org/tbrowder/Geo-Ellipsoid-Perl6)
+[![Build Status](https://travis-ci.com/tbrowder/Geo-Ellipsoid-Perl6.svg?branch=master)](https://travis-ci.com/tbrowder/Geo-Ellipsoid-Perl6)
 
 NAME
 ====
