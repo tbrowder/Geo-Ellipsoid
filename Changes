@@ -1,0 +1,12 @@
+{{$NEXT}}
+    - Rakuize the code
+    - Remove travis testing
+    - Add github workflows testing
+    - Correct the module's repository path
+    - Change to management by App::Mi6
+    - Move to the Zef ecosystem
+    - Miscellaneous changes and corrections
+
+1.0.0  2018-01-23T23:19:50-05:00
+    - Last published on CPAN5
+
