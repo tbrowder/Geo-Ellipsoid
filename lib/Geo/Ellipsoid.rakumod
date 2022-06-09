@@ -9,12 +9,10 @@
 #	results of the calculations, although they do seem to
 #	work for him and have been tested against other methods.
 
-use v6;
 
-#use Math::Trig;
 use Geo::Ellipsoid::Utils;
 
-unit class Geo::Ellipsoid:auth<github:tbrowder>;
+unit class Geo::Ellipsoid;
 
 # export a debug var for users
 our $DEBUG = False;
