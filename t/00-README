@@ -1,7 +1,7 @@
 =begin pod
 
 There are some differences between test functions in Perl 5's
-"Test::Number::Delta: and Perl 6's "Test" modules.
+"Test::Number::Delta: and Raku's "Test" modules.
 
 As used in the Perl 5 version for testing Geo::Ellipsoid:
 
@@ -19,7 +19,7 @@ As used in the Perl 5 version for testing Geo::Ellipsoid:
     use Test::Number::Delta relative => 1e-3;
     delta_ok( 1.01, 1.0099, 'values within 1.01e-3');
 
-Those translate to the Perl 6 versions:
+Those translate to the Raku versions:
 
 1.  # Equality test with default tolerance [absolute]
     # delta_ok

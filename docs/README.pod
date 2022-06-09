@@ -21,7 +21,7 @@ To install this module, run one of the following commands:
 
 2. To run an individual test:
 
-   $ perl6 t/test-filename.t
+   $ raku t/test-filename.t
 
 3. To compare the results of this module to the CPAN Perl 5 version:
 
