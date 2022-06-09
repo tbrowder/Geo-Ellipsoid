@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.com/tbrowder/Geo-Ellipsoid-Perl6.svg?branch=master)](https://travis-ci.com/tbrowder/Geo-Ellipsoid-Perl6)
-
 NAME
 ====
 
@@ -251,14 +249,14 @@ BUGS
 
 See LIMITATIONS, above.
 
-Please enter any bugs or feature requests to the issues  through the web interface at [https://github.com/tbrowder/Geo-Ellipsoid-Perl6](https://github.com/tbrowder/Geo-Ellipsoid-Perl6).
+Please enter any bugs or feature requests to the issues through the web interface at [https://github.com/tbrowder/Geo-Ellipsoid](https://github.com/tbrowder/Geo-Ellipsoid).
 
 COPYRIGHT & LICENSE
 ===================
 
-Copyright (c) 2005-2008 Jim Gibson, all rights reserved. Copyright (c) 2015-2017 Tom Browder, all rights reserved.
+Copyright (c) 2005-2008 Jim Gibson, all rights reserved. Copyright (c) 2015-2022 Tom Browder, all rights reserved.
 
-This program is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
+This program is free software; you can redistribute it and/or modify it under the same terms as Raku itself.
 
 SEE ALSO
 ========
