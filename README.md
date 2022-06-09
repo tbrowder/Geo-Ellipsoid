@@ -3,11 +3,6 @@ NAME
 
 Geo::Ellipsoid - Longitude and latitude calculations using an ellipsoid model.
 
-VERSION
-=======
-
-Version 1.0.0, not yet released.
-
 SYNOPSIS
 ========
 
