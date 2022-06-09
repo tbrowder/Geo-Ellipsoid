@@ -1,3 +1,5 @@
+[![Actions Status](https://github.com/tbrowder/Geo-Ellipsoid/workflows/test/badge.svg)](https://github.com/tbrowder/Geo-Ellipsoid/actions)
+
 NAME
 ====
 
