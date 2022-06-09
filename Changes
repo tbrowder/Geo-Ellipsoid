@@ -1,4 +1,6 @@
 {{$NEXT}}
+
+1.0.1  2022-06-09T18:35:48-05:00
     - Rakuize the code
     - Remove travis testing
     - Add github workflows testing
